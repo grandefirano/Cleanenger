@@ -31,10 +31,20 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchPeopleRecyclerView"
-        android:layout_width="416dp"
-        android:layout_height="573dp"
-        android:layout_marginTop="26dp"
+        android:layout_width="403dp"
+        android:layout_height="563dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchPeopleEditText" />
+
+    <Switch
+        android:id="@+id/switchIfFriends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="2dp"
+        android:text="Only Friends"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchPeopleEditText" />
 

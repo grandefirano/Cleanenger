@@ -17,16 +17,16 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class FindPeopleAdapter extends RecyclerView.Adapter<com.grandefirano.cleanenger.login.MainListAdapter.ViewHolder> {
+public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.ViewHolder> {
 
 
 
 
-        private ArrayList<SingleMessageFeedItem> mList;
-        com.grandefirano.cleanenger.login.MainListAdapter.OnItemListener mOnItemListener;
+        private ArrayList<SinglePersonSearchItem> mList;
+        OnItemListener mOnItemListener;
         private Context mContext;
 
-        public FindPeopleAdapter(Context context, ArrayList<SingleMessageFeedItem> listOfMessages, com.grandefirano.cleanenger.login.MainListAdapter.OnItemListener onItemListener){
+        public FindPeopleAdapter(Context context, ArrayList<SinglePersonSearchItem> listOfMessages, OnItemListener onItemListener){
             mOnItemListener=onItemListener;
             mList=listOfMessages;
             mContext=context;
@@ -34,16 +34,16 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<com.grandefirano.cle
 
         @NonNull
         @Override
-        public com.grandefirano.cleanenger.login.MainListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View v= LayoutInflater.from(parent.getContext()).inflate(R.layout.single_message_feed_item,parent,false);
-            com.grandefirano.cleanenger.login.MainListAdapter.ViewHolder viewHolder=new com.grandefirano.cleanenger.login.MainListAdapter.ViewHolder(v,mOnItemListener);
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View v= LayoutInflater.from(parent.getContext()).inflate(R.layout.single_person_search_item,parent,false);
+            ViewHolder viewHolder=new ViewHolder(v,mOnItemListener);
             return viewHolder;
         }
 
         @Override
-        public void onBindViewHolder(@NonNull com.grandefirano.cleanenger.login.MainListAdapter.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-            SingleMessageFeedItem currentItem=mList.get(position);
+            SinglePersonSearchItem currentItem=mList.get(position);
 
             Picasso.with(mContext).load(currentItem.getImageResource())
                     .fit()
@@ -52,9 +52,8 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<com.grandefirano.cle
             //DOWNLOAD PHOTO
 
             //holder.mImageView.setImageResource("");
-            holder.mMessageTextView.setText(currentItem.getMessageText());
             holder.mPersonTextView.setText(currentItem.getPersonText());
-            if(!currentItem.isIfRead()) holder.mMessageTextView.setTextColor(Color.BLUE);
+
 
 
         }
@@ -69,16 +68,16 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<com.grandefirano.cle
 
             public ImageView mImageView;
             public TextView mPersonTextView;
-            public TextView mMessageTextView;
-
-            com.grandefirano.cleanenger.login.MainListAdapter.OnItemListener mOnItemListener;
 
 
-            public ViewHolder(@NonNull View itemView, com.grandefirano.cleanenger.login.MainListAdapter.OnItemListener onItemListener) {
+            OnItemListener mOnItemListener;
+
+
+            public ViewHolder(@NonNull View itemView, OnItemListener onItemListener) {
                 super(itemView);
                 mImageView=itemView.findViewById(R.id.personImageView);
                 mPersonTextView=itemView.findViewById(R.id.nameOfPersonTextView);
-                mMessageTextView=itemView.findViewById(R.id.messageOfPersonTextView);
+
                 Log.d("ddd",mPersonTextView.getText().toString());
 
                 this.mOnItemListener=onItemListener;

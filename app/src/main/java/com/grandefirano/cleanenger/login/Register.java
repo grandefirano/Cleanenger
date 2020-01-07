@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -70,10 +71,14 @@ public class Register extends AppCompatActivity {
                                 String uId=user.getUid();
 
                                 myRef=FirebaseDatabase.getInstance()
-                                        .getReference();
+                                        .getReference().child("users").child(uId);
 
-                                User newUser= new User(username,email);
-                                myRef.child("users").child(uId).setValue(newUser);
+                                //TODO:nie masz pozwolenia
+                                //default photo
+                                String linktoPhoto="";
+
+                                UserData newUserData= new UserData(username,email,linktoPhoto);
+                                myRef.child("data").setValue(newUserData);
 
 
                                 goToMain();
@@ -127,21 +132,27 @@ public class Register extends AppCompatActivity {
 
 
 
-    static public class User{
+    static public class UserData{
         public String username;
         public String email;
+        public String profile_photo;
 
-        public User() {
+        public UserData() {
         }
-        public User(String username, String email) {
+        public UserData(String username, String email,String profile_photo) {
             this.username = username;
             this.email = email;
+            this.profile_photo=profile_photo;
         }
         public String getUsername() {
             return username;
         }
         public String getEmail() {
             return email;
+        }
+
+        public String getProfile_photo() {
+            return profile_photo;
         }
     }
 

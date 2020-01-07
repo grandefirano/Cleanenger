@@ -167,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
                         username,
                         message,
                         ifRead));
+
                 mAdapter.notifyDataSetChanged();
 
                 Log.i("ssdfdfa",String.valueOf(listItems.size()));
