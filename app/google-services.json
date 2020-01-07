@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "683790062007",
+    "firebase_url": "https://cleanenger.firebaseio.com",
+    "project_id": "cleanenger",
+    "storage_bucket": "cleanenger.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:683790062007:android:21c7c952bea61ba36e5832",
+        "android_client_info": {
+          "package_name": "com.grandefirano.cleanenger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "683790062007-k0mc8movvobltjbh1ghoob5btf754jfr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-gVMux66VG8PlwCy0gAPgn-YMNxjIoqw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "683790062007-k0mc8movvobltjbh1ghoob5btf754jfr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
