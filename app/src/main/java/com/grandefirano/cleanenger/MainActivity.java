@@ -29,12 +29,14 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements MainListAdapter.OnItemListener {
 
     FirebaseAuth mAuth;
+    String myId;
     DatabaseReference mDatabase;
     private RecyclerView mMessagesRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     ArrayList<String> idList=new ArrayList<>();
     ArrayList<SingleMessageFeedItem> listItems= new ArrayList<>();
+    ArrayList<String> chatIdList= new ArrayList<>();
 
     String TAG="CHECK_LOG_MAIN";
 
@@ -87,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
         // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
+        myId=mAuth.getUid();
+
         mDatabase=FirebaseDatabase.getInstance().getReference();
         mMessagesRecyclerView=findViewById(R.id.searchPeopleRecyclerView);
 
@@ -114,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     private void downloadListFromDatabase(){
         listItems.clear();
         idList.clear();
+        chatIdList.clear();
 
 
         mDatabase.child("users")
@@ -125,15 +130,20 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 //                        emails.add((String) dataSnapshot.child("from").getValue());
 //                              TODO:
                         //tODo:BEZ NAZWY DANE W BAZIE
-                            makeListItem(dataSnapshot.getKey(),
-                                    String.valueOf(dataSnapshot.child("message").getValue()),
-                                    (boolean)dataSnapshot.child("ifRead").getValue());
+                        DatabaseReference lastMessage=mDatabase.child("chats").child(dataSnapshot.getValue().toString()).child("last_message");
+
+                        idList.add(String.valueOf(dataSnapshot.getKey()));
+                        chatIdList.add(String.valueOf(dataSnapshot.getValue()));
+                        findLastMessage(lastMessage,dataSnapshot.getKey());
+
+
+
 
 //                        listItems.add(new SingleMessageFeedItem(R.drawable.ic_android,
 //                                String.valueOf(dataSnapshot.child("username").getValue()),
 //                                String.valueOf(dataSnapshot.child("message").getValue()),
 //                                (boolean)dataSnapshot.child("ifRead").getValue()));
-                        idList.add(String.valueOf(dataSnapshot.getKey()));
+
 
 
                     }
@@ -147,6 +157,31 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
                     public void onCancelled(@NonNull DatabaseError databaseError) { }
                 });
 
+
+    }
+
+    private void findLastMessage(DatabaseReference reference, final String uId){
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String mess=String.valueOf(dataSnapshot.child("message").getValue());
+                String hisId=String.valueOf(dataSnapshot.child("uId").getValue());
+                if(hisId.equals(myId)){
+                    mess="Me: "+mess;
+                }
+
+                makeListItem(uId,mess,
+                        (boolean)dataSnapshot.child("ifRead").getValue());
+               Log.d("ddddd",uId);
+               Log.d("ddddd",String.valueOf(dataSnapshot.child("message").getValue()));
+               Log.d("ddddd",dataSnapshot.child("ifRead").getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void makeListItem(String uId, final String message, final boolean ifRead){
@@ -224,6 +259,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
         Intent intent= new Intent(this, ChatActivity.class);
         intent.putExtra("id", idList.get(position));
+        intent.putExtra("chatId",chatIdList.get(position));
         finish();
         startActivity(intent);
     }

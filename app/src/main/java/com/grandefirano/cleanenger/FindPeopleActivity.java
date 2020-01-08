@@ -37,6 +37,7 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
     ArrayList<String> idList=new ArrayList<>();
     ArrayList<SinglePersonSearchItem> listItems= new ArrayList<>();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +78,7 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
 
 
 
+
         mDatabase.child("users")
                 .addChildEventListener(new ChildEventListener() {
                     @Override
@@ -94,6 +96,9 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
 //                                String.valueOf(dataSnapshot.child("message").getValue()),
 //                                (boolean)dataSnapshot.child("ifRead").getValue()));
                         idList.add(String.valueOf(dataSnapshot.getKey()));
+                        //TODO:gdy nie ma chat Id;
+
+
 
 
 
@@ -116,6 +121,7 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
 
         Intent intent= new Intent(this, ChatActivity.class);
         intent.putExtra("id", idList.get(position));
+
         startActivity(intent);
     }
 }
