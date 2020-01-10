@@ -238,17 +238,13 @@ public class AccountActivity extends AppCompatActivity {
 
 
     }
-    private String getFileExtension(Uri uri){
-        ContentResolver cR=getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(cR.getType(uri));
-    }
+
 
     private void uploadFile(){
         if(mImageUri!=null){
             final StorageReference profilePhotoReference= FirebaseStorage.getInstance()
                     .getReference().child("profile_photos")
-                    .child(mAuth.getCurrentUser().getUid()+"."+getFileExtension(mImageUri));
+                    .child(mAuth.getCurrentUser().getUid()+"."+PhotoHelper.getFileExtension(mImageUri,getContentResolver()));
 
             profilePhotoReference.putFile(mImageUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {

@@ -19,19 +19,20 @@
         app:srcCompat="@drawable/common_google_signin_btn_icon_light_normal" />
 
     <Button
-        android:id="@+id/sendButton"
+        android:id="@+id/sendPhotoSendButton"
         android:layout_width="194dp"
         android:layout_height="59dp"
         android:layout_marginTop="6dp"
         android:layout_marginBottom="16dp"
+        android:onClick="sendToAll"
         android:text="Send"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cancelButton"
+        app:layout_constraintStart_toEndOf="@+id/sendPhotoCancelButton"
         app:layout_constraintTop_toBottomOf="@+id/photoToSendImageView" />
 
     <Button
-        android:id="@+id/cancelButton"
+        android:id="@+id/sendPhotoCancelButton"
         android:layout_width="193dp"
         android:layout_height="58dp"
         android:layout_marginStart="13dp"
