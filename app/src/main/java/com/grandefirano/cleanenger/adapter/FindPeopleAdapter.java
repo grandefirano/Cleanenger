@@ -5,19 +5,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.grandefirano.cleanenger.R;
-import com.grandefirano.cleanenger.messages.SinglePersonSearchItem;
+import com.grandefirano.cleanenger.singleItems.SinglePersonSearchItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.ViewHolder> implements Filterable {
@@ -28,6 +30,7 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
         private ArrayList<SinglePersonSearchItem> mList;
         private ArrayList<SinglePersonSearchItem> mListFull;
         OnItemListener mOnItemListener;
+        OnAddButtonListener mOnAddButtonListener;
         private Context mContext;
         private Filter mFilter=new Filter() {
             @Override
@@ -63,20 +66,37 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
             }
         };
 
+        public void updateFullList(ArrayList<SinglePersonSearchItem> newList){
+            mListFull=new ArrayList<>(newList);
+
+        }
 
 
-        public FindPeopleAdapter(Context context, ArrayList<SinglePersonSearchItem> listOfPeople, OnItemListener onItemListener){
+        public FindPeopleAdapter(Context context, ArrayList<SinglePersonSearchItem> listOfPeople, OnItemListener onItemListener,OnAddButtonListener onAddButtonListener){
             mOnItemListener=onItemListener;
+            mOnAddButtonListener=onAddButtonListener;
             mList=listOfPeople;
             mContext=context;
             //to have two different
-
+            for(SinglePersonSearchItem item:mList){
+                Log.d("dddddd",item.getPersonText());
+            }
             //TODO: ZROBIC TO TUTAJ
             mListFull=new ArrayList<>(mList);
 
+            Log.d("dddddd","creating");
 
 
 
+
+        }
+
+        public void showOnlyFriends(boolean onlyFriends){
+            if(onlyFriends){
+
+            }else{
+
+            }
         }
 
 
@@ -86,7 +106,7 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v= LayoutInflater.from(parent.getContext()).inflate(R.layout.single_person_search_item,parent,false);
-            ViewHolder viewHolder=new ViewHolder(v,mOnItemListener);
+            ViewHolder viewHolder=new ViewHolder(v,mOnItemListener,mOnAddButtonListener);
             return viewHolder;
         }
 
@@ -123,18 +143,27 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
 
             public ImageView mImageView;
             public TextView mPersonTextView;
+            public AppCompatImageButton mAddButton;
 
 
             OnItemListener mOnItemListener;
+            OnAddButtonListener mOnAddButtonListener;
 
 
-            public ViewHolder(@NonNull View itemView, OnItemListener onItemListener) {
+            public ViewHolder(@NonNull View itemView, OnItemListener onItemListener,OnAddButtonListener onAddButtonListener) {
                 super(itemView);
                 mImageView=itemView.findViewById(R.id.personImageView);
                 mPersonTextView=itemView.findViewById(R.id.nameOfPersonTextView);
-
+                mAddButton=itemView.findViewById(R.id.addFriendButton);
                 Log.d("ddd",mPersonTextView.getText().toString());
-
+                mAddButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d("dddd",String.valueOf(getAdapterPosition()));
+                        mOnAddButtonListener.onAddClick(getAdapterPosition());
+                    }
+                });
+                this.mOnAddButtonListener=onAddButtonListener;
                 this.mOnItemListener=onItemListener;
 
                 itemView.setOnClickListener(this);
@@ -148,6 +177,10 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
 
         public interface OnItemListener{
             void onItemClick(int position);
+        }
+
+        public interface OnAddButtonListener{
+            void onAddClick(int position);
         }
 
 

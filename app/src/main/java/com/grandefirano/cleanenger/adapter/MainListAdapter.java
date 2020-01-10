@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.grandefirano.cleanenger.R;
-import com.grandefirano.cleanenger.messages.SingleMessageFeedItem;
+import com.grandefirano.cleanenger.singleItems.SingleMessageFeedItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

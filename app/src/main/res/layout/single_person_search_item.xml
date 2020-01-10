@@ -27,7 +27,7 @@
             android:textStyle="bold" />
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/addFriendButton"
             android:layout_toEndOf="@id/nameOfPersonTextView"
             android:layout_marginLeft="200dp"
             android:layout_width="wrap_content"

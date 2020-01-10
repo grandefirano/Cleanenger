@@ -14,7 +14,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grandefirano.cleanenger.Activities.FindPeopleActivity;
 import com.grandefirano.cleanenger.adapter.FindPeopleAdapter;
-import com.grandefirano.cleanenger.messages.SinglePersonSearchItem;
+import com.grandefirano.cleanenger.singleItems.SinglePersonSearchItem;
 
 import java.util.ArrayList;
 
@@ -82,7 +82,7 @@ public class DownloaderController {
                         String username= (String) dataSnapshot.child("data").child("username").getValue();
                         String profilePhoto=(String)dataSnapshot.child("data").child("profile_photo").getValue();
 
-                        listItems.add(new SinglePersonSearchItem(profilePhoto,username));
+                        //listItems.add(new SinglePersonSearchItem(profilePhoto,username));
 
 //                        listItems.add(new SingleMessageFeedItem(R.drawable.ic_android,
 //                                String.valueOf(dataSnapshot.child("username").getValue()),

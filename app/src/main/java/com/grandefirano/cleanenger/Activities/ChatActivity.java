@@ -18,7 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.adapter.ChatListAdapter;
-import com.grandefirano.cleanenger.messages.SingleMessage;
+import com.grandefirano.cleanenger.singleItems.SingleMessage;
 
 public class ChatActivity extends AppCompatActivity {
 

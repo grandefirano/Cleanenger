@@ -10,15 +10,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -27,29 +24,76 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.grandefirano.cleanenger.Activities.ChatActivity;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.adapter.FindPeopleAdapter;
-import com.grandefirano.cleanenger.messages.SinglePersonSearchItem;
+import com.grandefirano.cleanenger.singleItems.SinglePersonSearchItem;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class FindPeopleActivity extends AppCompatActivity implements FindPeopleAdapter.OnItemListener {
+public class FindPeopleActivity extends AppCompatActivity implements FindPeopleAdapter.OnItemListener, FindPeopleAdapter.OnAddButtonListener {
 
 
     RecyclerView mRecyclerView;
+    Switch mSwitch;
 
     FirebaseAuth mAuth;
     DatabaseReference mDatabase;
     private FindPeopleAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    ArrayList<String> idList=new ArrayList<>();
+
     ArrayList<SinglePersonSearchItem> listItems= new ArrayList<>();
-    ArrayList<String> usernameList=new ArrayList<>();
+    ArrayList<String> friendsList= new ArrayList<>();
     private Intent newIntent;
     private Context mContext;
 
+    ChildEventListener mChildEventListener=new ChildEventListener() {
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+            Log.d("dddddd","childAdded");
+            String username= (String) dataSnapshot.child("data").child("username").getValue();
+            String profilePhoto=(String)dataSnapshot.child("data").child("profile_photo").getValue();
+            String id=dataSnapshot.getKey();
+            listItems.add(new SinglePersonSearchItem(profilePhoto,username,id));
+
+
+
+        }
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
+    ValueEventListener onUsersValueListener=new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            Log.d("ddddd",String.valueOf(listItems.size()));
+            mAdapter= new FindPeopleAdapter(mContext,listItems,FindPeopleActivity.this,FindPeopleActivity.this);
+            mRecyclerView.setLayoutManager(mLayoutManager);
+            mRecyclerView.setAdapter(mAdapter);
+            Log.d("dddddd","datachange");
+
+
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+    CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+
+
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -70,7 +114,7 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
             @Override
             public boolean onQueryTextChange(String newText) {
                 mAdapter.getFilter().filter(newText);
-                Log.d("ddddd",newText);
+
                 return false;
             }
         });
@@ -86,20 +130,25 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
 
 
         mRecyclerView=findViewById(R.id.searchPeopleRecyclerView);
+        mSwitch=findViewById(R.id.switchIfFriends);
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase= FirebaseDatabase.getInstance().getReference();
         mContext=getApplicationContext();
 
 
+        mSwitch.setOnCheckedChangeListener(mOnCheckedChangeListener);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager= new LinearLayoutManager(this);
+
+
 
         Intent intent=getIntent();
        ///////
 
 
         downloadListFromDatabase();
+        Log.d("dddddd","downloading;");
 
 
         //mAdapter= new FindPeopleAdapter(getApplicationContext(),listItems,this);
@@ -118,76 +167,47 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
 
     private void downloadListFromDatabase(){
         listItems.clear();
-        idList.clear();
-        usernameList.clear();
+
+        friendsList.clear();
 
 
-        mDatabase.child("users").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mAdapter= new FindPeopleAdapter(mContext,listItems,FindPeopleActivity.this);
-                mRecyclerView.setLayoutManager(mLayoutManager);
-                mRecyclerView.setAdapter(mAdapter);
-
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        mDatabase.child("users")
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("data").child("friends").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                dataSnapshot.getValue()
+//            }
 //
-                        Log.d("rrrr","ffffff");
-                        String username= (String) dataSnapshot.child("data").child("username").getValue();
-                        String profilePhoto=(String)dataSnapshot.child("data").child("profile_photo").getValue();
-
-                        listItems.add(new SinglePersonSearchItem(profilePhoto,username));
-                        //TODO:SDKFLDSKFL
-                        //mAdapter.notifyDataSetChanged();
-
-//                        listItems.add(new SingleMessageFeedItem(R.drawable.ic_android,
-//                                String.valueOf(dataSnapshot.child("username").getValue()),
-//                                String.valueOf(dataSnapshot.child("message").getValue()),
-//                                (boolean)dataSnapshot.child("ifRead").getValue()));
-                        idList.add(String.valueOf(dataSnapshot.getKey()));
-                        usernameList.add(username);
-
-
-
-
-
-
-
-
-                    }
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) { }
-                });
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        })
+        mDatabase.child("users").addValueEventListener(onUsersValueListener);
+        mDatabase.child("users")
+                .addChildEventListener(mChildEventListener);
 
     }
 
+    //ON ADD BUTTON FROM LIST
+    public void onAddClick(int position){
+        String id=listItems.get(position).getPersonId();
+        String name=listItems.get(position).getPersonText();
+        Log.d("dddd",name);
+        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("friends").child(id).setValue(name);
 
+    }
+    //ONITEM FROM LIST
     @Override
     public void onItemClick(int position) {
 
         newIntent= new Intent(this, ChatActivity.class);
-        newIntent.putExtra("id", idList.get(position));
-        newIntent.putExtra("username",usernameList.get(position));
+        newIntent.putExtra("id", listItems.get(position).getPersonId());
+
+        newIntent.putExtra("username",listItems.get(position).getPersonText());
 
 
         mDatabase.child("users").child(mAuth.getCurrentUser().getUid())
-                .child("main_screen_messages").child(idList.get(position))
+                .child("main_screen_messages").child(listItems.get(position).getPersonId())
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -209,5 +229,14 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
 
     }
 
+    private void cleanUp(){
+        mDatabase.child("users").removeEventListener(mChildEventListener);
+        mDatabase.child("users").removeEventListener(onUsersValueListener);
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        cleanUp();
+    }
 }

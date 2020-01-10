@@ -1,4 +1,4 @@
-package com.grandefirano.cleanenger.messages;
+package com.grandefirano.cleanenger.singleItems;
 
 public class SingleMessageFeedItem {
 

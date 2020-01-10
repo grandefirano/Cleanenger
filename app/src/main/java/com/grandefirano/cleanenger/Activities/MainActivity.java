@@ -6,12 +6,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -21,22 +31,22 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.grandefirano.cleanenger.Activities.AccountActivity;
-import com.grandefirano.cleanenger.Activities.ChatActivity;
-import com.grandefirano.cleanenger.Activities.FindPeopleActivity;
-import com.grandefirano.cleanenger.DownloaderController;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.login.Login;
 import com.grandefirano.cleanenger.adapter.MainListAdapter;
-import com.grandefirano.cleanenger.messages.SingleMessageFeedItem;
+import com.grandefirano.cleanenger.singleItems.SingleMessageFeedItem;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MainListAdapter.OnItemListener {
 
+
     FirebaseAuth mAuth;
     String myId;
     DatabaseReference mDatabase;
+
+
+
     private RecyclerView mMessagesRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -44,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     ArrayList<SingleMessageFeedItem> listItems= new ArrayList<>();
     ArrayList<String> chatIdList= new ArrayList<>();
     ArrayList<String> usernameList=new ArrayList<>();
+
+
 
     String TAG="CHECK_LOG_MAIN";
 
@@ -71,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 //            downloaderController.downloadListForFindPeople();
             finish();
             Intent intent=new Intent(this, FindPeopleActivity.class);
+
             finish();
             startActivity(intent);
 
@@ -223,6 +236,17 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
 
     }
+    public void takeAPhoto(View view){
+
+        Intent intent= new Intent(this,SendPhotoActivity.class);
+        startActivity(intent);
+
+
+
+    }
+
+
+
 
 
     @Override

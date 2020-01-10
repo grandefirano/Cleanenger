@@ -17,7 +17,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.grandefirano.cleanenger.R;
-import com.grandefirano.cleanenger.messages.SingleMessage;
+import com.grandefirano.cleanenger.singleItems.SingleMessage;
 
 import java.util.ArrayList;
 

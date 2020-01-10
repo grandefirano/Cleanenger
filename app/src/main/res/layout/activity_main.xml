@@ -8,11 +8,12 @@
 
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/cameraImageView"
         android:layout_width="86dp"
         android:layout_height="73dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:onClick="takeAPhoto"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_camera" />
@@ -23,7 +24,7 @@
         android:layout_height="77dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintStart_toEndOf="@+id/imageView2"
+        app:layout_constraintStart_toEndOf="@+id/cameraImageView"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/common_google_signin_btn_icon_dark_focused" />
 
@@ -33,7 +34,7 @@
         android:layout_height="77dp"
         android:layout_marginStart="108dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintStart_toEndOf="@+id/imageView2"
+        app:layout_constraintStart_toEndOf="@+id/cameraImageView"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/common_google_signin_btn_icon_dark_focused" />
 
@@ -43,7 +44,7 @@
         android:layout_height="77dp"
         android:layout_marginStart="196dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintStart_toEndOf="@+id/imageView2"
+        app:layout_constraintStart_toEndOf="@+id/cameraImageView"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/common_google_signin_btn_icon_dark_focused" />
 
@@ -55,6 +56,6 @@
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+        app:layout_constraintTop_toBottomOf="@+id/cameraImageView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
