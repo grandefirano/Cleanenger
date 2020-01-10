@@ -38,67 +38,35 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        mAuth=FirebaseAuth.getInstance();
-        mDatabase= FirebaseDatabase.getInstance().getReference();
-
-        mTextView=findViewById(R.id.Id);
-        mMessageInput=findViewById(R.id.messageInput);
-        mChatListView = (ListView) findViewById(R.id.chat_list_view);
-
+        //INTENT
         Intent intent=getIntent();
+        mchatId=intent.getStringExtra("chatId");
         mIdOfChatPerson=intent.getStringExtra("id");
         mNameOfChatPerson=intent.getStringExtra("username");
 
+        //FIREBASE
+        mAuth=FirebaseAuth.getInstance();
+        mDatabase= FirebaseDatabase.getInstance().getReference();
+        mChatRef=mDatabase.child("chats").child(mchatId);
+
+        //VIEW FINDING
+        mTextView=findViewById(R.id.Id);
+        mMessageInput=findViewById(R.id.messageInput);
+        mChatListView =findViewById(R.id.chat_list_view);
         mTextView.setText(mIdOfChatPerson);
 
-         mchatId=intent.getStringExtra("chatId");
 
-        mChatRef=mDatabase.child("chats").child(mchatId);
-        mAdapter= new ChatListAdapter(ChatActivity.this, mChatRef,mAuth.getCurrentUser().getUid(),mNameOfChatPerson );
-                            mChatListView.setAdapter(mAdapter);
-
-                        checkIfRead();
+        //ADAPTER
+        mAdapter= new ChatListAdapter(ChatActivity.this, mChatRef,
+                mAuth.getCurrentUser().getUid(),mNameOfChatPerson );
+        mChatListView.setAdapter(mAdapter);
 
 
-        //FOR WRITING USER
-//        mDatabase.child("users").child(mAuth.getCurrentUser().getUid())
-//                .child("main_screen_messages").child(mIdOfChatPerson)
-//                .addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        if(!dataSnapshot.exists()){
-//                            //If not exists
-//                            mchatId= UUID.randomUUID().toString();
-//
-//                        }else{
-//                            //If exists
-//                            mchatId=dataSnapshot.getValue().toString();
-//
-//                            DatabaseReference refy= mDatabase.child("chats").child(mchatId);
-//                            mAdapter= new ChatListAdapter(ChatActivity.this, refy,mAuth.getCurrentUser().getUid(),mNameOfChatPerson );
-//                            mChatListView.setAdapter(mAdapter);
-//
-//                        }
-//                        mChatRef=mDatabase.child("chats").child(mchatId);
-//
-//                        checkIfRead();
-//
-//
-//
-//                    }
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError databaseError) { }
-//                });
-
-        //setReference to Chat
-
-
+        changeReadStatus();
     }
 
 
     public void sendMessage(View view){
-
-
 
         String textOfMessage=mMessageInput.getText().toString();
 
@@ -111,10 +79,6 @@ public class ChatActivity extends AppCompatActivity {
                 .child(mAuth.getCurrentUser().getUid()).setValue(mchatId);
 
 
-//        if(!mAuth.getCurrentUser().getUid().equals(mIdOfChatPerson)) {
-//            mDatabase.child("users").child(mIdOfChatPerson).child("main_screen_messages")
-//                    .child(mAuth.getCurrentUser().getUid()).setValue(messageBlock);
-//        }
         //Message
         SingleMessage singleMessage= new SingleMessage(mAuth.getUid(),textOfMessage);
         mChatRef.child(String.valueOf(System.currentTimeMillis())).setValue(singleMessage);
@@ -134,17 +98,14 @@ public class ChatActivity extends AppCompatActivity {
             super(uId, message);
             this.isifRead = isRead;
         }
-
-        public LastMessage() {
-        }
-
+        public LastMessage() { }
         public boolean isifRead() {
             return isifRead;
         }
     }
 
 
-    private void checkIfRead(){
+    private void changeReadStatus(){
         if(mchatId!=null) {
 
              mDatabase.child("chats").child(mchatId).child("last_message").addValueEventListener(new ValueEventListener() {
@@ -156,13 +117,9 @@ public class ChatActivity extends AppCompatActivity {
                         mDatabase.child("chats").child(mchatId).child("last_message").child("ifRead").setValue(true);
                     }
                 }
-
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
             });
-
 
         }
     }
@@ -170,15 +127,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        //TODO:???
-        checkIfRead();
-
-
-        //
-
-
-
-
+        changeReadStatus();
 
     }
 }

@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     FirebaseAuth mAuth;
     String myId;
     DatabaseReference mDatabase;
+    DatabaseReference mainScreenMessagesReference;
 
 
 
@@ -56,12 +57,33 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     ArrayList<String> usernameList=new ArrayList<>();
 
 
+    ChildEventListener mOnMainScreenMessageListener=new ChildEventListener() {
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            DatabaseReference lastMessage=mDatabase.child("chats").child(dataSnapshot.getValue().toString()).child("last_message");
+
+            idList.add(String.valueOf(dataSnapshot.getKey()));
+            chatIdList.add(String.valueOf(dataSnapshot.getValue()));
+
+            findLastMessage(lastMessage,dataSnapshot.getKey());
+
+        }
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
+
+
 
     String TAG="CHECK_LOG_MAIN";
 
-
-    //MENU THREE DOTS
-
+    //MENU
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -79,11 +101,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
             startActivity(intent);
         }
         else if(item.getItemId()==R.id.find_people){
-//            DownloaderController downloaderController=new DownloaderController(this);
-//            downloaderController.downloadListForFindPeople();
-            finish();
             Intent intent=new Intent(this, FindPeopleActivity.class);
-
             finish();
             startActivity(intent);
 
@@ -93,13 +111,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
             Intent intent= new Intent(this,Login.class);
             finish();
             startActivity(intent);
-
-            if(FirebaseAuth.getInstance().getCurrentUser()==null){
-                Log.d(TAG,"There is no user");
-
-            }
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -110,30 +122,27 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize Firebase
+
         mAuth = FirebaseAuth.getInstance();
         myId=mAuth.getUid();
 
         mDatabase=FirebaseDatabase.getInstance().getReference();
+        mainScreenMessagesReference=mDatabase.child("users")
+                .child(mAuth.getCurrentUser().getUid())
+                .child("main_screen_messages");
+
         mMessagesRecyclerView=findViewById(R.id.searchPeopleRecyclerView);
 
         //DOWNLOAD USERS
         downloadListFromDatabase();
 
 
-
-        mMessagesRecyclerView=findViewById(R.id.searchPeopleRecyclerView);
         mMessagesRecyclerView.setHasFixedSize(true);
         mLayoutManager= new LinearLayoutManager(this);
         mAdapter= new MainListAdapter(getApplicationContext(),listItems,this);
 
         mMessagesRecyclerView.setLayoutManager(mLayoutManager);
         mMessagesRecyclerView.setAdapter(mAdapter);
-
-        //ONCLICK
-
-
-
 
 
     }
@@ -144,34 +153,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         chatIdList.clear();
         usernameList.clear();
 
-
-        mDatabase.child("users")
-                .child(mAuth.getCurrentUser().getUid())
-                .child("main_screen_messages")
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                        emails.add((String) dataSnapshot.child("from").getValue());
-//                              TODO:
-                        //tODo:BEZ NAZWY DANE W BAZIE
-                        DatabaseReference lastMessage=mDatabase.child("chats").child(dataSnapshot.getValue().toString()).child("last_message");
-
-                        idList.add(String.valueOf(dataSnapshot.getKey()));
-                        chatIdList.add(String.valueOf(dataSnapshot.getValue()));
-
-                        findLastMessage(lastMessage,dataSnapshot.getKey());
-
-                    }
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) { }
-                });
-
+        mainScreenMessagesReference.addChildEventListener(mOnMainScreenMessageListener);
 
     }
 
@@ -184,25 +166,16 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
                 if(hisId.equals(myId)){
                     mess="Me: "+mess;
                 }
-
                 makeListItem(uId,mess,
                         (boolean)dataSnapshot.child("ifRead").getValue());
-               Log.d("ddddd",uId);
-               Log.d("ddddd",String.valueOf(dataSnapshot.child("message").getValue()));
-               Log.d("ddddd",dataSnapshot.child("ifRead").getValue().toString());
-            }
 
+            }
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
     }
 
     public void makeListItem(String uId, final String message, final boolean ifRead){
-
-
-
 
         mDatabase.child("users").child(uId).child("data").addValueEventListener(new ValueEventListener() {
             @Override
@@ -211,27 +184,15 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
                String profilePhoto=(String)dataSnapshot.child("profile_photo").getValue();
 
                 usernameList.add(username);
-
-
-
-
-                //TODO: ZDJECIE
                listItems.add(new SingleMessageFeedItem(profilePhoto,
                         username,
                         message,
                         ifRead));
 
                 mAdapter.notifyDataSetChanged();
-
-                Log.i("ssdfdfa",String.valueOf(listItems.size()));
-
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
 
 
@@ -241,13 +202,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         Intent intent= new Intent(this,SendPhotoActivity.class);
         startActivity(intent);
 
-
-
     }
-
-
-
-
 
     @Override
     protected void onStart() {
@@ -259,25 +214,12 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         //TODO: przelozyc do create
         if(currentUser==null) {
             goToLogin();
-        }else{
-            //TODO: IF USER IS NOT NULL
-            Log.d(TAG,currentUser.toString());
-
-
-
-
-
-
-
-
-
-        }
+        }else{ }
     }
 
     private void goToLogin(){
 
         Intent intent= new Intent(this,Login.class);
-
         finish();
         startActivity(intent);
 

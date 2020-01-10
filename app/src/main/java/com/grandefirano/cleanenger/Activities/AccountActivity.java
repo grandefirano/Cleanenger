@@ -142,24 +142,19 @@ public class AccountActivity extends AppCompatActivity {
         final String temporaryPassword=passwordEditText.getText().toString();
         String temporaryUsername=usernameEditText.getText().toString();
 
-
         if(!temporaryEmail.equals(emailBefore)){
-
             mUserDataDatabase.child("email").setValue(temporaryEmail);
             changeEmailInAuth(temporaryEmail);
-
         }
         if(!temporaryUsername.equals(usernameBefore)){
-
             mUserDataDatabase.child("username").setValue(temporaryUsername);
-
         }
         if(!temporaryPassword.equals("") && !(temporaryPassword==null)){
-
             changePasswordInAuth(temporaryPassword);
-
         }
-        uploadFile();
+        if(mImageUri!=null) {
+            uploadFile();
+        }
 
     }
 
@@ -182,10 +177,6 @@ public class AccountActivity extends AppCompatActivity {
     }
     private void changeEmailInAuth(final String newEmail){
 
-
-
-
-
             user.updateEmail(newEmail)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -199,7 +190,7 @@ public class AccountActivity extends AppCompatActivity {
                 public void onFailure(@NonNull Exception e) {
                     if(e.getClass().equals(FirebaseAuthRecentLoginRequiredException.class)){
 
-                        //REAUTH
+                        //REAUTHORIZATION
                         showDialog();
 
                     }
@@ -231,17 +222,12 @@ public class AccountActivity extends AppCompatActivity {
 
     }
     public void changePhoto(View view){
-
         openPhotoChooser();
-
-
-
-
     }
 
 
     private void uploadFile(){
-        if(mImageUri!=null){
+
             final StorageReference profilePhotoReference= FirebaseStorage.getInstance()
                     .getReference().child("profile_photos")
                     .child(mAuth.getCurrentUser().getUid()+"."+PhotoHelper.getFileExtension(mImageUri,getContentResolver()));
@@ -260,8 +246,6 @@ public class AccountActivity extends AppCompatActivity {
                                 }
                             });
 
-
-
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -270,10 +254,7 @@ public class AccountActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(),e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
-        }else{
-            Toast.makeText(this,"No file was selected",Toast.LENGTH_SHORT).show();
 
-        }
     }
 
     private void openPhotoChooser(){
@@ -314,8 +295,6 @@ public class AccountActivity extends AppCompatActivity {
                             usernameBefore=String.valueOf(dataSnapshot.getValue());
                             usernameEditText.setText(usernameBefore);
                         }
-
-
                     }
                     @Override
                     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }

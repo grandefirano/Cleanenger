@@ -37,8 +37,9 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
     RecyclerView mRecyclerView;
     Switch mSwitch;
 
-    FirebaseAuth mAuth;
-    DatabaseReference mDatabase;
+    private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
+    private DatabaseReference mChatClickedDatabaseReference;
     private FindPeopleAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
@@ -47,7 +48,7 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
     private Intent newIntent;
     private Context mContext;
 
-    ChildEventListener mChildEventListener=new ChildEventListener() {
+    ChildEventListener mOnUsersChildEventListener=new ChildEventListener() {
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 //
@@ -69,7 +70,7 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     };
-    ValueEventListener onUsersValueListener=new ValueEventListener() {
+    ValueEventListener mOnUsersValueListener=new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             Log.d("ddddd",String.valueOf(listItems.size()));
@@ -86,14 +87,34 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
 
         }
     };
+    ValueEventListener mOnChatIdValueListener=new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            String mChatId;
+            if(!dataSnapshot.exists()){
+                //If not exists
+                mChatId= UUID.randomUUID().toString();
+            }else{
+                //If exists
+                mChatId=dataSnapshot.getValue().toString();
+            }
+            newIntent.putExtra("chatId",mChatId);
+            startActivity(newIntent);
+
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
     CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
+            //TODO:
 
 
         }
     };
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -142,23 +163,7 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
         mLayoutManager= new LinearLayoutManager(this);
 
 
-
-        Intent intent=getIntent();
-       ///////
-
-
         downloadListFromDatabase();
-        Log.d("dddddd","downloading;");
-
-
-        //mAdapter= new FindPeopleAdapter(getApplicationContext(),listItems,this);
-
-
-
-
-
-
-
 
 
     }
@@ -170,21 +175,9 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
 
         friendsList.clear();
 
-
-//        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("data").child("friends").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                dataSnapshot.getValue()
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        })
-        mDatabase.child("users").addValueEventListener(onUsersValueListener);
+        mDatabase.child("users").addValueEventListener(mOnUsersValueListener);
         mDatabase.child("users")
-                .addChildEventListener(mChildEventListener);
+                .addChildEventListener(mOnUsersChildEventListener);
 
     }
 
@@ -201,37 +194,26 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
     public void onItemClick(int position) {
 
         newIntent= new Intent(this, ChatActivity.class);
-        newIntent.putExtra("id", listItems.get(position).getPersonId());
 
+        newIntent.putExtra("id", listItems.get(position).getPersonId());
         newIntent.putExtra("username",listItems.get(position).getPersonText());
 
 
-        mDatabase.child("users").child(mAuth.getCurrentUser().getUid())
-                .child("main_screen_messages").child(listItems.get(position).getPersonId())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String mChatId;
-                        if(!dataSnapshot.exists()){
-                            //If not exists
-                            mChatId= UUID.randomUUID().toString();
-                        }else{
-                            //If exists
-                            mChatId=dataSnapshot.getValue().toString();
-                        }
-                        newIntent.putExtra("chatId",mChatId);
-                        startActivity(newIntent);
-
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) { }
-                });
+        mChatClickedDatabaseReference= mDatabase.child("users").child(mAuth.getCurrentUser().getUid())
+                .child("main_screen_messages").child(listItems.get(position).getPersonId());
+        mChatClickedDatabaseReference
+                .addValueEventListener(mOnChatIdValueListener);
 
     }
 
     private void cleanUp(){
-        mDatabase.child("users").removeEventListener(mChildEventListener);
-        mDatabase.child("users").removeEventListener(onUsersValueListener);
+        mDatabase.child("users").removeEventListener(mOnUsersChildEventListener);
+        mDatabase.child("users").removeEventListener(mOnUsersValueListener);
+        if(mChatClickedDatabaseReference!=null) {
+            mChatClickedDatabaseReference.removeEventListener(mOnChatIdValueListener);
+        }
+
+
     }
 
     @Override

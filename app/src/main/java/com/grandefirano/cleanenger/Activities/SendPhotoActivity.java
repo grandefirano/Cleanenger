@@ -162,5 +162,8 @@ public class SendPhotoActivity extends AppCompatActivity {
             mSendButton.setVisibility(View.VISIBLE);
             mPhotoImageView.setImageURI(mImageUri);
         }
+        else{
+            finish();
+        }
     }
 }
