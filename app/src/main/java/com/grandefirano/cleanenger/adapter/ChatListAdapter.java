@@ -52,28 +52,15 @@ public class ChatListAdapter extends BaseAdapter {
                 mSnapshotList.add(dataSnapshot);
                 notifyDataSetChanged();}
         }
-
         @Override
-        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-        }
-
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
         @Override
-        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-        }
-
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
         @Override
-        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-        }
-
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
         @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
     };
-
 
     static class ViewHolder{
         TextView authorName;
@@ -83,14 +70,11 @@ public class ChatListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-
-
         return mSnapshotList.size();
     }
 
     @Override
     public SingleMessage getItem(int position) {
-
         DataSnapshot snapshot = mSnapshotList.get(position);
 
         return snapshot.getValue(SingleMessage.class);
@@ -100,7 +84,6 @@ public class ChatListAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return 0;
     }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -117,10 +100,9 @@ public class ChatListAdapter extends BaseAdapter {
         final SingleMessage message= getItem(position);
         final ViewHolder holder=(ViewHolder) convertView.getTag();
 
-        Log.d("dddd",message.getMessage());
-        Log.d("dddd",message.getuId());
+        String msg=message.getMessage();
         boolean isMe= message.getuId().equals(myId);
-        setChatRowAppearance(isMe,holder);
+
         String author;
         if(isMe){
             author="Me";
@@ -128,13 +110,11 @@ public class ChatListAdapter extends BaseAdapter {
             author = musernameOfChatPerson;
         }
         holder.authorName.setText(author);
-        String msg=message.getMessage();
         holder.body.setText(msg);
-//
-//
-//
-        return convertView;
 
+        setChatRowAppearance(isMe,holder);
+
+        return convertView;
 
     }
 
