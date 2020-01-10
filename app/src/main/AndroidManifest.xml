@@ -9,9 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".FindPeopleActivity"></activity>
-        <activity android:name=".AccountActivity" />
-        <activity android:name=".ChatActivity" />
+        <activity android:name=".Activities.FindPeopleActivity"></activity>
+        <activity android:name=".Activities.AccountActivity" />
+        <activity android:name=".Activities.ChatActivity" />
         <activity android:name=".login.Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".login.Register" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".Activities.MainActivity" />
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

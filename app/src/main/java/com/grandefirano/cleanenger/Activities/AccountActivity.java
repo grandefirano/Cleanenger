@@ -1,4 +1,4 @@
-package com.grandefirano.cleanenger;
+package com.grandefirano.cleanenger.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,6 +43,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.grandefirano.cleanenger.R;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;

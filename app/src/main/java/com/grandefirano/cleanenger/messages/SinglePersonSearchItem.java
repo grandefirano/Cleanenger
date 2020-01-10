@@ -1,4 +1,4 @@
-package com.grandefirano.cleanenger;
+package com.grandefirano.cleanenger.messages;
 
 public class SinglePersonSearchItem {
 

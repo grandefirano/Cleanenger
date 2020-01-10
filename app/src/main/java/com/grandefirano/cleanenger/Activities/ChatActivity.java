@@ -1,14 +1,13 @@
-package com.grandefirano.cleanenger;
+package com.grandefirano.cleanenger.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.renderscript.Sampler;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,11 +16,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import org.w3c.dom.Text;
-
-import java.util.EventListener;
-import java.util.UUID;
+import com.grandefirano.cleanenger.R;
+import com.grandefirano.cleanenger.adapter.ChatListAdapter;
+import com.grandefirano.cleanenger.messages.SingleMessage;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -29,10 +26,13 @@ public class ChatActivity extends AppCompatActivity {
     String mIdOfChatPerson;
     EditText mMessageInput;
     String mchatId;
+    String mNameOfChatPerson;
 
+    private ChatListAdapter mAdapter;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private DatabaseReference mChatRef;
+    private ListView mChatListView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,48 +43,55 @@ public class ChatActivity extends AppCompatActivity {
 
         mTextView=findViewById(R.id.Id);
         mMessageInput=findViewById(R.id.messageInput);
+        mChatListView = (ListView) findViewById(R.id.chat_list_view);
 
         Intent intent=getIntent();
         mIdOfChatPerson=intent.getStringExtra("id");
+        mNameOfChatPerson=intent.getStringExtra("username");
 
         mTextView.setText(mIdOfChatPerson);
 
+         mchatId=intent.getStringExtra("chatId");
 
-        //FOR WRITING USER
-        mDatabase.child("users").child(mAuth.getUid())
-                .child("main_screen_messages").child(mIdOfChatPerson)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(!dataSnapshot.exists()){
-                            //If not exists
-                            mchatId= UUID.randomUUID().toString();
-
-                        }else{
-                            //If exists
-                            mchatId=dataSnapshot.getValue().toString();
-
-                        }
-                        mChatRef=mDatabase.child("chats").child(mchatId);
+        mChatRef=mDatabase.child("chats").child(mchatId);
+        mAdapter= new ChatListAdapter(ChatActivity.this, mChatRef,mAuth.getCurrentUser().getUid(),mNameOfChatPerson );
+                            mChatListView.setAdapter(mAdapter);
 
                         checkIfRead();
 
 
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+        //FOR WRITING USER
+//        mDatabase.child("users").child(mAuth.getCurrentUser().getUid())
+//                .child("main_screen_messages").child(mIdOfChatPerson)
+//                .addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        if(!dataSnapshot.exists()){
+//                            //If not exists
+//                            mchatId= UUID.randomUUID().toString();
+//
+//                        }else{
+//                            //If exists
+//                            mchatId=dataSnapshot.getValue().toString();
+//
+//                            DatabaseReference refy= mDatabase.child("chats").child(mchatId);
+//                            mAdapter= new ChatListAdapter(ChatActivity.this, refy,mAuth.getCurrentUser().getUid(),mNameOfChatPerson );
+//                            mChatListView.setAdapter(mAdapter);
+//
+//                        }
+//                        mChatRef=mDatabase.child("chats").child(mchatId);
+//
+//                        checkIfRead();
+//
+//
+//
+//                    }
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) { }
+//                });
 
         //setReference to Chat
 
-
-    }
-    private void forRetrieving(){
-        //FOR RETRIEVING USER
 
     }
 
@@ -92,10 +99,8 @@ public class ChatActivity extends AppCompatActivity {
     public void sendMessage(View view){
 
 
-        //Mesage Block potrzebny??
-        String textOfMessage=mMessageInput.getText().toString();
 
-        MessageBlock messageBlock= new MessageBlock(textOfMessage,12434,mchatId);
+        String textOfMessage=mMessageInput.getText().toString();
 
         //SENDING USER
         mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("main_screen_messages")
@@ -114,25 +119,14 @@ public class ChatActivity extends AppCompatActivity {
         SingleMessage singleMessage= new SingleMessage(mAuth.getUid(),textOfMessage);
         mChatRef.child(String.valueOf(System.currentTimeMillis())).setValue(singleMessage);
 
-        LastMessage lastMessage=new LastMessage(singleMessage.uId,singleMessage.message,false);
+        LastMessage lastMessage=new LastMessage(singleMessage.getuId(),singleMessage.getMessage(),false);
 
         mChatRef.child("last_message").setValue(lastMessage);
 
     }
 
 
-    private class SingleMessage{
-        private String uId;
-        private String message;
 
-        public SingleMessage(String uId, String message) {
-            this.uId = uId;
-            this.message = message; }
-        public SingleMessage() { }
-
-        public String getuId() { return uId; }
-        public String getMessage() { return message; }
-    }
     private class LastMessage extends SingleMessage{
         private boolean isifRead;
 
@@ -149,40 +143,6 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    private class MessageBlock{
-        private int date;
-        private String message;
-        private boolean ifRead=false;
-        private String chatId;
-
-
-
-        public MessageBlock(String message, int date,String chatId) {
-            this.date = date;
-            this.message = message;
-            this.chatId=chatId;
-
-        }
-
-        public boolean isIfRead() {
-            return ifRead;
-        }
-
-        public MessageBlock() {
-        }
-
-        public int getDate() {
-            return date;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public String getChatId() {
-            return chatId;
-        }
-    }
 
     private void checkIfRead(){
         if(mchatId!=null) {
@@ -212,6 +172,11 @@ public class ChatActivity extends AppCompatActivity {
         super.onStart();
         //TODO:???
         checkIfRead();
+
+
+        //
+
+
 
 
 

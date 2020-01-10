@@ -1,36 +1,86 @@
-package com.grandefirano.cleanenger;
+package com.grandefirano.cleanenger.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.grandefirano.cleanenger.login.MainListAdapter;
+import com.grandefirano.cleanenger.R;
+import com.grandefirano.cleanenger.messages.SinglePersonSearchItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.ViewHolder> {
+public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.ViewHolder> implements Filterable {
 
 
 
 
         private ArrayList<SinglePersonSearchItem> mList;
+        private ArrayList<SinglePersonSearchItem> mListFull;
         OnItemListener mOnItemListener;
         private Context mContext;
+        private Filter mFilter=new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                List<SinglePersonSearchItem> filteredList= new ArrayList<>();
+                Log.d("ddddLISTFULL","ss");
+                if(constraint==null || constraint.length()==0){
+                    filteredList.addAll(mListFull);
+                }else{
+                    String filterPattern=constraint.toString().toLowerCase().trim();
+                    Log.d("ddddLISTFULL","pelno");
+                    Log.d("ddddLISTFULL",filterPattern);
 
-        public FindPeopleAdapter(Context context, ArrayList<SinglePersonSearchItem> listOfMessages, OnItemListener onItemListener){
+                    for(SinglePersonSearchItem item: mListFull){
+                        Log.d("ddddLISTFULL","ddd");
+                        if(item.getPersonText().toLowerCase().contains(filterPattern)){
+                            filteredList.add(item);
+                            Log.d("ddddLISTFULL",item.getPersonText());
+                        }
+                    }
+                }
+                FilterResults results= new FilterResults();
+
+                results.values=filteredList;
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                mList.clear();
+                mList.addAll((ArrayList)results.values);
+                notifyDataSetChanged();
+            }
+        };
+
+
+
+        public FindPeopleAdapter(Context context, ArrayList<SinglePersonSearchItem> listOfPeople, OnItemListener onItemListener){
             mOnItemListener=onItemListener;
-            mList=listOfMessages;
+            mList=listOfPeople;
             mContext=context;
+            //to have two different
+
+            //TODO: ZROBIC TO TUTAJ
+            mListFull=new ArrayList<>(mList);
+
+
+
+
         }
+
+
+
 
         @NonNull
         @Override
@@ -64,7 +114,12 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
             return mList.size();
         }
 
-        public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    @Override
+    public Filter getFilter() {
+        return mFilter;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
             public ImageView mImageView;
             public TextView mPersonTextView;

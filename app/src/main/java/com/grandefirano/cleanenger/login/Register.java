@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,10 +18,8 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.grandefirano.cleanenger.MainActivity;
+import com.grandefirano.cleanenger.Activities.MainActivity;
 import com.grandefirano.cleanenger.R;
-
-import org.w3c.dom.Text;
 
 public class Register extends AppCompatActivity {
 

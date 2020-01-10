@@ -1,4 +1,4 @@
-package com.grandefirano.cleanenger;
+package com.grandefirano.cleanenger.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,8 +21,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.grandefirano.cleanenger.Activities.AccountActivity;
+import com.grandefirano.cleanenger.Activities.ChatActivity;
+import com.grandefirano.cleanenger.Activities.FindPeopleActivity;
+import com.grandefirano.cleanenger.DownloaderController;
+import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.login.Login;
-import com.grandefirano.cleanenger.login.MainListAdapter;
+import com.grandefirano.cleanenger.adapter.MainListAdapter;
+import com.grandefirano.cleanenger.messages.SingleMessageFeedItem;
 
 import java.util.ArrayList;
 
@@ -37,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     ArrayList<String> idList=new ArrayList<>();
     ArrayList<SingleMessageFeedItem> listItems= new ArrayList<>();
     ArrayList<String> chatIdList= new ArrayList<>();
+    ArrayList<String> usernameList=new ArrayList<>();
 
     String TAG="CHECK_LOG_MAIN";
 
@@ -55,11 +62,14 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()==R.id.account){
-            Intent intent= new Intent(this,AccountActivity.class);
+            Intent intent= new Intent(this, AccountActivity.class);
             finish();
             startActivity(intent);
         }
         else if(item.getItemId()==R.id.find_people){
+//            DownloaderController downloaderController=new DownloaderController(this);
+//            downloaderController.downloadListForFindPeople();
+            finish();
             Intent intent=new Intent(this, FindPeopleActivity.class);
             finish();
             startActivity(intent);
@@ -119,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         listItems.clear();
         idList.clear();
         chatIdList.clear();
+        usernameList.clear();
 
 
         mDatabase.child("users")
@@ -134,17 +145,8 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
                         idList.add(String.valueOf(dataSnapshot.getKey()));
                         chatIdList.add(String.valueOf(dataSnapshot.getValue()));
+
                         findLastMessage(lastMessage,dataSnapshot.getKey());
-
-
-
-
-//                        listItems.add(new SingleMessageFeedItem(R.drawable.ic_android,
-//                                String.valueOf(dataSnapshot.child("username").getValue()),
-//                                String.valueOf(dataSnapshot.child("message").getValue()),
-//                                (boolean)dataSnapshot.child("ifRead").getValue()));
-
-
 
                     }
                     @Override
@@ -184,7 +186,8 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         });
     }
 
-    private void makeListItem(String uId, final String message, final boolean ifRead){
+    public void makeListItem(String uId, final String message, final boolean ifRead){
+
 
 
 
@@ -193,6 +196,8 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                String username= (String) dataSnapshot.child("username").getValue();
                String profilePhoto=(String)dataSnapshot.child("profile_photo").getValue();
+
+                usernameList.add(username);
 
 
 
@@ -248,6 +253,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     private void goToLogin(){
 
         Intent intent= new Intent(this,Login.class);
+
         finish();
         startActivity(intent);
 
@@ -259,6 +265,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
         Intent intent= new Intent(this, ChatActivity.class);
         intent.putExtra("id", idList.get(position));
+        intent.putExtra("username",usernameList.get(position));
         intent.putExtra("chatId",chatIdList.get(position));
         finish();
         startActivity(intent);

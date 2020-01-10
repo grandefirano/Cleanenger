@@ -1,4 +1,4 @@
-package com.grandefirano.cleanenger.login;
+package com.grandefirano.cleanenger.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.grandefirano.cleanenger.R;
-import com.grandefirano.cleanenger.SingleMessageFeedItem;
+import com.grandefirano.cleanenger.messages.SingleMessageFeedItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
