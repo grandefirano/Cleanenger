@@ -143,7 +143,7 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
 
             public ImageView mImageView;
             public TextView mPersonTextView;
-            public AppCompatImageButton mAddButton;
+            public ImageView mAddFriendImageView;
 
 
             OnItemListener mOnItemListener;
@@ -154,9 +154,9 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
                 super(itemView);
                 mImageView=itemView.findViewById(R.id.personImageView);
                 mPersonTextView=itemView.findViewById(R.id.nameOfPersonTextView);
-                mAddButton=itemView.findViewById(R.id.addFriendButton);
+                mAddFriendImageView=itemView.findViewById(R.id.addFriendImageView);
                 Log.d("ddd",mPersonTextView.getText().toString());
-                mAddButton.setOnClickListener(new View.OnClickListener() {
+                mAddFriendImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Log.d("dddd",String.valueOf(getAdapterPosition()));
