@@ -31,12 +31,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.grandefirano.cleanenger.FriendsController;
 import com.grandefirano.cleanenger.R;
+import com.grandefirano.cleanenger.adapter.StoryAdapter;
 import com.grandefirano.cleanenger.login.Login;
 import com.grandefirano.cleanenger.adapter.MainListAdapter;
 import com.grandefirano.cleanenger.singleItems.SingleMessageFeedItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MainListAdapter.OnItemListener {
 
@@ -48,6 +51,10 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
 
 
+    private RecyclerView mStoryRecyclerView;
+    private StoryAdapter mStoryAdapter;
+    private List<String> mStoryList=new ArrayList<>();
+
     private RecyclerView mMessagesRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -55,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     ArrayList<SingleMessageFeedItem> listItems= new ArrayList<>();
     ArrayList<String> chatIdList= new ArrayList<>();
     ArrayList<String> usernameList=new ArrayList<>();
+
 
 
     ChildEventListener mOnMainScreenMessageListener=new ChildEventListener() {
@@ -87,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        MenuInflater menuInflater= new MenuInflater(this);
+        MenuInflater menuInflater= getMenuInflater();
         menuInflater.inflate(R.menu.clean_menu,menu);
         return super.onCreateOptionsMenu(menu);
 
@@ -131,19 +139,62 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
                 .child(mAuth.getCurrentUser().getUid())
                 .child("main_screen_messages");
 
+
         mMessagesRecyclerView=findViewById(R.id.searchPeopleRecyclerView);
+
+        mStoryRecyclerView=findViewById(R.id.storyRecycleView);
 
         //DOWNLOAD USERS
         downloadListFromDatabase();
+        listOfSnapsPerson();
 
 
         mMessagesRecyclerView.setHasFixedSize(true);
         mLayoutManager= new LinearLayoutManager(this);
+
+
         mAdapter= new MainListAdapter(getApplicationContext(),listItems,this);
+
+
+
+
 
         mMessagesRecyclerView.setLayoutManager(mLayoutManager);
         mMessagesRecyclerView.setAdapter(mAdapter);
 
+        mStoryRecyclerView.setHasFixedSize(true);
+        LinearLayoutManager mStoryLinearLayoutManager= new LinearLayoutManager(getApplicationContext(),
+                LinearLayoutManager.HORIZONTAL,false);
+        mStoryRecyclerView.setLayoutManager(mStoryLinearLayoutManager);
+
+
+        mStoryAdapter=new StoryAdapter(getApplicationContext(),mStoryList);
+        mStoryRecyclerView.setAdapter(mStoryAdapter);
+
+
+    }
+
+
+    private void listOfSnapsPerson(){
+
+        mStoryList.clear();
+        Log.d("dddd","My id "+myId);
+        mDatabase.child("users").child(myId).child("snaps").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                mStoryList.add(dataSnapshot.getKey());
+                mStoryAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
 
     }
 
@@ -181,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                String username= (String) dataSnapshot.child("username").getValue();
-               String profilePhoto=(String)dataSnapshot.child("profile_photo").getValue();
+               String profilePhoto=(String)dataSnapshot.child("profilePhoto").getValue();
 
                 usernameList.add(username);
                listItems.add(new SingleMessageFeedItem(profilePhoto,
@@ -200,6 +251,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     public void takeAPhoto(View view){
 
         Intent intent= new Intent(this,SendPhotoActivity.class);
+        finish();
         startActivity(intent);
 
     }

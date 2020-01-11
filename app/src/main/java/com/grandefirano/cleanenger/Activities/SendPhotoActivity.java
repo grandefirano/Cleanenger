@@ -26,8 +26,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.grandefirano.cleanenger.FriendsController;
 import com.grandefirano.cleanenger.R;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import static com.grandefirano.cleanenger.Activities.PhotoHelper.getFileExtension;
@@ -43,11 +45,30 @@ public class SendPhotoActivity extends AppCompatActivity {
     Button mSendButton;
 
     FirebaseAuth mAuth;
-    DatabaseReference mSnapsDatabase;
+    DatabaseReference mDatabaseReference;
+    DatabaseReference mUsersDatabase;
+    DatabaseReference mFriendsReference;
+    String mCurrentUserId;
+
+
+    ArrayList<String> mFriendsIdList= new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_photo);
+
+        mAuth=FirebaseAuth.getInstance();
+        mCurrentUserId= mAuth.getCurrentUser().getUid();
+
+        mDatabaseReference=FirebaseDatabase.getInstance().getReference();
+
+        mFriendsReference=mDatabaseReference.child("users")
+                .child(mAuth.getCurrentUser().getUid())
+                .child("friends");
+
+        FriendsController.downloadFriends(mFriendsReference,mFriendsIdList);
+
 
         mPhotoImageView=findViewById(R.id.photoToSendImageView);
         mCancelButton=findViewById(R.id.sendPhotoCancelButton);
@@ -58,12 +79,10 @@ public class SendPhotoActivity extends AppCompatActivity {
         mSendButton.setVisibility(View.INVISIBLE);
 
 
-        mAuth=FirebaseAuth.getInstance();
 
-        mSnapsDatabase= FirebaseDatabase.getInstance().getReference()
-                .child("users")
-                .child(mAuth.getCurrentUser().getUid())
-                .child("snaps");
+
+        mUsersDatabase= mDatabaseReference
+                .child("users");
 
 
 
@@ -98,25 +117,30 @@ public class SendPhotoActivity extends AppCompatActivity {
     }
 
     public void sendToAll(View view){
-        Log.d("ddddd", String.valueOf(mImageUri));
 
         if(mImageUri!=null){
+
+
+            final String random=String.valueOf(UUID.randomUUID());
+
             final StorageReference profilePhotoReference= FirebaseStorage.getInstance()
                     .getReference().child("snaps")
-                    .child(mAuth.getCurrentUser().getUid()).child(UUID.randomUUID() +"."+getFileExtension(mImageUri,getContentResolver()));
+                    .child(mAuth.getCurrentUser().getUid()).child(random +"."+getFileExtension(mImageUri,getContentResolver()));
 
             profilePhotoReference.putFile(mImageUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
+
                             profilePhotoReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
-                                    mSnapsDatabase.child("photo").setValue(uri.toString());
-                                    mSnapsDatabase.child("id").setValue(mAuth.getCurrentUser().getUid());
-                                    Toast.makeText(getApplicationContext(),"Upload successful",Toast.LENGTH_SHORT).show();
-
+                                    for(String friendId:mFriendsIdList) {
+                                        Log.d("ddddddID",friendId);
+                                        mUsersDatabase.child(friendId).child("snaps").child(mCurrentUserId).child(random).setValue(uri.toString());
+                                        Toast.makeText(getApplicationContext(), "Upload successful", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                             });
 

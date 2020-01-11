@@ -232,7 +232,8 @@ public class AccountActivity extends AppCompatActivity {
                     .getReference().child("profile_photos")
                     .child(mAuth.getCurrentUser().getUid()+"."+PhotoHelper.getFileExtension(mImageUri,getContentResolver()));
 
-            profilePhotoReference.putFile(mImageUri)
+
+        profilePhotoReference.putFile(mImageUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -240,7 +241,7 @@ public class AccountActivity extends AppCompatActivity {
                            profilePhotoReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
-                                    mUserDataDatabase.child("profile_photo").setValue(uri.toString());
+                                    mUserDataDatabase.child("profilePhoto").setValue(uri.toString());
                                     Toast.makeText(getApplicationContext(),"Upload successful",Toast.LENGTH_SHORT).show();
 
                                 }

@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.grandefirano.cleanenger.Activities.MainActivity;
 import com.grandefirano.cleanenger.R;
+import com.grandefirano.cleanenger.UserData;
 
 public class Register extends AppCompatActivity {
 
@@ -72,9 +73,9 @@ public class Register extends AppCompatActivity {
 
                                 //TODO:nie masz pozwolenia
                                 //default photo
-                                String linktoPhoto="";
+                                String linktoPhoto="https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/profile_photos%2Fdefault_profile_photo.jpg?alt=media&token=5f8f3295-d9d1-4a70-bc41-b344cf07fd5d";
 
-                                UserData newUserData= new UserData(username,email,linktoPhoto);
+                                UserData newUserData= new UserData(email,username,linktoPhoto);
                                 myRef.child("data").setValue(newUserData);
 
 
@@ -120,37 +121,17 @@ public class Register extends AppCompatActivity {
 
     public void goToLogin(View view){
         Intent intent=new Intent(this, Login.class);
+
         startActivity(intent);
     }
     public void goToMain(){
         Intent intent=new Intent(this, MainActivity.class);
+        finish();
         startActivity(intent);
     }
 
 
 
-    static public class UserData{
-        public String username;
-        public String email;
-        public String profile_photo;
 
-        public UserData() {
-        }
-        public UserData(String username, String email,String profile_photo) {
-            this.username = username;
-            this.email = email;
-            this.profile_photo=profile_photo;
-        }
-        public String getUsername() {
-            return username;
-        }
-        public String getEmail() {
-            return email;
-        }
-
-        public String getProfile_photo() {
-            return profile_photo;
-        }
-    }
 
 }

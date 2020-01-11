@@ -10,11 +10,12 @@
         android:layout_height="wrap_content"
         android:layout_margin="4dp">
 
-        <ImageView
+
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/personImageView"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:padding="2dp" />
+            android:padding="2dp"/>
 
         <TextView
             android:id="@+id/nameOfPersonTextView"

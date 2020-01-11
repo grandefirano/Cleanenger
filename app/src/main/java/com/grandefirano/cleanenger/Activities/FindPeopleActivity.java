@@ -54,7 +54,7 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
 //
             Log.d("dddddd","childAdded");
             String username= (String) dataSnapshot.child("data").child("username").getValue();
-            String profilePhoto=(String)dataSnapshot.child("data").child("profile_photo").getValue();
+            String profilePhoto=(String)dataSnapshot.child("data").child("profilePhoto").getValue();
             String id=dataSnapshot.getKey();
             listItems.add(new SinglePersonSearchItem(profilePhoto,username,id));
 

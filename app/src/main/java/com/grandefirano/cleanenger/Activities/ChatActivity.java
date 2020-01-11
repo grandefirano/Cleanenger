@@ -111,10 +111,11 @@ public class ChatActivity extends AppCompatActivity {
              mDatabase.child("chats").child(mchatId).child("last_message").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    if (!dataSnapshot.child("uId").getValue().toString().equals(mAuth.getCurrentUser().getUid())
-                    || mAuth.getCurrentUser().getUid().equals(mIdOfChatPerson)) {
-                        mDatabase.child("chats").child(mchatId).child("last_message").child("ifRead").setValue(true);
+                    if(dataSnapshot.child("uId").exists()) {
+                        if (!dataSnapshot.child("uId").getValue().toString().equals(mAuth.getCurrentUser().getUid())
+                                || mAuth.getCurrentUser().getUid().equals(mIdOfChatPerson)) {
+                            mDatabase.child("chats").child(mchatId).child("last_message").child("ifRead").setValue(true);
+                        }
                     }
                 }
                 @Override
