@@ -69,16 +69,19 @@
                 android:imeOptions="actionUnspecified"
                 android:inputType="textCapSentences|textAutoCorrect"
                 android:maxLines="1"
-                android:gravity="center_horizontal"/>
+                android:background="@android:color/transparent"
+                android:hint="Type a message..."
+                />
 
             <ImageButton
-                android:id="@+id/sendPhotoSendButton"
+                android:id="@+id/chatSendButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="aaa"
+                android:background="@color/colorPrimary"
                 android:onClick="sendMessage"
                 android:padding="10dp"
-                android:src="@android:drawable/ic_menu_send" />
+                android:src="@drawable/ic_send_black" />
         </LinearLayout>
 
 

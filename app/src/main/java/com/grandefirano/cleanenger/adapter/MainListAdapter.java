@@ -127,11 +127,12 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
                            Typeface.BOLD);
                    message="Me: "+message;
                    if(ifRead){
-                       message="[Read] "+message;
+                       holder.mMessageTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_circle_black, 0, 0, 0);
                    }
                }else{
                    if(ifRead){
                        holder.mMessageTextView.setTextColor(Color.GRAY);
+
                        holder.mMessageTextView.setTypeface(holder.mMessageTextView.getTypeface(),
                                Typeface.NORMAL);
 
