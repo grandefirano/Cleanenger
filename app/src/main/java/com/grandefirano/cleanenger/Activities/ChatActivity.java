@@ -2,13 +2,17 @@ package com.grandefirano.cleanenger.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -17,22 +21,27 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grandefirano.cleanenger.R;
+import com.grandefirano.cleanenger.UserData;
 import com.grandefirano.cleanenger.adapter.ChatListAdapter;
 import com.grandefirano.cleanenger.singleItems.SingleMessage;
+import com.squareup.picasso.Picasso;
 
 public class ChatActivity extends AppCompatActivity {
 
-    TextView mTextView;
     String mIdOfChatPerson;
     EditText mMessageInput;
     String mchatId;
-    String mNameOfChatPerson;
+    //String mNameOfChatPerson;
 
     private ChatListAdapter mAdapter;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private DatabaseReference mChatRef;
     private ListView mChatListView;
+
+    private CircleImageView mPersonImageView;
+    private TextView mPersonNameTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +51,7 @@ public class ChatActivity extends AppCompatActivity {
         Intent intent=getIntent();
         mchatId=intent.getStringExtra("chatId");
         mIdOfChatPerson=intent.getStringExtra("id");
-        mNameOfChatPerson=intent.getStringExtra("username");
+
 
         //FIREBASE
         mAuth=FirebaseAuth.getInstance();
@@ -50,16 +59,49 @@ public class ChatActivity extends AppCompatActivity {
         mChatRef=mDatabase.child("chats").child(mchatId);
 
         //VIEW FINDING
-        mTextView=findViewById(R.id.Id);
+
+
         mMessageInput=findViewById(R.id.messageInput);
         mChatListView =findViewById(R.id.chat_list_view);
-        mTextView.setText(mIdOfChatPerson);
+        mPersonNameTextView=findViewById(R.id.nameOfChatPersonTextView);
+        mPersonImageView=findViewById(R.id.chatPersonImageView);
+
+        Toolbar mToolbar=findViewById(R.id.chatToolbar);
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_black);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+
+        mDatabase.child("users").child(mIdOfChatPerson).child("data").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                UserData userData=dataSnapshot.getValue(UserData.class);
+
+                mPersonNameTextView.setText(userData.getUsername());
+                Picasso.with(getApplicationContext()).load(userData.getProfilePhoto())
+                        .fit()
+                        .centerCrop()
+                        .into(mPersonImageView);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
 
 
         //ADAPTER
         mAdapter= new ChatListAdapter(ChatActivity.this, mChatRef,
-                mAuth.getCurrentUser().getUid(),mNameOfChatPerson );
+                mAuth.getCurrentUser().getUid(),null );//TODO::::
+
         mChatListView.setAdapter(mAdapter);
+
+
+
+
 
 
         changeReadStatus();

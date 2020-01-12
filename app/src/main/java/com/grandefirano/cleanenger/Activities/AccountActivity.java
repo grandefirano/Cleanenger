@@ -38,6 +38,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -282,30 +283,29 @@ public class AccountActivity extends AppCompatActivity {
 
         Log.i("dddd",mAuth.getCurrentUser().getUid());
 
-        mUserDataDatabase
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+        mUserDataDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    emailBefore=String.valueOf(dataSnapshot.child("email").getValue());
+                    emailEditText.setText(emailBefore);
 
-                        if(dataSnapshot.getKey().equals("email")){
-                            emailBefore=String.valueOf(dataSnapshot.getValue());
-                            emailEditText.setText(emailBefore);
-                        }
+                    usernameBefore=String.valueOf(dataSnapshot.child("username").getValue());
+                    usernameEditText.setText(usernameBefore);
 
-                        if(dataSnapshot.getKey().equals("username")) {
-                            usernameBefore=String.valueOf(dataSnapshot.getValue());
-                            usernameEditText.setText(usernameBefore);
-                        }
-                    }
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) { }
-                });
+                    photoBefore=String.valueOf(dataSnapshot.child("profilePhoto").getValue());
+                    Picasso.with(getApplicationContext()).load(photoBefore)
+                        .fit()
+                        .centerCrop()
+                        .into(mProfilePhotoImageView);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
 

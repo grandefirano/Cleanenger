@@ -8,12 +8,12 @@
 
     <ImageView
         android:id="@+id/profilePhotoImageView"
-        android:layout_width="105dp"
-        android:layout_height="89dp"
-        android:layout_marginStart="16dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_marginTop="51dp"
         android:onClick="changePhoto"
         android:src="@drawable/common_google_signin_btn_text_dark_focused"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/pobrane" />

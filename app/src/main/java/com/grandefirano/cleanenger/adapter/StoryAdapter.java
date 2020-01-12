@@ -2,6 +2,7 @@ package com.grandefirano.cleanenger.adapter;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,11 +29,13 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder>{
 
     private Context mContext;
     private List<String> mStoriesList;
+    private OnSnapClickListener mOnSnapClickListener;
 
-    public StoryAdapter(Context context, List<String> storiesList) {
+    public StoryAdapter(Context context, List<String> storiesList,OnSnapClickListener onSnapClickListener) {
         mContext = context;
         mStoriesList = storiesList;
-        Log.d("ddddstory", String.valueOf(mStoriesList.size()));
+        mOnSnapClickListener=onSnapClickListener;
+
     }
 
     @NonNull
@@ -43,14 +46,14 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder>{
         View view= LayoutInflater.from(mContext).inflate(R.layout.single_main_screen_story_item,parent,false);
 
 
-        return new StoryAdapter.ViewHolder(view);
+        return new StoryAdapter.ViewHolder(view,mOnSnapClickListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         String mId=mStoriesList.get(position);
-        getUserInfo(holder,mId,position);
+        getUserInfoAndMakeItem(holder,mId,position);
 
         Log.d("dddd","ekiiii");
         //add lsitener
@@ -62,18 +65,26 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder>{
         return mStoriesList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public ImageView storyImageView;
         public TextView storyNameTextView;
+        private OnSnapClickListener mOnClickListener;
 
 
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView,OnSnapClickListener mListener) {
             super(itemView);
 
             storyImageView=itemView.findViewById(R.id.StoryImageView);
             storyNameTextView=itemView.findViewById(R.id.storyTextView);
+            mOnClickListener=mListener;
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            mOnClickListener.onSnapClick(getAdapterPosition());
         }
     }
 
@@ -82,14 +93,16 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder>{
         return super.getItemViewType(position);
     }
 
-    private void getUserInfo(final ViewHolder holder, String userId, int position){
+    private void getUserInfoAndMakeItem(final ViewHolder holder, final String userId, int position){
         DatabaseReference mGivenUserData= FirebaseDatabase.getInstance().getReference()
                 .child("users").child(userId).child("data");
         mGivenUserData.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserData userData=dataSnapshot.getValue(UserData.class);
-
+                Log.d("ssssss",userId);
+                Log.d("ssssss",userData.getProfilePhoto());
+                Log.d("ssssss",userData.getUsername());
                 Picasso.with(mContext).load(userData.getProfilePhoto())
                         .fit()
                         .centerCrop()
@@ -103,4 +116,8 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder>{
 
     }
 
+    public interface OnSnapClickListener{
+        void onSnapClick(int position);
+
+    }
 }

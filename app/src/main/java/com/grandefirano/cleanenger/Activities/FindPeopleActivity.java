@@ -52,7 +52,6 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 //
-            Log.d("dddddd","childAdded");
             String username= (String) dataSnapshot.child("data").child("username").getValue();
             String profilePhoto=(String)dataSnapshot.child("data").child("profilePhoto").getValue();
             String id=dataSnapshot.getKey();
@@ -196,7 +195,7 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
         newIntent= new Intent(this, ChatActivity.class);
 
         newIntent.putExtra("id", listItems.get(position).getPersonId());
-        newIntent.putExtra("username",listItems.get(position).getPersonText());
+
 
 
         mChatClickedDatabaseReference= mDatabase.child("users").child(mAuth.getCurrentUser().getUid())

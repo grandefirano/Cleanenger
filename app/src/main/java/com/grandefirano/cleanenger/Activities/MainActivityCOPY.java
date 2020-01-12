@@ -1,10 +1,5 @@
+/*
 package com.grandefirano.cleanenger.Activities;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,15 +18,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grandefirano.cleanenger.R;
+import com.grandefirano.cleanenger.adapter.MainListAdapter;
 import com.grandefirano.cleanenger.adapter.StoryAdapter;
 import com.grandefirano.cleanenger.login.Login;
-import com.grandefirano.cleanenger.adapter.MainListAdapter;
 import com.grandefirano.cleanenger.singleItems.SingleMessageFeedItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MainListAdapter.OnItemListener, StoryAdapter.OnSnapClickListener{
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+public class MainActivityCOPY extends AppCompatActivity implements MainListAdapter.OnItemListener, StoryAdapter.OnSnapClickListener{
 
 
     FirebaseAuth mAuth;
@@ -63,9 +64,8 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
             idList.add(String.valueOf(dataSnapshot.getKey()));
             chatIdList.add(String.valueOf(dataSnapshot.getValue()));
-            Log.d("ddddIIIIDD", String.valueOf(chatIdList.size()));
-            Log.d("ddddCHATTT", String.valueOf(idList.size()));
-            mAdapter.notifyDataSetChanged();
+
+            findLastMessage(lastMessage,dataSnapshot.getKey());
 
         }
         @Override
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         mLayoutManager= new LinearLayoutManager(this);
 
 
-        mAdapter= new MainListAdapter(getApplicationContext(),listItems,this,chatIdList,idList);
+        mAdapter= new MainListAdapter(getApplicationContext(),listItems,this);
 
 
 
@@ -199,56 +199,56 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
     }
 
-//    private void findLastMessage(DatabaseReference reference, final String uId){
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                String mess=String.valueOf(dataSnapshot.child("message").getValue());
-//                String hisId=String.valueOf(dataSnapshot.child("uId").getValue());
-//                boolean ifRead=(boolean)dataSnapshot.child("ifRead").getValue();
-//                boolean ifMe=hisId.equals(myId);
-//
-//                if(ifMe){
-//                    mess="Me: "+mess;
-//                    if(ifRead){
-//                        mess="[Read]"+mess;
-//                    }
-//                }
-//
-//                makeListItem(uId,mess,
-//                        ifRead,ifMe);
-//
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) { }
-//        });
-//    }
-//
-//    public void makeListItem(String uId, final String message, final boolean ifRead, final boolean ifMe){
-//
-//        mDatabase.child("users").child(uId).child("data").addValueEventListener(new ValueEventListener() {
-//
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//               String username= (String) dataSnapshot.child("username").getValue();
-//               String profilePhoto=(String)dataSnapshot.child("profilePhoto").getValue();
-//
-//
-//
-//                usernameList.add(username);
-//               listItems.add(new SingleMessageFeedItem(profilePhoto,
-//                        username,
-//                        message,
-//                        ifRead));
-//
-//                mAdapter.notifyDataSetChanged();
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) { }
-//        });
-//
-//
-//    }
+    private void findLastMessage(DatabaseReference reference, final String uId){
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String mess=String.valueOf(dataSnapshot.child("message").getValue());
+                String hisId=String.valueOf(dataSnapshot.child("uId").getValue());
+                boolean ifRead=(boolean)dataSnapshot.child("ifRead").getValue();
+                boolean ifMe=hisId.equals(myId);
+
+                if(ifMe){
+                    mess="Me: "+mess;
+                    if(ifRead){
+                        mess="[Read]"+mess;
+                    }
+                }
+
+                makeListItem(uId,mess,
+                        ifRead,ifMe);
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
+    }
+
+    public void makeListItem(String uId, final String message, final boolean ifRead, final boolean ifMe){
+
+        mDatabase.child("users").child(uId).child("data").addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+               String username= (String) dataSnapshot.child("username").getValue();
+               String profilePhoto=(String)dataSnapshot.child("profilePhoto").getValue();
+
+
+
+                usernameList.add(username);
+               listItems.add(new SingleMessageFeedItem(profilePhoto,
+                        username,
+                        message,
+                        ifRead));
+
+                mAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
+
+
+    }
     public void takeAPhoto(View view){
 
         Intent intent= new Intent(this,SendPhotoActivity.class);
@@ -284,6 +284,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
         Intent intent= new Intent(this, ChatActivity.class);
         intent.putExtra("id", idList.get(position));
+        intent.putExtra("username",usernameList.get(position));
         intent.putExtra("chatId",chatIdList.get(position));
         finish();
         startActivity(intent);
@@ -298,3 +299,4 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
     }
 }
+*/
