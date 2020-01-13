@@ -1,17 +1,10 @@
 package com.grandefirano.cleanenger.adapter;
 
-import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.net.Uri;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.firebase.database.ChildEventListener;
@@ -19,7 +12,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.grandefirano.cleanenger.R;
-import com.grandefirano.cleanenger.login.Utilities;
+import com.grandefirano.cleanenger.Utilities;
 import com.grandefirano.cleanenger.singleItems.SingleMessage;
 import com.squareup.picasso.Picasso;
 

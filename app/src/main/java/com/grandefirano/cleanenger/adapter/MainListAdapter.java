@@ -18,15 +18,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.UserData;
-import com.grandefirano.cleanenger.login.Utilities;
+import com.grandefirano.cleanenger.Utilities;
 import com.grandefirano.cleanenger.singleItems.SingleMessageFeedItem;
 import com.squareup.picasso.Picasso;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Formatter;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -138,7 +134,7 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
                if(ifMe){
                    holder.mMessageTextView.setTextColor(Color.GRAY);
                    holder.mMessageTextView.setTypeface(holder.mMessageTextView.getTypeface(),
-                           Typeface.BOLD);
+                           Typeface.NORMAL);
                    message="Me: "+message;
                    if(ifRead){
                        holder.mMessageTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_circle_black, 0, 0, 0);

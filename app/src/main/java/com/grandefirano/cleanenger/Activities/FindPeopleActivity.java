@@ -43,10 +43,18 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
     private FindPeopleAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    ArrayList<SinglePersonSearchItem> mFriendList=new ArrayList<>();
+    ArrayList<SinglePersonSearchItem> mAllPeopleList=new ArrayList<>();
+
+    ArrayList<SinglePersonSearchItem> mTemporaryList=new ArrayList<>();
+
     ArrayList<SinglePersonSearchItem> listItems= new ArrayList<>();
+
     ArrayList<String> friendsList= new ArrayList<>();
     private Intent newIntent;
     private Context mContext;
+
+    //Źle ROZWIĄZANIE Z ADDCHILD na value
 
     ChildEventListener mOnUsersChildEventListener=new ChildEventListener() {
         @Override
@@ -90,6 +98,7 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             String mChatId;
+            Log.d("ddddYYY","rprpror");
             if(!dataSnapshot.exists()){
                 //If not exists
                 mChatId= UUID.randomUUID().toString();
@@ -184,6 +193,7 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
     public void onAddClick(int position){
         String id=listItems.get(position).getPersonId();
         String name=listItems.get(position).getPersonText();
+
         Log.d("dddd",name);
         mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("friends").child(id).setValue(name);
 

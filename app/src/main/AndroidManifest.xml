@@ -11,7 +11,9 @@
         android:theme="@style/AppTheme">
         <activity android:name=".Activities.ShowStoryActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".Activities.SendPhotoActivity" />
+        <activity android:name=".Activities.SendPhotoActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Activities.FindPeopleActivity"
             android:screenOrientation="portrait" />
@@ -38,6 +40,10 @@
         <activity
             android:name=".Activities.MainActivity"
             android:screenOrientation="portrait" />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />

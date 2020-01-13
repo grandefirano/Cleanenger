@@ -4,41 +4,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.SendPhotoActivity">
+    tools:context=".Activities.SendPhotoActivity"
+    android:background="@color/colorTextSecondary">
 
     <ImageView
         android:id="@+id/photoToSendImageView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="70dp"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/common_google_signin_btn_icon_light_normal" />
+        app:srcCompat="@color/colorPrimaryDark" />
 
-    <Button
+    <ImageView
         android:id="@+id/sendPhotoSendButton"
-        android:layout_width="194dp"
-        android:layout_height="59dp"
-        android:layout_marginTop="6dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:alpha="0.8"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/circle"
         android:onClick="sendToAll"
-        android:text="Send"
-        android:visibility="visible"
+        android:padding="10dp"
+        android:src="@drawable/ic_send_black"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/sendPhotoCancelButton"
-        app:layout_constraintTop_toBottomOf="@+id/photoToSendImageView" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
+    <ImageView
         android:id="@+id/sendPhotoCancelButton"
-        android:layout_width="193dp"
-        android:layout_height="58dp"
-        android:layout_marginStart="13dp"
-        android:layout_marginTop="2dp"
-        android:text="Cancel"
-        android:visibility="visible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/photoToSendImageView" />
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+
+        android:onClick="cancelAction"
+        android:padding="2dp"
+        android:src="@drawable/ic_close_medium"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

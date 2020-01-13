@@ -161,6 +161,7 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
                     public void onClick(View v) {
                         Log.d("dddd",String.valueOf(getAdapterPosition()));
                         mOnAddButtonListener.onAddClick(getAdapterPosition());
+                        Log.d("dddddci","");
                     }
                 });
                 this.mOnAddButtonListener=onAddButtonListener;

@@ -8,6 +8,9 @@ import android.Manifest;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +21,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.internal.service.Common;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,7 +32,11 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.grandefirano.cleanenger.FriendsController;
 import com.grandefirano.cleanenger.R;
+import com.grandefirano.cleanenger.Utilities;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -41,8 +49,8 @@ public class SendPhotoActivity extends AppCompatActivity {
 
     Uri mImageUri;
     ImageView mPhotoImageView;
-    Button mCancelButton;
-    Button mSendButton;
+    ImageView mCancelButton;
+    ImageView mSendButton;
 
     FirebaseAuth mAuth;
     DatabaseReference mDatabaseReference;
@@ -140,6 +148,9 @@ public class SendPhotoActivity extends AppCompatActivity {
                                         Log.d("ddddddID",friendId);
                                         mUsersDatabase.child(friendId).child("snaps").child(mCurrentUserId).child(random).setValue(uri.toString());
                                         Toast.makeText(getApplicationContext(), "Upload successful", Toast.LENGTH_SHORT).show();
+
+
+                                        finish();
                                     }
                                 }
                             });
@@ -158,6 +169,10 @@ public class SendPhotoActivity extends AppCompatActivity {
             Toast.makeText(this,"No file was selected",Toast.LENGTH_SHORT).show();
 
         }
+
+    }
+    public void cancelAction(View view){
+        finish();
     }
 
     //handling permission result
@@ -181,10 +196,28 @@ public class SendPhotoActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(resultCode==RESULT_OK){
+
             mPhotoImageView.setVisibility(View.VISIBLE);
             mCancelButton.setVisibility(View.VISIBLE);
             mSendButton.setVisibility(View.VISIBLE);
-            mPhotoImageView.setImageURI(mImageUri);
+
+
+            try {
+                Bitmap selectedImage= Utilities.convertToStoryBitmapFromSteam(this,mImageUri);
+                mPhotoImageView.setImageBitmap(selectedImage);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Picasso.with(getApplicationContext()).load(mImageUri)
+                        .fit()
+                        .centerCrop()
+                        .into(mPhotoImageView);
+            }
+
+
+
+
+
+
         }
         else{
             finish();
