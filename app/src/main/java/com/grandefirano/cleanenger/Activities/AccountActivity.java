@@ -4,11 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import id.zelory.compressor.Compressor;
 
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -44,11 +46,16 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.google.firebase.storage.internal.Util;
 import com.grandefirano.cleanenger.R;
+import com.grandefirano.cleanenger.login.Utilities;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 
 public class AccountActivity extends AppCompatActivity {
 
@@ -68,6 +75,7 @@ public class AccountActivity extends AppCompatActivity {
     String emailBefore;
 
     String photoBefore;
+    Bitmap newPhotoBitmap;
 
     private View alertView;
     private Uri mImageUri;
@@ -153,7 +161,7 @@ public class AccountActivity extends AppCompatActivity {
         if(!temporaryPassword.equals("") && !(temporaryPassword==null)){
             changePasswordInAuth(temporaryPassword);
         }
-        if(mImageUri!=null) {
+        if(newPhotoBitmap!=null) {
             uploadFile();
         }
 
@@ -231,10 +239,14 @@ public class AccountActivity extends AppCompatActivity {
 
             final StorageReference profilePhotoReference= FirebaseStorage.getInstance()
                     .getReference().child("profile_photos")
-                    .child(mAuth.getCurrentUser().getUid()+"."+PhotoHelper.getFileExtension(mImageUri,getContentResolver()));
+                    .child(mAuth.getCurrentUser().getUid()+".jpg");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        newPhotoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
 
 
-        profilePhotoReference.putFile(mImageUri)
+        profilePhotoReference.putBytes(data)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -257,6 +269,7 @@ public class AccountActivity extends AppCompatActivity {
                         }
                     });
 
+
     }
 
     private void openPhotoChooser(){
@@ -272,10 +285,17 @@ public class AccountActivity extends AppCompatActivity {
 
         if(requestCode==PICK_IMAGE_REQUEST&&resultCode==RESULT_OK
         &&data!=null &&data.getData()!=null){
-            mImageUri=data.getData();
 
-            Picasso.with(this).load(mImageUri).into(mProfilePhotoImageView);
-            mProfilePhotoImageView.setImageURI(mImageUri);
+            Uri imageUri=data.getData();
+
+            try {
+                InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                Bitmap selectedImage=Utilities.convertToBitmapFromStream(imageStream);
+                mProfilePhotoImageView.setImageBitmap(selectedImage);
+                newPhotoBitmap=selectedImage;
+
+            } catch (IOException e) { e.printStackTrace(); Toast.makeText(this,"Problem with compression",Toast.LENGTH_SHORT).show(); }
+
         }
     }
 

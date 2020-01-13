@@ -18,10 +18,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.UserData;
+import com.grandefirano.cleanenger.login.Utilities;
 import com.grandefirano.cleanenger.singleItems.SingleMessageFeedItem;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Formatter;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -75,6 +80,7 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
         public ImageView mImageView;
         public TextView mPersonTextView;
         public TextView mMessageTextView;
+        public TextView mDateTextView;
 
         OnItemListener mOnItemListener;
 
@@ -84,7 +90,7 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
             mImageView=itemView.findViewById(R.id.personImageView);
             mPersonTextView=itemView.findViewById(R.id.nameOfPersonTextView);
             mMessageTextView=itemView.findViewById(R.id.messageOfPersonTextView);
-            Log.d("ddd",mPersonTextView.getText().toString());
+            mDateTextView=itemView.findViewById(R.id.messageDateTextView);
 
             this.mOnItemListener=onItemListener;
 
@@ -118,7 +124,15 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String message=String.valueOf(dataSnapshot.child("message").getValue());
                 String messagePersonId=String.valueOf(dataSnapshot.child("uId").getValue());
+                //DAte
+                long date=(long)dataSnapshot.child("date").getValue();
+                //FROM UTILITIES
+
+
+                String dateString = Utilities.getProperDateFormat(date);
+
                 boolean ifRead=(boolean)dataSnapshot.child("ifRead").getValue();
+                Log.d("ddddd",messagePersonId);
                 boolean ifMe=messagePersonId.equals(myId);
 
                if(ifMe){
@@ -144,6 +158,7 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
                }
 
 
+                holder.mDateTextView.setText(dateString);
                 holder.mMessageTextView.setText(message);
 
 

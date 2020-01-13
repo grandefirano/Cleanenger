@@ -2,19 +2,33 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:padding="2dp">
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="300dp"
     android:layout_height="wrap_content"
     android:layout_alignParentEnd="true">
 
-
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/messagePersonImageView"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Date"
+        android:id="@+id/chatMessageDateTextView"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        android:layout_marginEnd="10dp"
+        android:layout_toStartOf="@+id/messagePersonTextView"/>
+    <TextView
+        android:id="@+id/messagePersonTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="@drawable/background_right_chat_row"
-        android:layout_toEndOf="@+id/chatPersonImageView"
+        android:layout_toEndOf="@+id/messagePersonImageView"
         android:text="message"
         android:padding="8dp"
         android:layout_marginStart="5dp"

@@ -3,13 +3,20 @@ package com.grandefirano.cleanenger.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -19,6 +26,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.UserData;
@@ -26,9 +34,15 @@ import com.grandefirano.cleanenger.adapter.ChatListAdapter;
 import com.grandefirano.cleanenger.singleItems.SingleMessage;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ChatActivity extends AppCompatActivity {
 
     String mIdOfChatPerson;
+
+    String profilePhoto;
+
     EditText mMessageInput;
     String mchatId;
     //String mNameOfChatPerson;
@@ -37,7 +51,7 @@ public class ChatActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private DatabaseReference mChatRef;
-    private ListView mChatListView;
+    private RecyclerView mChatRecycleView;
 
     private CircleImageView mPersonImageView;
     private TextView mPersonNameTextView;
@@ -58,11 +72,12 @@ public class ChatActivity extends AppCompatActivity {
         mDatabase= FirebaseDatabase.getInstance().getReference();
         mChatRef=mDatabase.child("chats").child(mchatId);
 
+
         //VIEW FINDING
 
 
         mMessageInput=findViewById(R.id.messageInput);
-        mChatListView =findViewById(R.id.chat_list_view);
+        mChatRecycleView =findViewById(R.id.chat_recycle_view);
         mPersonNameTextView=findViewById(R.id.nameOfChatPersonTextView);
         mPersonImageView=findViewById(R.id.chatPersonImageView);
 
@@ -76,16 +91,20 @@ public class ChatActivity extends AppCompatActivity {
         });
 
 
+
+
         mDatabase.child("users").child(mIdOfChatPerson).child("data").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserData userData=dataSnapshot.getValue(UserData.class);
 
                 mPersonNameTextView.setText(userData.getUsername());
+                profilePhoto=userData.getProfilePhoto();
                 Picasso.with(getApplicationContext()).load(userData.getProfilePhoto())
                         .fit()
                         .centerCrop()
                         .into(mPersonImageView);
+                mAdapter.updateProfilePhoto(profilePhoto);
             }
 
             @Override
@@ -94,10 +113,14 @@ public class ChatActivity extends AppCompatActivity {
 
 
         //ADAPTER
-        mAdapter= new ChatListAdapter(ChatActivity.this, mChatRef,
-                mAuth.getCurrentUser().getUid(),null );//TODO::::
+        mAdapter= new ChatListAdapter(this, mChatRef,
+                mAuth.getCurrentUser().getUid(),profilePhoto);
 
-        mChatListView.setAdapter(mAdapter);
+        mChatRecycleView.setAdapter(mAdapter);
+        mChatRecycleView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager= new LinearLayoutManager(getApplicationContext());
+        linearLayoutManager.setStackFromEnd(true);
+        mChatRecycleView.setLayoutManager(linearLayoutManager);
 
 
 
@@ -106,6 +129,7 @@ public class ChatActivity extends AppCompatActivity {
 
         changeReadStatus();
     }
+
 
 
     public void sendMessage(View view){
@@ -122,24 +146,69 @@ public class ChatActivity extends AppCompatActivity {
 
 
         //Message
-        SingleMessage singleMessage= new SingleMessage(mAuth.getUid(),textOfMessage);
-        mChatRef.child(String.valueOf(System.currentTimeMillis())).setValue(singleMessage);
 
-        LastMessage lastMessage=new LastMessage(singleMessage.getuId(),singleMessage.getMessage(),false);
 
-        mChatRef.child("last_message").setValue(lastMessage);
+        mChatRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
+
+        SingleMessage singleMessage= new SingleMessage(mAuth.getUid(),textOfMessage,ServerValue.TIMESTAMP);
+        LastMessage lastMessage=new LastMessage(singleMessage.getuId(),singleMessage.getMessage(),ServerValue.TIMESTAMP,false);
+
+
+        mChatRef.push().setValue(singleMessage.toMap());
+        //mChatRef.child(String.valueOf(ServerValue.TIMESTAMP)).setValue(singleMessage);
+
+        //mChatRef.child(String.valueOf(System.currentTimeMillis())).setValue(singleMessage);
+
+
+        mChatRef.child("last_message").setValue(lastMessage.toMap());
+
+
+
+
+
+
+
+
+
+        mMessageInput.setText("");
+        hideKeyboard(ChatActivity.this);
+
+
+    }
+    private void hideKeyboard(Activity activity){
+        //TODO::
+
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
 
 
-    private class LastMessage extends SingleMessage{
+    public class LastMessage extends SingleMessage{
         private boolean isifRead;
 
-        public LastMessage(String uId,String message, boolean isRead) {
-            super(uId, message);
+        public LastMessage(String uId,String message,Map<String,String> dateCreated, boolean isRead) {
+            super(uId, message,dateCreated);
             this.isifRead = isRead;
         }
+        public Map<String, Object> toMap() {
+           Map<String,Object> result=super.toMap();
+           result.put("ifRead",isifRead);
+
+            return result;
+        }
+
         public LastMessage() { }
         public boolean isifRead() {
             return isifRead;

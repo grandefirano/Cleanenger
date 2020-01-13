@@ -8,13 +8,15 @@ public class SingleMessageFeedItem {
     private String mImageResource;
     private String mPersonText;
     private String mMessageText;
+    private String mDate;
     private boolean mIfRead;
 
-    public SingleMessageFeedItem(String imageResource, String person, String message, boolean ifRead){
+    public SingleMessageFeedItem(String imageResource, String person, String message, boolean ifRead,String date){
         mImageResource=imageResource;
         mPersonText=person;
         mMessageText=message;
         mIfRead=ifRead;
+        mDate=date;
 
     }
 

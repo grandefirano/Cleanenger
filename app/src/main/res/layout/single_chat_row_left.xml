@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="8dp">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="3dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/chatPersonImageView"
+        android:id="@+id/messagePersonImageView"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:padding="2dp"
@@ -14,8 +14,18 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Date"
+        android:id="@+id/chatMessageDateTextView"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="10dp"
+        android:visibility="invisible"
+        android:layout_toEndOf="@+id/messagePersonTextView"/>
+    <TextView
+        android:id="@+id/messagePersonTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="@drawable/background_left_chat_row"
-        android:layout_toEndOf="@+id/chatPersonImageView"
+        android:layout_toEndOf="@+id/messagePersonImageView"
         android:text="message"
         android:padding="8dp"
         android:layout_marginStart="5dp"

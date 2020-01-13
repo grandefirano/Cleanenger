@@ -8,12 +8,13 @@
 
 
     <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
         android:id="@+id/storiesView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="10dp"
-        android:layout_marginStart="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
@@ -33,29 +34,25 @@
                 app:srcCompat="@drawable/ic_add_a_photo_black" />
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/storyRecycleView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/storyRecycleView"/>
+                android:layout_height="wrap_content" />
 
 
         </LinearLayout>
 
 
-
     </androidx.core.widget.NestedScrollView>
-
-
-
-
 
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchPeopleRecyclerView"
-        android:layout_width="415dp"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/storiesView" />
 

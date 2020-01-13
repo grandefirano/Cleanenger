@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -38,6 +39,9 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     String myId;
     DatabaseReference mDatabase;
     DatabaseReference mainScreenMessagesReference;
+
+
+    private long backPressedTime;
 
 
 
@@ -295,6 +299,26 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         intent.putExtra("id",mStoryList.get(position));
         finish();
         startActivity(intent);
+
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if(backPressedTime+2000>System.currentTimeMillis()){
+            Intent a = new Intent(Intent.ACTION_MAIN);
+            a.addCategory(Intent.CATEGORY_HOME);
+            a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            finish();
+            startActivity(a);
+
+        }else{
+            Toast.makeText(getApplicationContext(),"Press back again to exit",Toast.LENGTH_SHORT).show();
+
+        }
+
+        backPressedTime=System.currentTimeMillis();
+
 
     }
 }
