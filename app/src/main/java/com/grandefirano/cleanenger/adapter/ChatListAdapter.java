@@ -25,46 +25,47 @@ import androidx.recyclerview.widget.RecyclerView;
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
 
     private Context mContext;
-    private DatabaseReference mDatabaseReference;
     private String myId;
-
     private String mProfilePhotoUri;
+
+    private ViewHolder clickedView;
 
     public static final int MSG_TYPE_LEFT = 0;
     public static final int MSG_TYPE_RIGHT = 1;
 
-    private ArrayList<SingleMessage> mMessagesList=new ArrayList<>();
+    private ArrayList<SingleMessage> mMessagesList;
 
 
-    public ChatListAdapter(Context context, DatabaseReference ref, String id,String profilePhoto){
+    public ChatListAdapter(Context context,ArrayList<SingleMessage> messageList, String id, String profilePhoto){
 
         mContext=context;
         mProfilePhotoUri=profilePhoto;
         myId=id;
-        mDatabaseReference=ref;
-        mDatabaseReference.addChildEventListener(mListener);
+        mMessagesList=messageList;
+
 
 
 
     }
-    private ChildEventListener mListener= new ChildEventListener() {
-        @Override
-        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            if(!dataSnapshot.getKey().equals("last_message")){
-                SingleMessage message=dataSnapshot.getValue(SingleMessage.class);
-                mMessagesList.add(message);
-                notifyDataSetChanged();}
-        }
-        @Override
-        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-        @Override
-        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
-        @Override
-        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) { }
-    };
+//    private ChildEventListener mListener= new ChildEventListener() {
+//        @Override
+//        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//            if(!dataSnapshot.getKey().equals("last_message")){
+//                SingleMessage message=dataSnapshot.getValue(SingleMessage.class);
+//                mMessagesList.add(message);
+//                notifyDataSetChanged();}
+//            recyclerView.scrollToPosition(getItemCount()-1);
+//        }
+//        @Override
+//        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+//        @Override
+//        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
+//        @Override
+//        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+//        @Override
+//        public void onCancelled(@NonNull DatabaseError databaseError) { }
+//    };
 
 
     @NonNull
@@ -185,12 +186,42 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         }
 
+
         @Override
         public void onClick(View v) {
-            if(dateMessageTextView.getVisibility()==View.INVISIBLE)
-            dateMessageTextView.setVisibility(View.VISIBLE);
-            else dateMessageTextView.setVisibility(View.INVISIBLE);
+            if(clickedView!=null){
+                //clicked exist
+                clickedView.dateMessageTextView.setVisibility(View.GONE);
+                if(clickedView.getItemViewType()==MSG_TYPE_LEFT)
+                    clickedView.bodyMessageTextView.setBackgroundResource(R.drawable.background_left_chat_row);
+                else clickedView.bodyMessageTextView.setBackgroundResource(R.drawable.background_right_chat_row);
+
+                if(!clickedView.equals(this)) {
+                    dateMessageTextView.setVisibility(View.VISIBLE);
+                    if(getItemViewType()==MSG_TYPE_LEFT)
+                        bodyMessageTextView.setBackgroundResource(R.drawable.background_left_chat_row_clicked);
+                    else bodyMessageTextView.setBackgroundResource(R.drawable.background_right_chat_row_clicked);
+                    clickedView = this;
+                }else{
+                    clickedView=null;
+                }
+
+            }else{
+                //clicked don't exist
+                dateMessageTextView.setVisibility(View.VISIBLE);
+                if(getItemViewType()==MSG_TYPE_LEFT)
+                    bodyMessageTextView.setBackgroundResource(R.drawable.background_left_chat_row_clicked);
+                else bodyMessageTextView.setBackgroundResource(R.drawable.background_right_chat_row_clicked);
+                clickedView=this;
+            }
+
+
+
         }
+    }
+    public void hideDate(int position){
+
+
     }
 
     public void updateProfilePhoto(String profilePhotoUri){
@@ -198,7 +229,4 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     }
 
 
-    public void cleanup(){
-        mDatabaseReference.removeEventListener(mListener);
-    }
 }

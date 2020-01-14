@@ -3,19 +3,25 @@ package com.grandefirano.cleanenger.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.grandefirano.cleanenger.R;
+import com.grandefirano.cleanenger.Utilities;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -34,8 +40,8 @@ public class ShowStoryActivity extends AppCompatActivity {
 
     String myId;
     private int position;
-
     DatabaseReference mSnapsReference;
+    DatabaseReference mUserSnapsReference;
     FirebaseAuth mAuth;
 
     private View.OnClickListener mOnNextClickListener = new View.OnClickListener(){
@@ -57,9 +63,11 @@ public class ShowStoryActivity extends AppCompatActivity {
 
         mAuth=FirebaseAuth.getInstance();
         myId=mAuth.getCurrentUser().getUid();
-        mSnapsReference= FirebaseDatabase.getInstance().getReference()
+        mUserSnapsReference= FirebaseDatabase.getInstance().getReference()
                 .child("users")
                 .child(myId).child("snaps");
+        mSnapsReference=FirebaseDatabase.getInstance().getReference()
+                .child("snaps");
 
         mStoryImageView= findViewById(R.id.showStoryImageView);
 
@@ -79,7 +87,7 @@ public class ShowStoryActivity extends AppCompatActivity {
     private void getStoriesFromUser(String id){
         mStoryIds.clear();
         mStoryPhotos.clear();
-        mSnapsReference.child(id)
+        mUserSnapsReference.child(id)
             .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -88,8 +96,10 @@ public class ShowStoryActivity extends AppCompatActivity {
                     mStoryIds.add(snapshot.getKey());
                     mStoryPhotos.add(String.valueOf(snapshot.getValue()));
                     Log.d("ddddY",String.valueOf(snapshot.getValue()));
-                    showNext();
+
+
                 }
+                showNext();
             }
 
             @Override
@@ -102,18 +112,64 @@ public class ShowStoryActivity extends AppCompatActivity {
 
     private void showNext(){
 
+
+
         if(mStoryPhotos.size()>position){
             //when is in bound
-        Picasso.with(this).load(mStoryPhotos.get(0))
+            Log.d("dddd","poee");
+            Log.d("ddddddd", String.valueOf(mStoryPhotos.size()));
+//            Uri uri=Uri.parse(mStoryPhotos.get(position));
+//            Bitmap bitmap= Utilities.convertToStoryBitmap(getApplicationContext(),uri);
+//            mStoryImageView.setImageBitmap(bitmap);
+        Picasso.with(this).load(mStoryPhotos.get(position))
                 .fit()
-                .centerCrop()
+                .centerInside()
                 .into(mStoryImageView);
 
+
+            deleteSnap(position);
+
+
         position++;
+
+
         }else{
             //when is out of bound
             finish();
         }
+
+
+
+    }
+
+    private void deleteSnap(int pos) {
+        final String snapId=mStoryIds.get(pos);
+        Log.d("ddddSnapId",snapId);
+
+        mUserSnapsReference.child(mStoryUserId).child(snapId).removeValue();
+        mSnapsReference.child(snapId).child(myId).removeValue();
+
+        mSnapsReference.child(snapId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getChildrenCount()==0){
+                    StorageReference snapToDeleteRef= FirebaseStorage.getInstance()
+                            .getReference().child("snaps").child(mStoryUserId).child(snapId+".jpg");
+                    snapToDeleteRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d("dddddd","dalismy rade");
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
     }
 

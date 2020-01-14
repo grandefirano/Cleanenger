@@ -6,7 +6,7 @@
 
     <size android:width="70dp"
         android:height="70dp"/>
-    <solid android:color="@color/colorChatRight"/>
+    <solid android:color="#fff"/>
 
 
 

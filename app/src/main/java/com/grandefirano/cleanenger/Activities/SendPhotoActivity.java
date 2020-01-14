@@ -3,6 +3,7 @@ package com.grandefirano.cleanenger.Activities;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.Manifest;
 import android.content.ContentValues;
@@ -35,8 +36,10 @@ import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.Utilities;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -48,9 +51,14 @@ public class SendPhotoActivity extends AppCompatActivity {
     private static final int IMAGE_CAPTURE_CODE = 1001;
 
     Uri mImageUri;
+    Bitmap mSelectedImage;
+
+
     ImageView mPhotoImageView;
     ImageView mCancelButton;
     ImageView mSendButton;
+    ImageView mRotateButton;
+    ConstraintLayout mConstraintLayout;
 
     FirebaseAuth mAuth;
     DatabaseReference mDatabaseReference;
@@ -75,18 +83,17 @@ public class SendPhotoActivity extends AppCompatActivity {
                 .child(mAuth.getCurrentUser().getUid())
                 .child("friends");
 
+
         FriendsController.downloadFriends(mFriendsReference,mFriendsIdList);
 
 
         mPhotoImageView=findViewById(R.id.photoToSendImageView);
         mCancelButton=findViewById(R.id.sendPhotoCancelButton);
         mSendButton=findViewById(R.id.sendPhotoSendButton);
+        mRotateButton=findViewById(R.id.sendPhotoRotateButton);
+        mConstraintLayout=findViewById(R.id.sendConstraintLayout);
 
-        mPhotoImageView.setVisibility(View.INVISIBLE);
-        mCancelButton.setVisibility(View.INVISIBLE);
-        mSendButton.setVisibility(View.INVISIBLE);
-
-
+        mConstraintLayout.setVisibility(View.INVISIBLE);
 
 
         mUsersDatabase= mDatabaseReference
@@ -126,7 +133,7 @@ public class SendPhotoActivity extends AppCompatActivity {
 
     public void sendToAll(View view){
 
-        if(mImageUri!=null){
+        if(mSelectedImage!=null){
 
 
             final String random=String.valueOf(UUID.randomUUID());
@@ -135,7 +142,11 @@ public class SendPhotoActivity extends AppCompatActivity {
                     .getReference().child("snaps")
                     .child(mAuth.getCurrentUser().getUid()).child(random +"."+getFileExtension(mImageUri,getContentResolver()));
 
-            profilePhotoReference.putFile(mImageUri)
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            mSelectedImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data = baos.toByteArray();
+
+            profilePhotoReference.putBytes(data)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -147,11 +158,13 @@ public class SendPhotoActivity extends AppCompatActivity {
                                     for(String friendId:mFriendsIdList) {
                                         Log.d("ddddddID",friendId);
                                         mUsersDatabase.child(friendId).child("snaps").child(mCurrentUserId).child(random).setValue(uri.toString());
+
                                         Toast.makeText(getApplicationContext(), "Upload successful", Toast.LENGTH_SHORT).show();
 
-
-                                        finish();
+                                        mDatabaseReference.child("snaps").child(random).child(friendId).setValue(false);
                                     }
+
+                                    finish();
                                 }
                             });
 
@@ -173,6 +186,11 @@ public class SendPhotoActivity extends AppCompatActivity {
     }
     public void cancelAction(View view){
         finish();
+    }
+
+    public void rotatePhoto(View view){
+        mSelectedImage=Utilities.rotateBitmap(mSelectedImage,270);
+        mPhotoImageView.setImageBitmap(mSelectedImage);
     }
 
     //handling permission result
@@ -197,25 +215,20 @@ public class SendPhotoActivity extends AppCompatActivity {
 
         if(resultCode==RESULT_OK){
 
-            mPhotoImageView.setVisibility(View.VISIBLE);
-            mCancelButton.setVisibility(View.VISIBLE);
-            mSendButton.setVisibility(View.VISIBLE);
+            mConstraintLayout.setVisibility(View.VISIBLE);
+
 
 
             try {
-                Bitmap selectedImage= Utilities.convertToStoryBitmapFromSteam(this,mImageUri);
-                mPhotoImageView.setImageBitmap(selectedImage);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Picasso.with(getApplicationContext()).load(mImageUri)
-                        .fit()
-                        .centerCrop()
-                        .into(mPhotoImageView);
-            }
+                mSelectedImage = Utilities.convertToStoryBitmapFromUri(this,mImageUri);
+
+                mSelectedImage= Utilities.rotateImageBasedOnExif(mSelectedImage, String.valueOf(mImageUri));
+
+            } catch (IOException e) { e.printStackTrace(); }
 
 
 
-
+            mPhotoImageView.setImageBitmap(mSelectedImage);
 
 
         }

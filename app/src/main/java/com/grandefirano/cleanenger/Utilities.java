@@ -1,20 +1,14 @@
 package com.grandefirano.cleanenger;
 
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.hardware.Camera;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Surface;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,30 +32,37 @@ public class Utilities {
         if(sameDayofYear&&sameYear) {
             formatter= new SimpleDateFormat("HH:mm");
         }else if(sameYear){
-            formatter=new SimpleDateFormat("dd MMM.");
+            formatter=new SimpleDateFormat("dd MMM");
         }
         else{
-            formatter= new SimpleDateFormat("dd MMM. yyyy");
+            formatter= new SimpleDateFormat("dd MMM yyyy");
         }
 
     return formatter.format(new Date(date));
     }
 
     //PHOTO
-    public static Bitmap convertToProfileBitmapFromStream(ContentResolver contentResolver,Uri imageUri) throws FileNotFoundException {
-        InputStream imageStream = contentResolver.openInputStream(imageUri);
-        Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
+    public static Bitmap convertToProfileBitmapFromUri(Context context,Uri imageUri) throws IOException {
+        Bitmap bitmap=convertToBitmapFromUri(context,imageUri);
         bitmap=getResizedBitmap(bitmap,1200);
         bitmap=cropToSquare(bitmap);
         return bitmap;
     }
-    public static Bitmap convertToStoryBitmapFromSteam(Context context,Uri imageUri) throws IOException {
+    public static Bitmap convertToStoryBitmapFromUri(Context context,Uri imageUri) throws IOException {
+        Bitmap bitmap=convertToBitmapFromUri(context,imageUri);
+        bitmap=getResizedBitmap(bitmap,1920);
+
+        return bitmap;
+    }
+
+
+    public static Bitmap convertToBitmapFromUri(Context context,Uri imageUri) throws IOException {
         InputStream imageStream = context.getContentResolver().openInputStream(imageUri);
         Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-        rotateImage(bitmap, String.valueOf(imageUri));
         return bitmap;
 
     }
+
     public static Bitmap getResizedBitmap(Bitmap image, int maxSize) {
         int width = image.getWidth();
         int height = image.getHeight();
@@ -89,7 +90,7 @@ public class Utilities {
 
         return cropImg;
     }
-    public static Bitmap rotateImage(Bitmap bitmap,String imageFileLocation) throws IOException {
+    public static Bitmap rotateImageBasedOnExif(Bitmap bitmap,String imageFileLocation) throws IOException {
 
 
         ExifInterface exifInterface = new ExifInterface(imageFileLocation);
@@ -97,53 +98,35 @@ public class Utilities {
 
             orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_ROTATE_90);
 
-        Matrix matrix= new Matrix();
+        Bitmap rotatedBitmap;
+        int rotation;
+
         switch (orientation){
             case ExifInterface.ORIENTATION_ROTATE_90:
-                matrix.setRotate(90);
+                rotation=90;
                 break;
             case ExifInterface.ORIENTATION_ROTATE_180:
-                matrix.setRotate(180);
+                rotation=180;
                 break;
             case ExifInterface.ORIENTATION_ROTATE_270:
-                matrix.setRotate(270);
+                rotation=270;
+                break;
             default:
+                rotation=0;
         }
+        rotatedBitmap=rotateBitmap(bitmap,rotation);
 
-        Bitmap rotatedBitmap= Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
         return rotatedBitmap;
     }
 
-    public static Bitmap rotateBitmap(Context context, Uri photoUri, Bitmap bitmap) {
-        int orientation = getOrientation(context, photoUri);
-        if (orientation <= 0) {
-            return bitmap;
-        }
-        Matrix matrix = new Matrix();
-        matrix.postRotate(orientation);
-        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, false);
-        return bitmap;
+    public static Bitmap rotateBitmap(Bitmap bitmap, int rotation){
+        Matrix matrix= new Matrix();
+        matrix.setRotate(rotation);
+        Bitmap rotatedBitmap= Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+        Log.d("dddd","adfter rotation");
+
+        return rotatedBitmap;
     }
-    private static int getOrientation(Context context, Uri photoUri) {
-
-
-
-        Cursor cursor = context.getContentResolver().query(photoUri,
-                new String[]{MediaStore.Images.ImageColumns.ORIENTATION}, null, null, null);
-
-        if (cursor.getCount() != 1) {
-            cursor.close();
-            return -1;
-        }
-
-        cursor.moveToFirst();
-        int orientation = cursor.getInt(0);
-        cursor.close();
-        cursor = null;
-        Log.d("ddddorient", String.valueOf(orientation));
-        return orientation;
-    }
-
 
 
 

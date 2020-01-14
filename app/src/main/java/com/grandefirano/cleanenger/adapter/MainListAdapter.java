@@ -106,7 +106,7 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
 
     private void getLastMessage(final MainListAdapter.ViewHolder holder,String chatId){
 
-        DatabaseReference chatReference=FirebaseDatabase.getInstance().getReference()
+        DatabaseReference lastMessageReference=FirebaseDatabase.getInstance().getReference()
                 .child("chats").child(chatId).child("last_message");
         FirebaseAuth mAuth=FirebaseAuth.getInstance();
         final String myId=mAuth.getCurrentUser().getUid();
@@ -114,7 +114,7 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
 
 
 
-        chatReference
+        lastMessageReference
         .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -132,6 +132,7 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
                 boolean ifMe=messagePersonId.equals(myId);
 
                if(ifMe){
+                   Log.d("ddddddYY", String.valueOf(ifRead));
                    holder.mMessageTextView.setTextColor(Color.GRAY);
                    holder.mMessageTextView.setTypeface(holder.mMessageTextView.getTypeface(),
                            Typeface.NORMAL);
@@ -142,11 +143,13 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
                }else{
                    if(ifRead){
                        holder.mMessageTextView.setTextColor(Color.GRAY);
+                       Log.d("ddddddYY", String.valueOf(ifRead));
 
                        holder.mMessageTextView.setTypeface(holder.mMessageTextView.getTypeface(),
                                Typeface.NORMAL);
 
                    }else {
+                       Log.d("ddddddYY", String.valueOf(ifRead));
                        holder.mMessageTextView.setTextColor(Color.BLACK);
                        holder.mMessageTextView.setTypeface(holder.mMessageTextView.getTypeface(),
                                Typeface.BOLD);

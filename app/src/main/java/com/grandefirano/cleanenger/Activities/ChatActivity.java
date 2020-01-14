@@ -1,6 +1,7 @@
 package com.grandefirano.cleanenger.Activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,6 +36,7 @@ import com.grandefirano.cleanenger.adapter.ChatListAdapter;
 import com.grandefirano.cleanenger.singleItems.SingleMessage;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,6 +50,9 @@ public class ChatActivity extends AppCompatActivity {
     String mchatId;
     //String mNameOfChatPerson;
 
+    boolean isOnTheBottom=true;
+
+
     private ChatListAdapter mAdapter;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
@@ -55,6 +61,44 @@ public class ChatActivity extends AppCompatActivity {
 
     private CircleImageView mPersonImageView;
     private TextView mPersonNameTextView;
+
+    private ArrayList<SingleMessage> mMessagesList=new ArrayList<>();
+
+    private ValueEventListener onLastMessageListener=new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            if(dataSnapshot.child("uId").exists()) {
+                if (!dataSnapshot.child("uId").getValue().toString().equals(mAuth.getCurrentUser().getUid())
+                        || mAuth.getCurrentUser().getUid().equals(mIdOfChatPerson)) {
+                    Log.d("dddd","onDataLopata");
+                    mDatabase.child("chats").child(mchatId).child("last_message").child("ifRead").setValue(true);
+                }
+            }
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
+
+    private ChildEventListener mListener= new ChildEventListener() {
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            if(!dataSnapshot.getKey().equals("last_message")){
+                SingleMessage message=dataSnapshot.getValue(SingleMessage.class);
+                mMessagesList.add(message);
+                mAdapter.notifyDataSetChanged();}
+            mChatRecycleView.scrollToPosition(mAdapter.getItemCount()-1);
+        }
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +117,9 @@ public class ChatActivity extends AppCompatActivity {
         mChatRef=mDatabase.child("chats").child(mchatId);
 
 
+        mChatRef.addChildEventListener(mListener);
+
+
         //VIEW FINDING
 
 
@@ -89,6 +136,13 @@ public class ChatActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+
+
+
+
+
+
 
 
 
@@ -113,7 +167,7 @@ public class ChatActivity extends AppCompatActivity {
 
 
         //ADAPTER
-        mAdapter= new ChatListAdapter(this, mChatRef,
+        mAdapter= new ChatListAdapter(this, mMessagesList,
                 mAuth.getCurrentUser().getUid(),profilePhoto);
 
         mChatRecycleView.setAdapter(mAdapter);
@@ -122,7 +176,32 @@ public class ChatActivity extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         mChatRecycleView.setLayoutManager(linearLayoutManager);
 
+        mChatRecycleView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(!recyclerView.canScrollVertically(1)){
+                    isOnTheBottom=true;
+                    Log.d("ddddddR","isOnbottom");
+                }else{
+                    isOnTheBottom=false;
+                    Log.d("ddddddR","isNOtOnbottom");
+                }
+            }
+        });
+        //adjust recyclerview to keyboard
+        mChatRecycleView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
 
+            public void onLayoutChange(View v, int left, int top, int right,int bottom, int oldLeft, int oldTop,int oldRight, int oldBottom)
+            {
+                if(isOnTheBottom) {
+                    Log.d("ddddd","scrollto poss");
+                    mChatRecycleView.scrollToPosition(mAdapter.getItemCount() - 1);
+                }
+
+            }
+        });
 
 
 
@@ -135,51 +214,38 @@ public class ChatActivity extends AppCompatActivity {
     public void sendMessage(View view){
 
         String textOfMessage=mMessageInput.getText().toString();
+        if(textOfMessage!=null && !textOfMessage.equals("")) {
 
-        //SENDING USER
-        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("main_screen_messages")
-                .child(mIdOfChatPerson).setValue(mchatId);
-        //RECEIVING USER
+            //SENDING USER
+            mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("main_screen_messages")
+                    .child(mIdOfChatPerson).setValue(mchatId);
+            //RECEIVING USER
 
-        mDatabase.child("users").child(mIdOfChatPerson).child("main_screen_messages")
-                .child(mAuth.getCurrentUser().getUid()).setValue(mchatId);
-
-
-        //Message
+            mDatabase.child("users").child(mIdOfChatPerson).child("main_screen_messages")
+                    .child(mAuth.getCurrentUser().getUid()).setValue(mchatId);
 
 
-        mChatRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
-        });
-
-        SingleMessage singleMessage= new SingleMessage(mAuth.getUid(),textOfMessage,ServerValue.TIMESTAMP);
-        LastMessage lastMessage=new LastMessage(singleMessage.getuId(),singleMessage.getMessage(),ServerValue.TIMESTAMP,false);
-
-
-        mChatRef.push().setValue(singleMessage.toMap());
-        //mChatRef.child(String.valueOf(ServerValue.TIMESTAMP)).setValue(singleMessage);
-
-        //mChatRef.child(String.valueOf(System.currentTimeMillis())).setValue(singleMessage);
-
-
-        mChatRef.child("last_message").setValue(lastMessage.toMap());
+            //Message
 
 
 
 
+            SingleMessage singleMessage = new SingleMessage(mAuth.getUid(), textOfMessage, ServerValue.TIMESTAMP);
+            LastMessage lastMessage = new LastMessage(singleMessage.getuId(), singleMessage.getMessage(), ServerValue.TIMESTAMP, false);
 
 
+            mChatRef.push().setValue(singleMessage.toMap());
+            //mChatRef.child(String.valueOf(ServerValue.TIMESTAMP)).setValue(singleMessage);
+
+            //mChatRef.child(String.valueOf(System.currentTimeMillis())).setValue(singleMessage);
 
 
+            mChatRef.child("last_message").setValue(lastMessage.toMap());
+            mMessageInput.setText("");
+            hideKeyboard(ChatActivity.this);
 
-        mMessageInput.setText("");
-        hideKeyboard(ChatActivity.this);
 
+        }
 
     }
     private void hideKeyboard(Activity activity){
@@ -219,21 +285,28 @@ public class ChatActivity extends AppCompatActivity {
     private void changeReadStatus(){
         if(mchatId!=null) {
 
-             mDatabase.child("chats").child(mchatId).child("last_message").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.child("uId").exists()) {
-                        if (!dataSnapshot.child("uId").getValue().toString().equals(mAuth.getCurrentUser().getUid())
-                                || mAuth.getCurrentUser().getUid().equals(mIdOfChatPerson)) {
-                            mDatabase.child("chats").child(mchatId).child("last_message").child("ifRead").setValue(true);
-                        }
-                    }
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) { }
-            });
-
+             mDatabase.child("chats").child(mchatId).child("last_message").addValueEventListener(onLastMessageListener);
+                Log.d("dddd","changReadStat");
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(mDatabase!=null){
+            Log.d("ddddd","istnieje");
+        }else{
+            Log.d("ddddd","niesitniejee");
+        }
+        mDatabase.child("chats").child(mchatId).child("last_message").removeEventListener(onLastMessageListener);
+        mChatRef.removeEventListener(mListener);
+        super.onDestroy();
+        Log.d("ddddd","removing");
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     @Override

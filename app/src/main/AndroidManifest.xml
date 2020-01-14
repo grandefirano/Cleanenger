@@ -24,6 +24,7 @@
             android:name=".Activities.ChatActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize"
             />
         <activity
             android:name=".login.Login"

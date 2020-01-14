@@ -276,7 +276,7 @@ public class AccountActivity extends AppCompatActivity {
 
             try {
 
-                Bitmap selectedImage=Utilities.convertToProfileBitmapFromStream(getContentResolver(),imageUri);
+                Bitmap selectedImage=Utilities.convertToProfileBitmapFromUri(getApplicationContext(),imageUri);
                 mProfilePhotoImageView.setImageBitmap(selectedImage);
                 newPhotoBitmap=selectedImage;
 
