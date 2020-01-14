@@ -151,6 +151,7 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
                    }else {
                        Log.d("ddddddYY", String.valueOf(ifRead));
                        holder.mMessageTextView.setTextColor(Color.BLACK);
+                       holder.mMessageTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                        holder.mMessageTextView.setTypeface(holder.mMessageTextView.getTypeface(),
                                Typeface.BOLD);
                    }

@@ -50,7 +50,7 @@ public class ChatActivity extends AppCompatActivity {
     String mchatId;
     //String mNameOfChatPerson;
 
-    boolean isOnTheBottom=true;
+    boolean isOnTheBottom=false;
 
 
     private ChatListAdapter mAdapter;
@@ -67,11 +67,14 @@ public class ChatActivity extends AppCompatActivity {
     private ValueEventListener onLastMessageListener=new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            if(dataSnapshot.child("uId").exists()) {
-                if (!dataSnapshot.child("uId").getValue().toString().equals(mAuth.getCurrentUser().getUid())
-                        || mAuth.getCurrentUser().getUid().equals(mIdOfChatPerson)) {
-                    Log.d("dddd","onDataLopata");
-                    mDatabase.child("chats").child(mchatId).child("last_message").child("ifRead").setValue(true);
+            if(isOnTheBottom) {
+                Log.d("ddddddyytyty", String.valueOf(isOnTheBottom));
+                if (dataSnapshot.child("uId").exists()) {
+                    if (!dataSnapshot.child("uId").getValue().toString().equals(mAuth.getCurrentUser().getUid())
+                            || mAuth.getCurrentUser().getUid().equals(mIdOfChatPerson)) {
+                        Log.d("dddd", "onDataLopata");
+                        mDatabase.child("chats").child(mchatId).child("last_message").child("ifRead").setValue(true);
+                    }
                 }
             }
         }
@@ -104,6 +107,8 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        isOnTheBottom=true;
 
         //INTENT
         Intent intent=getIntent();
@@ -292,14 +297,14 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if(mDatabase!=null){
-            Log.d("ddddd","istnieje");
-        }else{
-            Log.d("ddddd","niesitniejee");
-        }
-        mDatabase.child("chats").child(mchatId).child("last_message").removeEventListener(onLastMessageListener);
-        mChatRef.removeEventListener(mListener);
+
+
         super.onDestroy();
+        isOnTheBottom=false;
+        if(mDatabase!=null) {
+            mDatabase.child("chats").child(mchatId).child("last_message").removeEventListener(onLastMessageListener);
+            mChatRef.removeEventListener(mListener);
+        }
         Log.d("ddddd","removing");
     }
 
