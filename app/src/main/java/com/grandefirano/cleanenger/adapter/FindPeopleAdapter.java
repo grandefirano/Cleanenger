@@ -155,6 +155,7 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
                 mImageView=itemView.findViewById(R.id.personImageView);
                 mPersonTextView=itemView.findViewById(R.id.nameOfPersonTextView);
                 mAddFriendImageView=itemView.findViewById(R.id.addFriendImageView);
+
                 Log.d("ddd",mPersonTextView.getText().toString());
                 mAddFriendImageView.setOnClickListener(new View.OnClickListener() {
                     @Override

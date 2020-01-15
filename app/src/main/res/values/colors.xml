@@ -13,6 +13,8 @@
     <color name="colorChatLeft">#BFD6FF</color>
     <color name="colorChatRight">#C9C9C9</color>
 
+    <color name="colorChatFont">#222222</color>
+
     <color name="colorChatLeftClicked">#A5B7E0</color>
     <color name="colorChatRightClicked">#AFAFAF</color>
 
