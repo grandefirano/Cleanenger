@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -54,7 +55,7 @@ public class AccountActivity extends AppCompatActivity {
     EditText emailEditText;
     EditText passwordEditText;
     EditText usernameEditText;
-    Button saveAccountButton;
+    LinearLayout saveAccountLinearLayout;
     ImageView mProfilePhotoImageView;
 
     String usernameBefore;
@@ -85,7 +86,7 @@ public class AccountActivity extends AppCompatActivity {
         emailEditText=findViewById(R.id.emailAccountEditText);
         passwordEditText=findViewById(R.id.passwordAccountEditText);
         usernameEditText=findViewById(R.id.usernameAccountEditText);
-        saveAccountButton=findViewById(R.id.saveAccountButton);
+        saveAccountLinearLayout=findViewById(R.id.saveAccountLinearLayout);
         mProfilePhotoImageView=findViewById(R.id.profilePhotoImageView);
 
 
@@ -151,6 +152,11 @@ public class AccountActivity extends AppCompatActivity {
             uploadFile();
         }
 
+        finish();
+
+    }
+    public void closeAccountActivity(View view){
+        finish();
     }
 
 

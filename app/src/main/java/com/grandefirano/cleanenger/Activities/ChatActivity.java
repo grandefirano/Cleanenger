@@ -10,8 +10,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -48,10 +51,8 @@ public class ChatActivity extends AppCompatActivity {
 
     EditText mMessageInput;
     String mchatId;
-    //String mNameOfChatPerson;
-
+    String myId;
     boolean isOnTheBottom=false;
-
 
     private ChatListAdapter mAdapter;
     private FirebaseAuth mAuth;
@@ -61,6 +62,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private CircleImageView mPersonImageView;
     private TextView mPersonNameTextView;
+    private TextView mSeenStatus;
 
     private ArrayList<SingleMessage> mMessagesList=new ArrayList<>();
 
@@ -68,11 +70,11 @@ public class ChatActivity extends AppCompatActivity {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             if(isOnTheBottom) {
-                Log.d("ddddddyytyty", String.valueOf(isOnTheBottom));
+
                 if (dataSnapshot.child("uId").exists()) {
                     if (!dataSnapshot.child("uId").getValue().toString().equals(mAuth.getCurrentUser().getUid())
                             || mAuth.getCurrentUser().getUid().equals(mIdOfChatPerson)) {
-                        Log.d("dddd", "onDataLopata");
+
                         mDatabase.child("chats").child(mchatId).child("last_message").child("ifRead").setValue(true);
                     }
                 }
@@ -86,14 +88,24 @@ public class ChatActivity extends AppCompatActivity {
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            if(!dataSnapshot.getKey().equals("last_message")){
+            if(dataSnapshot.getKey().equals("last_message")){
+                setLastMessageStatus(dataSnapshot);
+
+            }else{
                 SingleMessage message=dataSnapshot.getValue(SingleMessage.class);
                 mMessagesList.add(message);
-                mAdapter.notifyDataSetChanged();}
+                mAdapter.notifyDataSetChanged();
+            }
+
             mChatRecycleView.scrollToPosition(mAdapter.getItemCount()-1);
         }
         @Override
-        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            if(dataSnapshot.getKey().equals("last_message")){
+                setLastMessageStatus(dataSnapshot);
+            }
+
+        }
         @Override
         public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
         @Override
@@ -101,7 +113,6 @@ public class ChatActivity extends AppCompatActivity {
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +129,7 @@ public class ChatActivity extends AppCompatActivity {
 
         //FIREBASE
         mAuth=FirebaseAuth.getInstance();
+        myId=mAuth.getCurrentUser().getUid();
         mDatabase= FirebaseDatabase.getInstance().getReference();
         mChatRef=mDatabase.child("chats").child(mchatId);
 
@@ -127,13 +139,14 @@ public class ChatActivity extends AppCompatActivity {
 
         //VIEW FINDING
 
-
+        mSeenStatus=findViewById(R.id.seenStatus);
         mMessageInput=findViewById(R.id.messageInput);
         mChatRecycleView =findViewById(R.id.chat_recycle_view);
         mPersonNameTextView=findViewById(R.id.nameOfChatPersonTextView);
         mPersonImageView=findViewById(R.id.chatPersonImageView);
 
         Toolbar mToolbar=findViewById(R.id.chatToolbar);
+
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_black);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,13 +154,6 @@ public class ChatActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-
-
-
-
-
-
 
 
 
@@ -173,7 +179,7 @@ public class ChatActivity extends AppCompatActivity {
 
         //ADAPTER
         mAdapter= new ChatListAdapter(this, mMessagesList,
-                mAuth.getCurrentUser().getUid(),profilePhoto);
+                myId,profilePhoto);
 
         mChatRecycleView.setAdapter(mAdapter);
         mChatRecycleView.setHasFixedSize(true);
@@ -222,12 +228,12 @@ public class ChatActivity extends AppCompatActivity {
         if(textOfMessage!=null && !textOfMessage.equals("")) {
 
             //SENDING USER
-            mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("main_screen_messages")
+            mDatabase.child("users").child(myId).child("main_screen_messages")
                     .child(mIdOfChatPerson).setValue(mchatId);
             //RECEIVING USER
 
             mDatabase.child("users").child(mIdOfChatPerson).child("main_screen_messages")
-                    .child(mAuth.getCurrentUser().getUid()).setValue(mchatId);
+                    .child(myId).setValue(mchatId);
 
 
             //Message
@@ -235,7 +241,7 @@ public class ChatActivity extends AppCompatActivity {
 
 
 
-            SingleMessage singleMessage = new SingleMessage(mAuth.getUid(), textOfMessage, ServerValue.TIMESTAMP);
+            SingleMessage singleMessage = new SingleMessage(myId, textOfMessage, ServerValue.TIMESTAMP);
             LastMessage lastMessage = new LastMessage(singleMessage.getuId(), singleMessage.getMessage(), ServerValue.TIMESTAMP, false);
 
 
@@ -292,6 +298,22 @@ public class ChatActivity extends AppCompatActivity {
 
              mDatabase.child("chats").child(mchatId).child("last_message").addValueEventListener(onLastMessageListener);
                 Log.d("dddd","changReadStat");
+        }
+    }
+    private void setLastMessageStatus(DataSnapshot dataSnapshot){
+        boolean ifRead = (boolean) dataSnapshot.child("ifRead").getValue();
+        String uId = (String) dataSnapshot.child("uId").getValue();
+        boolean ifMe = uId.equals(myId);
+
+        if (ifMe) {
+            if(ifRead){
+                mSeenStatus.setText("Seen");
+            }else {
+                mSeenStatus.setText("Send");
+            }
+            mSeenStatus.setVisibility(View.VISIBLE);
+        }else{
+            mSeenStatus.setVisibility(View.GONE);
         }
     }
 

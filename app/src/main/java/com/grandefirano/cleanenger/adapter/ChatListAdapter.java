@@ -1,6 +1,9 @@
 package com.grandefirano.cleanenger.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +32,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     private String mProfilePhotoUri;
 
     private ViewHolder clickedView;
+    private ViewHolder lastView;
 
     public static final int MSG_TYPE_LEFT = 0;
     public static final int MSG_TYPE_RIGHT = 1;
@@ -164,6 +168,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
     }
 
+
     //    static class ViewHolder{
 //        TextView authorName;
 //        TextView body;
@@ -219,14 +224,13 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         }
     }
-    public void hideDate(int position){
 
-
-    }
 
     public void updateProfilePhoto(String profilePhotoUri){
         mProfilePhotoUri=profilePhotoUri;
     }
+
+
 
 
 }

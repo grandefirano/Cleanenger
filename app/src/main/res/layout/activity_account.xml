@@ -6,62 +6,100 @@
     android:layout_height="match_parent"
     tools:context=".Activities.AccountActivity">
 
-    <ImageView
+    <include
+        android:id="@+id/include"
+        layout="@layout/toolbar_account" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profilePhotoImageView"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="51dp"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
         android:onClick="changePhoto"
-        android:src="@drawable/common_google_signin_btn_text_dark_focused"
+        app:layout_constraintBottom_toTopOf="@+id/usernameTitleTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/pobrane" />
+        app:layout_constraintTop_toBottomOf="@id/include"
+        android:src="@drawable/default_profile_photo"
+        />
+
+
+
+    <TextView
+        android:id="@+id/usernameTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="username"
+        app:layout_constraintBottom_toTopOf="@+id/usernameAccountEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/usernameAccountEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="83dp"
-        android:layout_marginTop="24dp"
-        android:ems="10"
-        android:hint="username"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:ems="12"
+        android:textSize="14sp"
+        android:backgroundTint="@color/colorAccent"
         android:inputType="textPersonName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profilePhotoImageView" />
+        app:layout_constraintBottom_toTopOf="@+id/emailTitleTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <EditText
-        android:id="@+id/passwordAccountEditText"
+    <TextView
+        android:id="@+id/emailTitleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="83dp"
-        android:layout_marginTop="24dp"
-        android:ems="10"
-        android:hint="password"
-        android:inputType="textPassword"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/usernameAccountEditText" />
+        android:text="email"
+        app:layout_constraintBottom_toTopOf="@+id/emailAccountEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 
     <EditText
         android:id="@+id/emailAccountEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="83dp"
-        android:layout_marginTop="24dp"
-        android:ems="10"
-        android:hint="email"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:ems="12"
+        android:textSize="14sp"
         android:inputType="textEmailAddress"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordAccountEditText" />
+        android:backgroundTint="@color/colorAccent"
+        app:layout_constraintBottom_toTopOf="@+id/passwordTitleTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-        android:id="@+id/saveAccountButton"
+
+    <TextView
+        android:id="@+id/passwordTitleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="137dp"
-        android:layout_marginTop="32dp"
-        android:onClick="saveData"
-        android:text="Save"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/emailAccountEditText" />
+        android:text="password"
+        app:layout_constraintBottom_toTopOf="@+id/passwordAccountEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <EditText
+        android:id="@+id/passwordAccountEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:gravity="center"
+        android:ems="12"
+        android:textSize="14sp"
+        android:backgroundTint="@color/colorAccent"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
