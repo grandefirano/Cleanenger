@@ -20,7 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.grandefirano.cleanenger.Activities.MainActivity;
 import com.grandefirano.cleanenger.R;
-import com.grandefirano.cleanenger.UserData;
+import com.grandefirano.cleanenger.singleItems.UserData;
 
 public class Register extends AppCompatActivity {
 

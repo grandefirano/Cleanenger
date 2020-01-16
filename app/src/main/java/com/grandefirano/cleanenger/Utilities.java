@@ -18,8 +18,11 @@ import java.util.Date;
 
 public class Utilities {
 
+    public static final int TYPE_SNAP_PHOTO=0;
+    public static final int TYPE_PROFILE_PHOTO=1;
+
     //DATA
-    public static String getProperDateFormat(long date){
+    public static String getProperDateFormat(long date,boolean insideChat){
         SimpleDateFormat formatter;
         Calendar calendarToday=Calendar.getInstance();
         Calendar calendarMessageDay=Calendar.getInstance();
@@ -32,35 +35,38 @@ public class Utilities {
         if(sameDayofYear&&sameYear) {
             formatter= new SimpleDateFormat("HH:mm");
         }else if(sameYear){
-            formatter=new SimpleDateFormat("dd MMM");
+            if(insideChat){
+                formatter=new SimpleDateFormat("dd MMM 'AT' HH:mm");
+            }else {
+                formatter = new SimpleDateFormat("dd MMM");
+            }
         }
         else{
-            formatter= new SimpleDateFormat("dd MMM yyyy");
+            if (insideChat) {
+                formatter = new SimpleDateFormat("dd MMM yyyy 'AT' HH:mm");
+            }else {
+                formatter = new SimpleDateFormat("dd MMM yyyy");
+            }
         }
 
     return formatter.format(new Date(date));
     }
 
+
     //PHOTO
-    public static Bitmap convertToProfileBitmapFromUri(Context context,Uri imageUri) throws IOException {
-        Bitmap bitmap=convertToBitmapFromUri(context,imageUri);
-        bitmap=getResizedBitmap(bitmap,1200);
-        bitmap=cropToSquare(bitmap);
-        return bitmap;
-    }
-    public static Bitmap convertToStoryBitmapFromUri(Context context,Uri imageUri) throws IOException {
-        Bitmap bitmap=convertToBitmapFromUri(context,imageUri);
-        bitmap=getResizedBitmap(bitmap,1920);
 
-        return bitmap;
-    }
-
-
-    public static Bitmap convertToBitmapFromUri(Context context,Uri imageUri) throws IOException {
+    public static Bitmap convertToBitmapFromUri(Context context,Uri imageUri,int type) throws IOException {
         InputStream imageStream = context.getContentResolver().openInputStream(imageUri);
         Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-        return bitmap;
 
+        if(type==TYPE_SNAP_PHOTO) {
+            bitmap = getResizedBitmap(bitmap, 1920);
+        }else if(type==TYPE_PROFILE_PHOTO){
+            bitmap=getResizedBitmap(bitmap,1200);
+            bitmap=cropToSquare(bitmap);
+        }
+
+        return bitmap;
     }
 
     public static Bitmap getResizedBitmap(Bitmap image, int maxSize) {
@@ -123,7 +129,6 @@ public class Utilities {
         Matrix matrix= new Matrix();
         matrix.setRotate(rotation);
         Bitmap rotatedBitmap= Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
-        Log.d("dddd","adfter rotation");
 
         return rotatedBitmap;
     }

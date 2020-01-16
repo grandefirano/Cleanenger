@@ -10,18 +10,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 
@@ -34,13 +27,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.grandefirano.cleanenger.R;
-import com.grandefirano.cleanenger.UserData;
+import com.grandefirano.cleanenger.singleItems.UserData;
 import com.grandefirano.cleanenger.adapter.ChatListAdapter;
 import com.grandefirano.cleanenger.singleItems.SingleMessage;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity {

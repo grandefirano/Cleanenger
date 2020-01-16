@@ -96,7 +96,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
                 .load(mProfilePhotoUri)
                 .into(holder.profilePhotoImageView);
 
-        holder.dateMessageTextView.setText(Utilities.getProperDateFormat(singleMessage.getDate()));
+        holder.dateMessageTextView.setText(Utilities.getProperDateFormat(singleMessage.getDate(),true));
 
 
 

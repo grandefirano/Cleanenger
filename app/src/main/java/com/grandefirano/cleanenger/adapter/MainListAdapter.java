@@ -17,7 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grandefirano.cleanenger.R;
-import com.grandefirano.cleanenger.UserData;
+import com.grandefirano.cleanenger.singleItems.UserData;
 import com.grandefirano.cleanenger.Utilities;
 import com.grandefirano.cleanenger.singleItems.SingleMessageFeedItem;
 import com.squareup.picasso.Picasso;
@@ -125,7 +125,7 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
                 //FROM UTILITIES
 
 
-                String dateString = Utilities.getProperDateFormat(date);
+                String dateString = Utilities.getProperDateFormat(date,false);
 
                 boolean ifRead=(boolean)dataSnapshot.child("ifRead").getValue();
                 Log.d("ddddd",messagePersonId);

@@ -220,7 +220,7 @@ public class SendPhotoActivity extends AppCompatActivity {
 
 
             try {
-                mSelectedImage = Utilities.convertToStoryBitmapFromUri(this,mImageUri);
+                mSelectedImage = Utilities.convertToBitmapFromUri(this,mImageUri,Utilities.TYPE_SNAP_PHOTO);
 
                 mSelectedImage= Utilities.rotateImageBasedOnExif(mSelectedImage, String.valueOf(mImageUri));
 

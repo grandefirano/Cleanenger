@@ -2,7 +2,6 @@ package com.grandefirano.cleanenger.adapter;
 
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +15,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grandefirano.cleanenger.R;
-import com.grandefirano.cleanenger.UserData;
+import com.grandefirano.cleanenger.singleItems.UserData;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
