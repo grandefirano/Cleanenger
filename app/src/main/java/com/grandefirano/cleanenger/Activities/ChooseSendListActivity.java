@@ -78,7 +78,7 @@ public class ChooseSendListActivity extends AppCompatActivity implements ChooseS
 
     public void send(View view){
         ArrayList<String> listToSend=new ArrayList<>();
-        for(int i=0;i<=mListOfFriends.size();i++){
+        for(int i=0;i<mListOfFriends.size();i++){
             if(mListOfChecked[i]){
                 listToSend.add(mListOfFriends.get(i));
             }

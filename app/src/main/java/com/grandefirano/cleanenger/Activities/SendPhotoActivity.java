@@ -145,6 +145,7 @@ public class SendPhotoActivity extends AppCompatActivity {
                 Intent intent=new Intent(this,ChooseSendListActivity.class);
                 startActivityForResult(intent,LIST_TO_SEND_CODE);
 
+
 //            final String random=String.valueOf(UUID.randomUUID());
 //
 //            final StorageReference profilePhotoReference= FirebaseStorage.getInstance()
@@ -258,7 +259,7 @@ public class SendPhotoActivity extends AppCompatActivity {
 
                                         }
 
-                                        finish();
+
                                     }
                                 });
 
@@ -271,6 +272,7 @@ public class SendPhotoActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
+                finish();
             }
         }
         if(requestCode==IMAGE_CAPTURE_CODE) {
