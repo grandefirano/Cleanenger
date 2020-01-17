@@ -90,7 +90,7 @@ public class AccountActivity extends AppCompatActivity {
         mProfilePhotoImageView=findViewById(R.id.profilePhotoImageView);
 
 
-        updatePools();
+        updateFields();
 
 
 
@@ -104,8 +104,8 @@ public class AccountActivity extends AppCompatActivity {
         LayoutInflater inflater = this.getLayoutInflater();
         alertView=inflater.inflate(R.layout.dialog_reauth,null);
         AlertDialog.Builder builder=new AlertDialog.Builder(this);
-        builder.setTitle("Reauth")
-                .setMessage("Are u?")
+        builder.setTitle("Reauthentication")
+                .setMessage("Write previous password to continue")
                 .setView(alertView)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
@@ -119,7 +119,7 @@ public class AccountActivity extends AppCompatActivity {
 
                         EditText passEditText=alertView.findViewById(R.id.passwordWhenChangeProfile);
                         String passwordWritten=passEditText.getText().toString();
-                        Log.d("dddd",emailBefore);
+
                         if(passwordWritten!=null && !passwordWritten.equals("")){
                             //TODO: ogarnac co gdy źle podane
                         reauthenticate(passwordWritten);
@@ -146,13 +146,21 @@ public class AccountActivity extends AppCompatActivity {
             mUserDataDatabase.child("username").setValue(temporaryUsername);
         }
         if(!temporaryPassword.equals("") && !(temporaryPassword==null)){
-            changePasswordInAuth(temporaryPassword);
+            if(temporaryPassword.length()>=6){
+                changePasswordInAuth(temporaryPassword);
+            }
+            else{
+                Toast.makeText(this,"Password is too short",Toast.LENGTH_SHORT).show();
+            }
+
+            Log.d("dddO",temporaryPassword+"dddd");
+
         }
         if(newPhotoBitmap!=null) {
             uploadFile();
         }
 
-        finish();
+        //finish();
 
     }
     public void closeAccountActivity(View view){
@@ -183,7 +191,7 @@ public class AccountActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                Log.d("ddddd", "User email address updated.");
+                                Toast.makeText(getApplicationContext(),"Email updated",Toast.LENGTH_SHORT).show();
                             }
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -191,7 +199,7 @@ public class AccountActivity extends AppCompatActivity {
                 public void onFailure(@NonNull Exception e) {
                     if(e.getClass().equals(FirebaseAuthRecentLoginRequiredException.class)){
 
-                        //REAUTHORIZATION
+                        //REAUTHENTICATION
                         showDialog();
 
                     }
@@ -201,19 +209,20 @@ public class AccountActivity extends AppCompatActivity {
 
     }
     private void changePasswordInAuth(final String newPassword){
+
         user.updatePassword(newPassword)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Log.d("dddd", "User password updated.");
+                            Toast.makeText(getApplicationContext(),"Password updated",Toast.LENGTH_SHORT).show();
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 if(e.getClass().equals(FirebaseAuthRecentLoginRequiredException.class)){
-
+                    Log.d("dddO","ptoblm");
                     //REAUTH
                     showDialog();
                 }
@@ -291,7 +300,7 @@ public class AccountActivity extends AppCompatActivity {
         }
     }
 
-    private void updatePools(){
+    private void updateFields(){
 
         Log.i("dddd",mAuth.getCurrentUser().getUid());
 

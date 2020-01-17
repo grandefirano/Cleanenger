@@ -40,36 +40,32 @@ public class Login extends AppCompatActivity {
 
     public void login(View view) {
 
-       //TODO:
+
         String email=loginTextView.getText().toString();
-        //String username = loginTextView.getText().toString();
         String password = passwordTextView.getText().toString();
+        if(email.length()>0 && email!=null && password.length()>0 && password!=null) {
 
-        //TODO: zrobić logowanie do firebase
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                gotoMain();
 
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            gotoMain();
+                            } else {
 
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                //TODO: EXCEPTIONS
+                                Toast.makeText(Login.this, "Authentication failed",
+                                        Toast.LENGTH_SHORT).show();
 
-                            //TODO: EXCEPTIONS
-                            Toast.makeText(Login.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            }
 
                         }
-
-                        // ...
-                    }
-                });
+                    });
+        }else{
+            Toast.makeText(Login.this, "Fill all blank fields",
+                    Toast.LENGTH_SHORT).show();
+        }
 
 
 

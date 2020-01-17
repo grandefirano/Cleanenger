@@ -67,8 +67,6 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
             idList.add(String.valueOf(dataSnapshot.getKey()));
             chatIdList.add(String.valueOf(dataSnapshot.getValue()));
-            Log.d("ddddIIIIDD", String.valueOf(chatIdList.size()));
-            Log.d("ddddCHATTT", String.valueOf(idList.size()));
             mAdapter.notifyDataSetChanged();
 
         }
@@ -173,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     private void listOfSnapsPerson(){
 
         mStoryList.clear();
-        Log.d("dddd","My id "+myId);
+
         mDatabase.child("users").child(myId).child("snaps").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {

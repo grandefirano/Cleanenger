@@ -53,54 +53,56 @@ public class Register extends AppCompatActivity {
         final String username=loginTextView.getText().toString();
         String password=passwordTextView.getText().toString();
         final String email=emailTextView.getText().toString();
-        if(checkPassword(password) && !username.equals("") && username!=null){
 
-            //TODO: UTWORZ KONTO
+        if(username.length()>0 && username!=null &&
+                password.length()>0 && password!=null &&
+                email.length()>0 && email!=null) {
+            if (checkPassword(password)) {
 
-            mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(TAG, "createUserWithEmail:success");
-                                //TODO: Create in Database
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                String uId=user.getUid();
+                //TODO: UTWORZ KONTO
 
-                                myRef=FirebaseDatabase.getInstance()
-                                        .getReference().child("users").child(uId);
+                mAuth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
 
-                                //TODO:nie masz pozwolenia
-                                //default photo
-                                String linktoPhoto="https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/profile_photos%2Fdefault_profile_photo.jpg?alt=media&token=5f8f3295-d9d1-4a70-bc41-b344cf07fd5d";
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    String uId = user.getUid();
 
-                                UserData newUserData= new UserData(email,username,linktoPhoto);
-                                myRef.child("data").setValue(newUserData);
+                                    myRef = FirebaseDatabase.getInstance()
+                                            .getReference().child("users").child(uId);
 
+                                    String linktoPhoto = "https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/profile_photos%2Fdefault_profile_photo.jpg?alt=media&token=5f8f3295-d9d1-4a70-bc41-b344cf07fd5d";
 
-                                goToMain();
+                                    UserData newUserData = new UserData(email, username, linktoPhoto);
+                                    myRef.child("data").setValue(newUserData);
 
-                            } else {
+                                    goToMain();
 
-                                try {
-                                    throw task.getException();
-                                }catch (FirebaseAuthUserCollisionException existEmail) {
-                                    Toast.makeText(Register.this, "This email already exists",
-                                            Toast.LENGTH_SHORT).show();
-                                //TODO: NIEUDANA REJESTRACJA
-                                } catch (Exception e) {
-                                    Toast.makeText(Register.this, "There is some problem with Signing Up",
-                                            Toast.LENGTH_SHORT).show();
+                                } else {
+
+                                    try {
+                                        throw task.getException();
+                                    } catch (FirebaseAuthUserCollisionException existEmail) {
+                                        Toast.makeText(Register.this, "This email already exists",
+                                                Toast.LENGTH_SHORT).show();
+                                    } catch (Exception e) {
+                                        Toast.makeText(Register.this, "There is some problem with signing up",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+
                                 }
 
+                                // ...
                             }
-
-                            // ...
-                        }
-                    });
+                        });
 
 
+            }
+        }else{
+            Toast.makeText(Register.this, "Fill all the blank fields",
+                    Toast.LENGTH_SHORT).show();
         }
     }
     private boolean checkPassword(String password){

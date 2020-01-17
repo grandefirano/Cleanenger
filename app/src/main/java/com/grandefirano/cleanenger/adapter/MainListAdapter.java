@@ -112,9 +112,6 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
                 .child("chats").child(chatId).child("last_message");
 
 
-
-
-
         lastMessageReference
         .addValueEventListener(new ValueEventListener() {
             @Override
@@ -129,11 +126,10 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
                 String dateString = Utilities.getProperDateFormat(date,false);
 
                 boolean ifRead=(boolean)dataSnapshot.child("ifRead").getValue();
-                Log.d("ddddd",messagePersonId);
                 boolean ifMe=messagePersonId.equals(myId);
 
                if(ifMe){
-                   Log.d("ddddddYY", String.valueOf(ifRead));
+
                    holder.mMessageTextView.setTextColor(Color.GRAY);
                    holder.mMessageTextView.setTypeface(holder.mMessageTextView.getTypeface(),
                            Typeface.NORMAL);
@@ -144,13 +140,13 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
                }else{
                    if(ifRead){
                        holder.mMessageTextView.setTextColor(Color.GRAY);
-                       Log.d("ddddddYY", String.valueOf(ifRead));
+
 
                        holder.mMessageTextView.setTypeface(holder.mMessageTextView.getTypeface(),
                                Typeface.NORMAL);
 
                    }else {
-                       Log.d("ddddddYY", String.valueOf(ifRead));
+
                        holder.mMessageTextView.setTextColor(Color.BLACK);
                        holder.mMessageTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                        holder.mMessageTextView.setTypeface(holder.mMessageTextView.getTypeface(),
