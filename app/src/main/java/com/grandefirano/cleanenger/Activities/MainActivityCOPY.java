@@ -50,7 +50,7 @@ public class MainActivityCOPY extends AppCompatActivity implements MainListAdapt
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     ArrayList<String> idList=new ArrayList<>();
-    ArrayList<SingleMessageFeedItem> listItems= new ArrayList<>();
+    ArrayList<SingleMessageFeedItem> mTemporaryList= new ArrayList<>();
     ArrayList<String> chatIdList= new ArrayList<>();
     ArrayList<String> usernameList=new ArrayList<>();
 
@@ -144,7 +144,7 @@ public class MainActivityCOPY extends AppCompatActivity implements MainListAdapt
         mLayoutManager= new LinearLayoutManager(this);
 
 
-        mAdapter= new MainListAdapter(getApplicationContext(),listItems,this);
+        mAdapter= new MainListAdapter(getApplicationContext(),mTemporaryList,this);
 
 
 
@@ -190,7 +190,7 @@ public class MainActivityCOPY extends AppCompatActivity implements MainListAdapt
     }
 
     private void downloadListFromDatabase(){
-        listItems.clear();
+        mTemporaryList.clear();
         idList.clear();
         chatIdList.clear();
         usernameList.clear();
@@ -236,7 +236,7 @@ public class MainActivityCOPY extends AppCompatActivity implements MainListAdapt
 
 
                 usernameList.add(username);
-               listItems.add(new SingleMessageFeedItem(profilePhoto,
+               mTemporaryList.add(new SingleMessageFeedItem(profilePhoto,
                         username,
                         message,
                         ifRead));

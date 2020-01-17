@@ -34,6 +34,8 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
     private ArrayList<String> mUserIdList;
     OnItemListener mOnItemListener;
     private Context mContext;
+    FirebaseAuth mAuth=FirebaseAuth.getInstance();
+    final String myId=mAuth.getCurrentUser().getUid();
 
     public MainListAdapter(Context context, ArrayList<SingleMessageFeedItem> listOfMessages, OnItemListener onItemListener,ArrayList<String> chatIdList,ArrayList<String> userIdList){
         mOnItemListener=onItemListener;
@@ -108,8 +110,7 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
 
         DatabaseReference lastMessageReference=FirebaseDatabase.getInstance().getReference()
                 .child("chats").child(chatId).child("last_message");
-        FirebaseAuth mAuth=FirebaseAuth.getInstance();
-        final String myId=mAuth.getCurrentUser().getUid();
+
 
 
 

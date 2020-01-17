@@ -2,14 +2,17 @@ package com.grandefirano.cleanenger.singleItems;
 
 public class SinglePersonSearchItem {
 
-    private String mImageResource;
-    private String mPersonText;
     private String mPersonId;
+    private String mPersonText;
+    private String mImageResource;
+    private boolean mIsFriend;
 
-    public SinglePersonSearchItem(String imageResource, String person,String personId){
-        mImageResource=imageResource;
-        mPersonText=person;
+    public SinglePersonSearchItem( String personId,String person,String imageResource,boolean isFriend){
+
         mPersonId=personId;
+        mPersonText=person;
+        mImageResource=imageResource;
+        mIsFriend=isFriend;
 
 
     }
@@ -26,4 +29,11 @@ public class SinglePersonSearchItem {
         return mPersonId;
     }
 
+    public boolean isFriend() {
+        return mIsFriend;
+    }
+
+    public void setFriend(boolean friend) {
+        mIsFriend = friend;
+    }
 }

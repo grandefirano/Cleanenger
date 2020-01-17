@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 //
 //
 //                usernameList.add(username);
-//               listItems.add(new SingleMessageFeedItem(profilePhoto,
+//               mTemporaryList.add(new SingleMessageFeedItem(profilePhoto,
 //                        username,
 //                        message,
 //                        ifRead));

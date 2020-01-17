@@ -26,11 +26,11 @@
             android:id="@+id/seenStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="goo"
+            android:text="status"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="20dp"
             android:layout_above="@id/listFooter"
-            android:visibility="visible"
+            android:visibility="gone"
             />
         <LinearLayout
             android:id="@+id/listFooter"

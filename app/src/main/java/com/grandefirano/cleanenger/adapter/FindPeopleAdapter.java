@@ -11,6 +11,8 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.singleItems.SinglePersonSearchItem;
 import com.squareup.picasso.Picasso;
@@ -26,9 +28,12 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
 
 
 
+        private DatabaseReference mDatabaseReference= FirebaseDatabase.getInstance().getReference();
+        private boolean mIfOnlyFriends=false;
+    private ArrayList<SinglePersonSearchItem> mList=new ArrayList<>();
+        private ArrayList<SinglePersonSearchItem> mFullList;
+        private ArrayList<SinglePersonSearchItem> mActualList= new ArrayList<>();
 
-        private ArrayList<SinglePersonSearchItem> mList;
-        private ArrayList<SinglePersonSearchItem> mListFull;
         OnItemListener mOnItemListener;
         OnAddButtonListener mOnAddButtonListener;
         private Context mContext;
@@ -36,19 +41,19 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 List<SinglePersonSearchItem> filteredList= new ArrayList<>();
-                Log.d("ddddLISTFULL","ss");
+
+
                 if(constraint==null || constraint.length()==0){
-                    filteredList.addAll(mListFull);
+                    filteredList.addAll(mActualList);
                 }else{
                     String filterPattern=constraint.toString().toLowerCase().trim();
-                    Log.d("ddddLISTFULL","pelno");
-                    Log.d("ddddLISTFULL",filterPattern);
 
-                    for(SinglePersonSearchItem item: mListFull){
-                        Log.d("ddddLISTFULL","ddd");
+
+                    for(SinglePersonSearchItem item: mActualList){
+
                         if(item.getPersonText().toLowerCase().contains(filterPattern)){
                             filteredList.add(item);
-                            Log.d("ddddLISTFULL",item.getPersonText());
+
                         }
                     }
                 }
@@ -63,40 +68,59 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
                 mList.clear();
                 mList.addAll((ArrayList)results.values);
                 notifyDataSetChanged();
+                Log.d("dddddddMLTIS", String.valueOf(mList.size()));
+                Log.d("dddddddMLTIS", String.valueOf(mList.size()));
             }
         };
 
-        public void updateFullList(ArrayList<SinglePersonSearchItem> newList){
-            mListFull=new ArrayList<>(newList);
 
-        }
 
 
         public FindPeopleAdapter(Context context, ArrayList<SinglePersonSearchItem> listOfPeople, OnItemListener onItemListener,OnAddButtonListener onAddButtonListener){
             mOnItemListener=onItemListener;
             mOnAddButtonListener=onAddButtonListener;
-            mList=listOfPeople;
+            mFullList=listOfPeople;
             mContext=context;
-            //to have two different
-            for(SinglePersonSearchItem item:mList){
-                Log.d("dddddd",item.getPersonText());
-            }
-            //TODO: ZROBIC TO TUTAJ
-            mListFull=new ArrayList<>(mList);
 
-            Log.d("dddddd","creating");
+            //to have two different
 
 
 
 
         }
 
-        public void showOnlyFriends(boolean onlyFriends){
+    public boolean isIfOnlyFriends() {
+        return mIfOnlyFriends;
+    }
+
+    public void showOnlyFriends(boolean onlyFriends){
+            mIfOnlyFriends=onlyFriends;
+
+
+
             if(onlyFriends){
 
+                mList.clear();
+                mActualList.clear();
+
+                for(SinglePersonSearchItem item:mFullList) {
+                    if (item.isFriend())
+                        mActualList.add(item);
+
+                }
+
+
+                mList.addAll(mActualList);
+
             }else{
+                mList.clear();
+                mList.addAll(mFullList);
+                mActualList=new ArrayList<>(mFullList);
+
 
             }
+
+            notifyDataSetChanged();
         }
 
 
@@ -114,6 +138,7 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
             SinglePersonSearchItem currentItem=mList.get(position);
+            showRightIcon(holder,currentItem.isFriend());
 
             Picasso.with(mContext).load(currentItem.getImageResource())
                     .fit()
@@ -128,9 +153,24 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
 
         }
 
-        @Override
+    private void showRightIcon(ViewHolder holder,boolean isFriend) {
+            if(mIfOnlyFriends) {
+                holder.mAddFriendImageView.setImageResource(R.drawable.ic_remove_gray);
+                holder.mAddFriendImageView.setVisibility(View.VISIBLE);
+            }else {
+                if (isFriend) {
+                    holder.mAddFriendImageView.setVisibility(View.INVISIBLE);
+                } else {
+                    holder.mAddFriendImageView.setImageResource(R.drawable.ic_person_add_black);
+                    holder.mAddFriendImageView.setVisibility(View.VISIBLE);
+                }
+            }
+
+    }
+
+    @Override
         public int getItemCount() {
-            Log.d("ddd", String.valueOf(mList.size()));
+            Log.d("ddddddddddListSize", String.valueOf(mList.size()));
             return mList.size();
         }
 
@@ -138,6 +178,8 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
     public Filter getFilter() {
         return mFilter;
     }
+
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -156,13 +198,14 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
                 mPersonTextView=itemView.findViewById(R.id.nameOfPersonTextView);
                 mAddFriendImageView=itemView.findViewById(R.id.addFriendImageView);
 
-                Log.d("ddd",mPersonTextView.getText().toString());
                 mAddFriendImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.d("dddd",String.valueOf(getAdapterPosition()));
+
+
+
                         mOnAddButtonListener.onAddClick(getAdapterPosition());
-                        Log.d("dddddci","");
+
                     }
                 });
                 this.mOnAddButtonListener=onAddButtonListener;
@@ -185,7 +228,18 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
             void onAddClick(int position);
         }
 
+        public void updateActualList(){
+            showOnlyFriends(isIfOnlyFriends());
+        }
 
+        //init
+
+
+
+    public ArrayList<SinglePersonSearchItem> getmList() {
+        return mList;
     }
+}
+
 
 
