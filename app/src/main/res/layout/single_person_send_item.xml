@@ -24,8 +24,11 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/personImageView"
-            android:text="Line 1"
-            android:textSize="20sp"
+            android:fontFamily="@font/roboto"
+            android:text=""
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="18sp"
+            android:layout_marginStart="5dp"
             android:textStyle="bold" />
 
         <ImageView

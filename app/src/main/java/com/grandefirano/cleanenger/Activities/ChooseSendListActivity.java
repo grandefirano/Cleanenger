@@ -38,24 +38,31 @@ import static com.grandefirano.cleanenger.Activities.PhotoHelper.getFileExtensio
 
 public class ChooseSendListActivity extends AppCompatActivity implements ChooseSendAdapter.OnItemListener {
 
+
+    private DatabaseReference mDatabaseReference;
+    private FirebaseAuth mAuth;
+
+    private String myId;
+
     private ChooseSendAdapter mAdapter;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.LayoutManager mLayoutManager;
+
     private ArrayList<String> mListOfFriends=new ArrayList<>();
     private boolean[] mListOfChecked;
-    private DatabaseReference mDatabaseReference;
-    private RecyclerView mRecyclerView;
+
     private CheckBox mSelectedAllCheckBox;
-    private FirebaseAuth mAuth;
-    private String myId;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private byte[] data;
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_send_list);
 
-        Intent intent=getIntent();
-        data=intent.getByteArrayExtra("mBytesOfDataArray");
+
 
 
         mRecyclerView=findViewById(R.id.selectToSendRecyclerView);

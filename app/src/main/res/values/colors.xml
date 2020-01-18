@@ -3,10 +3,11 @@
     <color name="colorPrimary">#F6FFFE</color>
     <color name="colorPrimaryDark">#222222</color>
     <color name="colorAccent">#7D5AD3</color>
+    <color name="colorStory">#AD65FF</color>
     <color name="colorAccentSecondary">#1BA2D8</color>
     <color name="colorAccentRed">#5638A3</color>
     <color name="colorTitleText">#222</color>
-    <color name="colorTextSecondary">#222</color>
+    <color name="colorTextSecondary">#555</color>
 
     #CHAT
 

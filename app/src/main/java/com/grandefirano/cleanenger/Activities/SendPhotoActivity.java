@@ -137,7 +137,7 @@ public class SendPhotoActivity extends AppCompatActivity {
 
     }
 
-    public void sendToAll(View view){
+    public void openList(View view){
 
         if(mSelectedImage!=null){
 

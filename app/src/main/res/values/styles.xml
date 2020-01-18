@@ -9,6 +9,7 @@
         <item name="android:textColorSecondary">@color/colorTextSecondary</item>
         <item name="actionOverflowButtonStyle">@style/MyOverflowButtonStyle</item>
 
+
     </style>
 
     <style name="MyOverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
@@ -17,8 +18,8 @@
 
 
     <style name="TextAppearance.AppCompat.Widget.ActionBar.Title" parent="@android:style/TextAppearance">
-        <item name="android:fontFamily">@font/ital</item>
-        <item name="android:textSize">30sp</item>
+        <item name="android:fontFamily">@font/bobbleboddy_light</item>
+        <item name="android:textSize">36sp</item>
         <item name="android:textColor">@color/colorTitleText</item>
 
     </style>

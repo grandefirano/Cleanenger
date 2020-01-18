@@ -28,6 +28,7 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,27 +49,34 @@ public class AccountActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST=1;
 
-    FirebaseAuth mAuth;
-    DatabaseReference mUserDataDatabase;
-    FirebaseUser user;
+    //FIREBASE
+    private FirebaseAuth mAuth;
+    private DatabaseReference mUserDataDatabase;
+    private FirebaseUser user;
 
-    EditText emailEditText;
-    EditText passwordEditText;
-    EditText usernameEditText;
-    LinearLayout saveAccountLinearLayout;
-    ImageView mProfilePhotoImageView;
+    //VIEWS
+    private EditText emailEditText;
+    private EditText passwordEditText;
+    private EditText usernameEditText;
+    private LinearLayout saveAccountLinearLayout;
+    private ImageView mProfilePhotoImageView;
 
-    String usernameBefore;
-    String emailBefore;
+    //STRINGS
+    private String usernameBefore;
+    private String emailBefore;
+    private String photoBefore;
+    private Bitmap newPhotoBitmap;
 
-    String photoBefore;
-    Bitmap newPhotoBitmap;
+    private String temporaryPassword;
+    private String temporaryEmail;
+    private String temporaryUsername;
 
+    //ALERT SHOW WHEN REAUTHORIZATION IS NECESSARY
     private View alertView;
-    private Uri mImageUri;
 
-
-
+    //CHECKS IF ACTIVITY CAN BE CLOSE AND TO UPDATE DATA IN ORDER
+    private boolean isPasswordEdited=false;
+    private boolean isEmailEdited=false;
 
 
     @Override
@@ -121,7 +129,7 @@ public class AccountActivity extends AppCompatActivity {
                         String passwordWritten=passEditText.getText().toString();
 
                         if(passwordWritten!=null && !passwordWritten.equals("")){
-                            //TODO: ogarnac co gdy źle podane
+
                         reauthenticate(passwordWritten);
                         saveData(null);
                         }else{
@@ -134,35 +142,51 @@ public class AccountActivity extends AppCompatActivity {
 
     public void saveData(View view){
 
-        final String temporaryEmail=emailEditText.getText().toString();
-        final String temporaryPassword=passwordEditText.getText().toString();
-        String temporaryUsername=usernameEditText.getText().toString();
+        //ASSIGNMENT
+        temporaryEmail=emailEditText.getText().toString();
+        temporaryPassword=passwordEditText.getText().toString();
+        temporaryUsername=usernameEditText.getText().toString();
 
+        //CHECK IF EDITED
+
+        if(newPhotoBitmap!=null) {
+            uploadFile();
+        }
         if(!temporaryEmail.equals(emailBefore)){
             mUserDataDatabase.child("email").setValue(temporaryEmail);
+            isEmailEdited=true;
             changeEmailInAuth(temporaryEmail);
         }
         if(!temporaryUsername.equals(usernameBefore)){
             mUserDataDatabase.child("username").setValue(temporaryUsername);
         }
-        if(!temporaryPassword.equals("") && !(temporaryPassword==null)){
-            if(temporaryPassword.length()>=6){
-                changePasswordInAuth(temporaryPassword);
-            }
-            else{
-                Toast.makeText(this,"Password is too short",Toast.LENGTH_SHORT).show();
-            }
 
-            Log.d("dddO",temporaryPassword+"dddd");
-
-        }
-        if(newPhotoBitmap!=null) {
-            uploadFile();
+        //TO PREVENT TWO ACCOUNT UPDATING THREADS AT ONCE
+        if(!isEmailEdited){
+           updatePassword(temporaryPassword);
         }
 
-        //finish();
+        //IF NOT UPDATING ACCOUNT
+        if(!isEmailEdited && !isPasswordEdited)finish();
+
 
     }
+    private void updatePassword(String temporaryPassword){
+
+        //CHECKING PASSWORD
+        if(!temporaryPassword.equals("") && !(temporaryPassword==null)) {
+
+            if (temporaryPassword.length() >= 6) {
+                isPasswordEdited=true;
+                changePasswordInAuth(temporaryPassword);
+
+            } else {
+                Toast.makeText(this, "Password is too short", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
+
     public void closeAccountActivity(View view){
         finish();
     }
@@ -174,14 +198,16 @@ public class AccountActivity extends AppCompatActivity {
                 .getCredential(emailBefore, passwordWritten);
         return credential;
     }
+
     private void reauthenticate(String passwordWritten){
         user.reauthenticate(getCredentials(passwordWritten))
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
+                    public void onSuccess(Void aVoid) {
 
                     }
                 });
+
 
     }
     private void changeEmailInAuth(final String newEmail){
@@ -191,6 +217,9 @@ public class AccountActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
+                                updatePassword(temporaryPassword);
+                                //HERE BECAUSE OF UPDATING PASSWORD IN ANOTHER THREAD
+                                finish();
                                 Toast.makeText(getApplicationContext(),"Email updated",Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -199,12 +228,11 @@ public class AccountActivity extends AppCompatActivity {
                 public void onFailure(@NonNull Exception e) {
                     if(e.getClass().equals(FirebaseAuthRecentLoginRequiredException.class)){
 
-                        //REAUTHENTICATION
                         showDialog();
-
                     }
                 }
             });
+
 
 
     }
@@ -215,20 +243,25 @@ public class AccountActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
+
                             Toast.makeText(getApplicationContext(),"Password updated",Toast.LENGTH_SHORT).show();
+                            finish();
                         }
+
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 if(e.getClass().equals(FirebaseAuthRecentLoginRequiredException.class)){
-                    Log.d("dddO","ptoblm");
-                    //REAUTH
+
                     showDialog();
+
                 }
 
             }
         });
+
+
 
     }
     public void changePhoto(View view){
@@ -255,12 +288,12 @@ public class AccountActivity extends AppCompatActivity {
                            profilePhotoReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
+                                    //PUT UPLOADED PHOTO URL TO DATABASE
                                     mUserDataDatabase.child("profilePhoto").setValue(uri.toString());
                                     Toast.makeText(getApplicationContext(),"Upload successful",Toast.LENGTH_SHORT).show();
 
                                 }
                             });
-
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -290,7 +323,6 @@ public class AccountActivity extends AppCompatActivity {
             Uri imageUri=data.getData();
 
             try {
-
                 Bitmap selectedImage=Utilities.convertToBitmapFromUri(getApplicationContext(),imageUri,Utilities.TYPE_PROFILE_PHOTO);
                 mProfilePhotoImageView.setImageBitmap(selectedImage);
                 newPhotoBitmap=selectedImage;
@@ -302,11 +334,11 @@ public class AccountActivity extends AppCompatActivity {
 
     private void updateFields(){
 
-        Log.i("dddd",mAuth.getCurrentUser().getUid());
-
         mUserDataDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    //GET DATA FROM FIREBASE AND UPLOAD FIELDS
                     emailBefore=String.valueOf(dataSnapshot.child("email").getValue());
                     emailEditText.setText(emailBefore);
 
@@ -318,9 +350,7 @@ public class AccountActivity extends AppCompatActivity {
                         .fit()
                         .centerCrop()
                         .into(mProfilePhotoImageView);
-
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 

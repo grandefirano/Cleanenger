@@ -151,6 +151,7 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
 
 
 
+
         }
 
     private void showRightIcon(ViewHolder holder,boolean isFriend) {
@@ -197,6 +198,7 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
                 mImageView=itemView.findViewById(R.id.personImageView);
                 mPersonTextView=itemView.findViewById(R.id.nameOfPersonTextView);
                 mAddFriendImageView=itemView.findViewById(R.id.addFriendImageView);
+
 
                 mAddFriendImageView.setOnClickListener(new View.OnClickListener() {
                     @Override

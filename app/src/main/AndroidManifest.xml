@@ -4,12 +4,15 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/logo2"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/logo2"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:logo="@mipmap/ic_launcher"
+
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.ChooseSendListActivity"></activity>
+        <activity android:name=".Activities.ChooseSendListActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".Activities.ShowStoryActivity"
             android:theme="@style/AppTheme.NoActionBar" />
