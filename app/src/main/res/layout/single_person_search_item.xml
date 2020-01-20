@@ -32,7 +32,7 @@
             android:textStyle="bold" />
 
         <ImageView
-            android:id="@+id/addFriendImageView"
+            android:id="@+id/rightButtonImageView"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_alignParentEnd="true"

@@ -1,13 +1,10 @@
-package com.grandefirano.cleanenger.adapter;
+package com.grandefirano.cleanenger.Adapter;
 
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,12 +14,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grandefirano.cleanenger.R;
-import com.grandefirano.cleanenger.singleItems.SinglePersonSearchItem;
-import com.grandefirano.cleanenger.singleItems.UserData;
+import com.grandefirano.cleanenger.SingleItems.UserData;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;

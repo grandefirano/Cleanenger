@@ -1,4 +1,4 @@
-package com.grandefirano.cleanenger.adapter;
+package com.grandefirano.cleanenger.Adapter;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.grandefirano.cleanenger.R;
-import com.grandefirano.cleanenger.singleItems.SingleMessageFeedItem;
+import com.grandefirano.cleanenger.SingleItems.SingleMessageFeedItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

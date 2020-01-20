@@ -4,42 +4,46 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import android.Manifest;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.internal.service.Common;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.grandefirano.cleanenger.FriendsController;
+import com.grandefirano.cleanenger.Notifications.APIService;
+import com.grandefirano.cleanenger.Notifications.Client;
+import com.grandefirano.cleanenger.Notifications.Data;
+import com.grandefirano.cleanenger.Notifications.MyResponse;
+import com.grandefirano.cleanenger.Notifications.Sender;
+import com.grandefirano.cleanenger.Notifications.Token;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.Utilities;
-import com.grandefirano.cleanenger.adapter.ChooseSendAdapter;
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -59,6 +63,8 @@ public class SendPhotoActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     String myId;
 
+    String myName;
+
 
     ImageView mPhotoImageView;
     ImageView mCancelButton;
@@ -66,7 +72,7 @@ public class SendPhotoActivity extends AppCompatActivity {
     ImageView mRotateButton;
     ConstraintLayout mConstraintLayout;
 
-
+    APIService mAPIService;
 
     //DatabaseReference mFriendsReference;
 
@@ -84,6 +90,12 @@ public class SendPhotoActivity extends AppCompatActivity {
 
         myId=mAuth.getCurrentUser().getUid();
 
+        mAPIService= Client.getRetrofit("https://fcm.googleapis.com/").create(APIService.class);
+
+
+        SharedPreferences sharedPreferences=getSharedPreferences(MainActivity.SHARED_PREFS,MODE_PRIVATE);
+
+        myName=sharedPreferences.getString(MainActivity.MY_NAME,myId);
 
 
       //  mDatabaseReference=FirebaseDatabase.getInstance().getReference();
@@ -247,9 +259,10 @@ public class SendPhotoActivity extends AppCompatActivity {
                                 snapPhotoReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                     @Override
                                     public void onSuccess(Uri uri) {
-                                        for (int i = 0; i < listToSend.size(); i++) {
 
-                                            Log.d("ddddddID", listToSend.get(i));
+                                        sendNotification(listToSend);
+
+                                        for (int i = 0; i < listToSend.size(); i++) {
 
                                                 mDatabaseReference.child("users").child(listToSend.get(i)).child("snaps").child(myId).child(random).setValue(uri.toString());
 
@@ -299,4 +312,35 @@ public class SendPhotoActivity extends AppCompatActivity {
             }
         }
     }
+    private void sendNotification(final ArrayList<String> idsOfSendPerson) {
+        DatabaseReference allTokens=FirebaseDatabase.getInstance().getReference("tokens");
+
+        for(final String idOfSendPerson:idsOfSendPerson) {
+            allTokens.child(idOfSendPerson).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    Token token = dataSnapshot.getValue(Token.class);
+
+                    Data data = new Data(myId, "[New snap]", null, myName, idOfSendPerson, R.drawable.ic_notification);
+
+                    Sender sender = new Sender(data, token.getToken());
+
+                    mAPIService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
+                        @Override
+                        public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                            Log.d("Response",response.toString()); }
+                        @Override
+                        public void onFailure(Call<MyResponse> call, Throwable t) { }
+                    });
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
 }

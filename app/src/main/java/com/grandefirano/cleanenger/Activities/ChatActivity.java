@@ -7,15 +7,21 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,16 +30,24 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.grandefirano.cleanenger.Notifications.APIService;
+import com.grandefirano.cleanenger.Notifications.Client;
+import com.grandefirano.cleanenger.Notifications.Data;
+import com.grandefirano.cleanenger.Notifications.MyResponse;
+import com.grandefirano.cleanenger.Notifications.Sender;
+import com.grandefirano.cleanenger.Notifications.Token;
 import com.grandefirano.cleanenger.R;
-import com.grandefirano.cleanenger.singleItems.UserData;
-import com.grandefirano.cleanenger.adapter.ChatListAdapter;
-import com.grandefirano.cleanenger.singleItems.SingleMessage;
+import com.grandefirano.cleanenger.SingleItems.UserData;
+import com.grandefirano.cleanenger.Adapter.ChatListAdapter;
+import com.grandefirano.cleanenger.SingleItems.SingleMessage;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.prefs.Preferences;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -44,7 +58,10 @@ public class ChatActivity extends AppCompatActivity {
     EditText mMessageInput;
     String mchatId;
     String myId;
+    String mNameOfPerson;
     boolean isOnTheBottom=false;
+
+    String myName;
 
     private ChatListAdapter mAdapter;
     private FirebaseAuth mAuth;
@@ -55,6 +72,9 @@ public class ChatActivity extends AppCompatActivity {
     private CircleImageView mPersonImageView;
     private TextView mPersonNameTextView;
     private TextView mSeenStatus;
+
+    APIService mAPIService;
+    boolean notify=false;
 
     private ArrayList<SingleMessage> mMessagesList=new ArrayList<>();
 
@@ -126,6 +146,11 @@ public class ChatActivity extends AppCompatActivity {
         mChatRef=mDatabase.child("chats").child(mchatId);
 
 
+        SharedPreferences sharedPreferences=getSharedPreferences(MainActivity.SHARED_PREFS,Context.MODE_PRIVATE);
+        //MY NAME
+        myName=sharedPreferences.getString(MainActivity.MY_NAME,myId);
+
+
         mChatRef.addChildEventListener(mListener);
 
 
@@ -154,8 +179,9 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserData userData=dataSnapshot.getValue(UserData.class);
+                mNameOfPerson=userData.getUsername();
+                mPersonNameTextView.setText(mNameOfPerson);
 
-                mPersonNameTextView.setText(userData.getUsername());
                 profilePhoto=userData.getProfilePhoto();
                 Picasso.with(getApplicationContext()).load(userData.getProfilePhoto())
                         .fit()
@@ -179,16 +205,18 @@ public class ChatActivity extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         mChatRecycleView.setLayoutManager(linearLayoutManager);
 
+        mAPIService= Client.getRetrofit("https://fcm.googleapis.com/").create(APIService.class);
+
         mChatRecycleView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(!recyclerView.canScrollVertically(1)){
                     isOnTheBottom=true;
-                    Log.d("ddddddR","isOnbottom");
+
                 }else{
                     isOnTheBottom=false;
-                    Log.d("ddddddR","isNOtOnbottom");
+
                 }
             }
         });
@@ -216,7 +244,9 @@ public class ChatActivity extends AppCompatActivity {
 
     public void sendMessage(View view){
 
-        String textOfMessage=mMessageInput.getText().toString();
+        notify=true;
+
+        final String textOfMessage=mMessageInput.getText().toString();
         if(textOfMessage!=null && !textOfMessage.equals("")) {
 
             //SENDING USER
@@ -230,9 +260,26 @@ public class ChatActivity extends AppCompatActivity {
 
             //Message
 
+            /////
+            mChatRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(notify){
+                        Log.d("sssssss","notifyyyy");
+                        sendNotification(mIdOfChatPerson,textOfMessage);
+
+                    }notify=false;
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
 
 
 
+                //////
             SingleMessage singleMessage = new SingleMessage(myId, textOfMessage, ServerValue.TIMESTAMP);
             LastMessage lastMessage = new LastMessage(singleMessage.getuId(), singleMessage.getMessage(), ServerValue.TIMESTAMP, false);
 
@@ -251,6 +298,44 @@ public class ChatActivity extends AppCompatActivity {
         }
 
     }
+
+    private void sendNotification(final String idOfChatPerson, final String textOfMessage) {
+        DatabaseReference allTokens=FirebaseDatabase.getInstance().getReference("tokens");
+
+
+        allTokens.child(idOfChatPerson).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    Token token= dataSnapshot.getValue(Token.class);
+
+                    Data data =new Data(myId,textOfMessage,mchatId,myName,idOfChatPerson,R.drawable.ic_notification);
+
+                    Sender sender= new Sender(data,token.getToken());
+
+                    mAPIService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
+                        @Override
+                        public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                            //Toast.makeText(ChatActivity.this,response.message(),Toast.LENGTH_SHORT).show();
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<MyResponse> call, Throwable t) {
+
+                        }
+                    });
+
+                //}
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void hideKeyboard(Activity activity){
         //TODO::
 

@@ -1,4 +1,4 @@
-package com.grandefirano.cleanenger.singleItems;
+package com.grandefirano.cleanenger.SingleItems;
 
 public class UserData {
 

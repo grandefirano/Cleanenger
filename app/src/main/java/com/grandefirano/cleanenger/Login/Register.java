@@ -1,11 +1,10 @@
-package com.grandefirano.cleanenger.login;
+package com.grandefirano.cleanenger.Login;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,7 +19,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.grandefirano.cleanenger.Activities.MainActivity;
 import com.grandefirano.cleanenger.R;
-import com.grandefirano.cleanenger.singleItems.UserData;
+import com.grandefirano.cleanenger.SingleItems.UserData;
 
 public class Register extends AppCompatActivity {
 

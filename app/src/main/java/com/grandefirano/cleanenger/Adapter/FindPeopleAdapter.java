@@ -1,11 +1,10 @@
-package com.grandefirano.cleanenger.adapter;
+package com.grandefirano.cleanenger.Adapter;
 
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -14,14 +13,13 @@ import android.widget.TextView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.grandefirano.cleanenger.R;
-import com.grandefirano.cleanenger.singleItems.SinglePersonSearchItem;
+import com.grandefirano.cleanenger.SingleItems.SinglePersonSearchItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.ViewHolder> implements Filterable {
@@ -35,7 +33,7 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
         private ArrayList<SinglePersonSearchItem> mActualList= new ArrayList<>();
 
         OnItemListener mOnItemListener;
-        OnAddButtonListener mOnAddButtonListener;
+        OnRightButtonListener mOnRightButtonListener;
         private Context mContext;
         private Filter mFilter=new Filter() {
             @Override
@@ -76,9 +74,9 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
 
 
 
-        public FindPeopleAdapter(Context context, ArrayList<SinglePersonSearchItem> listOfPeople, OnItemListener onItemListener,OnAddButtonListener onAddButtonListener){
+        public FindPeopleAdapter(Context context, ArrayList<SinglePersonSearchItem> listOfPeople, OnItemListener onItemListener,OnRightButtonListener onRightButtonListener){
             mOnItemListener=onItemListener;
-            mOnAddButtonListener=onAddButtonListener;
+            mOnRightButtonListener=onRightButtonListener;
             mFullList=listOfPeople;
             mContext=context;
 
@@ -130,7 +128,7 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v= LayoutInflater.from(parent.getContext()).inflate(R.layout.single_person_search_item,parent,false);
-            ViewHolder viewHolder=new ViewHolder(v,mOnItemListener,mOnAddButtonListener);
+            ViewHolder viewHolder=new ViewHolder(v,mOnItemListener,mOnRightButtonListener);
             return viewHolder;
         }
 
@@ -156,14 +154,14 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
 
     private void showRightIcon(ViewHolder holder,boolean isFriend) {
             if(mIfOnlyFriends) {
-                holder.mAddFriendImageView.setImageResource(R.drawable.ic_remove_gray);
-                holder.mAddFriendImageView.setVisibility(View.VISIBLE);
+                holder.mRightButtonImageView.setImageResource(R.drawable.ic_remove_gray);
+                holder.mRightButtonImageView.setVisibility(View.VISIBLE);
             }else {
                 if (isFriend) {
-                    holder.mAddFriendImageView.setVisibility(View.INVISIBLE);
+                    holder.mRightButtonImageView.setVisibility(View.INVISIBLE);
                 } else {
-                    holder.mAddFriendImageView.setImageResource(R.drawable.ic_person_add_black);
-                    holder.mAddFriendImageView.setVisibility(View.VISIBLE);
+                    holder.mRightButtonImageView.setImageResource(R.drawable.ic_person_add_black);
+                    holder.mRightButtonImageView.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -186,31 +184,31 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
 
             public ImageView mImageView;
             public TextView mPersonTextView;
-            public ImageView mAddFriendImageView;
+            public ImageView mRightButtonImageView;
 
 
             OnItemListener mOnItemListener;
-            OnAddButtonListener mOnAddButtonListener;
+            OnRightButtonListener mOnRightButtonListener;
 
 
-            public ViewHolder(@NonNull View itemView, OnItemListener onItemListener,OnAddButtonListener onAddButtonListener) {
+            public ViewHolder(@NonNull View itemView, OnItemListener onItemListener,OnRightButtonListener onRightButtonListener) {
                 super(itemView);
                 mImageView=itemView.findViewById(R.id.personImageView);
                 mPersonTextView=itemView.findViewById(R.id.nameOfPersonTextView);
-                mAddFriendImageView=itemView.findViewById(R.id.addFriendImageView);
+                mRightButtonImageView=itemView.findViewById(R.id.rightButtonImageView);
 
 
-                mAddFriendImageView.setOnClickListener(new View.OnClickListener() {
+                mRightButtonImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
 
 
-                        mOnAddButtonListener.onAddClick(getAdapterPosition());
+                        mOnRightButtonListener.onRightButtonClick(getAdapterPosition());
 
                     }
                 });
-                this.mOnAddButtonListener=onAddButtonListener;
+                this.mOnRightButtonListener=onRightButtonListener;
                 this.mOnItemListener=onItemListener;
 
                 itemView.setOnClickListener(this);
@@ -226,8 +224,8 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
             void onItemClick(int position);
         }
 
-        public interface OnAddButtonListener{
-            void onAddClick(int position);
+        public interface OnRightButtonListener{
+            void onRightButtonClick(int position);
         }
 
         public void updateActualList(){

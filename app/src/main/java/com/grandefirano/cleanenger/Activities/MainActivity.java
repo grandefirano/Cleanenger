@@ -3,12 +3,12 @@ package com.grandefirano.cleanenger.Activities;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -25,11 +25,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.grandefirano.cleanenger.Notifications.Token;
 import com.grandefirano.cleanenger.R;
-import com.grandefirano.cleanenger.adapter.StoryAdapter;
-import com.grandefirano.cleanenger.login.Login;
-import com.grandefirano.cleanenger.adapter.MainListAdapter;
-import com.grandefirano.cleanenger.singleItems.SingleMessageFeedItem;
+import com.grandefirano.cleanenger.Adapter.StoryAdapter;
+import com.grandefirano.cleanenger.Login.Login;
+import com.grandefirano.cleanenger.Adapter.MainListAdapter;
+import com.grandefirano.cleanenger.SingleItems.SingleMessageFeedItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements MainListAdapter.OnItemListener, StoryAdapter.OnSnapClickListener{
 
 
+    public static final String SHARED_PREFS ="user_prefs" ;
+    public static final String MY_NAME ="my_name" ;
     FirebaseAuth mAuth;
     String myId;
     DatabaseReference mDatabase;
@@ -110,7 +114,14 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
         }
         else if(item.getItemId()==R.id.logout){
+            //DELETE SHARED PREFERENCES WHEN LOG OUT
+            SharedPreferences preferences =getSharedPreferences(SHARED_PREFS,Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.clear();
+            editor.commit();
+            //LOGOUT FROM DATABASE
             mAuth.signOut();
+            //OPEN LOGIN ACTIVITY
             Intent intent= new Intent(this,Login.class);
             finish();
             startActivity(intent);
@@ -140,6 +151,11 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
         mStoryRecyclerView=findViewById(R.id.storyRecycleView);
 
+        //TODO:
+        //DWNLOAD MY DATA
+        downloadMyName(myId);
+
+
         //DOWNLOAD USERS
         downloadListFromDatabase();
         listOfSnapsPerson();
@@ -166,6 +182,32 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
         mStoryAdapter=new StoryAdapter(getApplicationContext(),mStoryList,this);
         mStoryRecyclerView.setAdapter(mStoryAdapter);
+
+
+        //UPDATE FIREBASE NOTIFICATIONS TOKEN
+        updateToken(FirebaseInstanceId.getInstance().getToken());
+
+    }
+
+    private void downloadMyName(String id){
+
+        Log.d("ddddddddMI",id);
+        mDatabase.child("users").child(id).child("data").child("username").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                SharedPreferences sharedPreferences=getSharedPreferences(SHARED_PREFS,Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(MY_NAME,dataSnapshot.getValue().toString());
+                editor.commit();
+                Log.d("ddddddmINAME",dataSnapshot.getValue().toString());
+                Log.d("ddddddmINAME","ddd");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
 
     }
@@ -320,6 +362,13 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
         backPressedTime=System.currentTimeMillis();
 
-
     }
+
+
+    public void updateToken(String token){
+        DatabaseReference reference=FirebaseDatabase.getInstance().getReference("tokens");
+        Token mToken= new Token(token);
+        reference.child(myId).setValue(mToken);
+    }
+
 }

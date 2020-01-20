@@ -33,7 +33,7 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".login.Login"
+            android:name=".Login.Login"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -43,7 +43,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".login.Register"
+            android:name=".Login.Register"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -53,6 +53,22 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+        <service android:name=".Notifications.FirebaseService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_SERVICE"/>
+
+            </intent-filter>
+        </service>
+        <service android:name=".Notifications.FirebaseMessaging"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+
+        </service>
     </application>
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

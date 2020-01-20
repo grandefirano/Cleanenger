@@ -1,28 +1,20 @@
-package com.grandefirano.cleanenger.adapter;
+package com.grandefirano.cleanenger.Adapter;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.Utilities;
-import com.grandefirano.cleanenger.singleItems.SingleMessage;
+import com.grandefirano.cleanenger.SingleItems.SingleMessage;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
