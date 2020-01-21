@@ -114,13 +114,16 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
         }
         else if(item.getItemId()==R.id.logout){
+
             //DELETE SHARED PREFERENCES WHEN LOG OUT
             SharedPreferences preferences =getSharedPreferences(SHARED_PREFS,Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
             editor.clear();
             editor.commit();
+
             //LOGOUT FROM DATABASE
             mAuth.signOut();
+
             //OPEN LOGIN ACTIVITY
             Intent intent= new Intent(this,Login.class);
             finish();
@@ -152,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         mStoryRecyclerView=findViewById(R.id.storyRecycleView);
 
         //TODO:
-        //DWNLOAD MY DATA
+        //DOWNLOAD MY DATA
         downloadMyName(myId);
 
 
@@ -191,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
     private void downloadMyName(String id){
 
-        Log.d("ddddddddMI",id);
+
         mDatabase.child("users").child(id).child("data").child("username").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

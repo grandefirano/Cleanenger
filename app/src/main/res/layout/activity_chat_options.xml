@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activities.ChatOptionsActivity">
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/chatColorRadioGroup">
+    <RadioButton
+        android:id="@+id/defaultColorChatRadioButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Default"
+        android:checked="true" />
+        <RadioButton
+            android:id="@+id/yellowColorChatRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Yellow"/>
+        <RadioButton
+            android:id="@+id/redColorChatRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Red"/>
+        <RadioButton
+            android:id="@+id/greenColorChatRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Green"/>
+        <RadioButton
+            android:id="@+id/blueColorChatRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Blue"/>
+
+    </RadioGroup>
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/chatTextSizeRadioGroup"
+        android:layout_toEndOf="@+id/chatColorRadioGroup"
+        android:layout_marginStart="30dp">
+        <RadioButton
+            android:id="@+id/size10ChatRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10"
+            android:textSize="10sp"
+            android:checked="true" />
+        <RadioButton
+            android:id="@+id/size12ChatRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12"
+            android:checked="true"
+            android:textSize="12sp"/>
+        <RadioButton
+            android:id="@+id/defaultSizeChatRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="16 (default)"
+            android:checked="true"
+            android:textSize="16sp"/>
+        <RadioButton
+            android:id="@+id/size20ChatRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="20"
+            android:checked="true"
+            android:textSize="20sp"/>
+        <RadioButton
+            android:id="@+id/size24ChatRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="24"
+            android:checked="true"
+            android:textSize="24sp"/>
+
+
+
+
+    </RadioGroup>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="saveChatOptions"
+        android:layout_alignParentBottom="true"
+
+        android:text="VHANGNE"
+        />
+</RelativeLayout>

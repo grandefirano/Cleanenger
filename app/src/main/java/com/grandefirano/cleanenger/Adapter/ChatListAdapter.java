@@ -1,6 +1,7 @@
 package com.grandefirano.cleanenger.Adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
@@ -24,12 +26,47 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     private String mProfilePhotoUri;
 
     private ViewHolder clickedView;
-    private ViewHolder lastView;
+    //private ViewHolder lastView;
 
     public static final int MSG_TYPE_LEFT = 0;
     public static final int MSG_TYPE_RIGHT = 1;
 
     private ArrayList<SingleMessage> mMessagesList;
+
+    public static final int DEFAULT_CHAT_COLOR=100;
+    public static final int RED_CHAT_COLOR=101;
+    public static final int BLUE_CHAT_COLOR=102;
+    public static final int GREEN_CHAT_COLOR=103;
+    public static final int YELLOW_CHAT_COLOR=104;
+
+    public int mChatColor;
+    public int mTextSize;
+
+
+    public static final int YELLOW_CHAT_BACKGROUND=R.drawable.background_left_chat_row_yellow;
+    public static final int RED_CHAT_BACKGROUND=R.drawable.background_left_chat_row_red;
+    public static final int GREEN_CHAT_BACKGROUND=R.drawable.background_left_chat_row_green;
+    public static final int BLUE_CHAT_BACKGROUND=R.drawable.background_left_chat_row_blue;
+    public static final int DEFAULT_CHAT_BACKGROUND=R.drawable.background_left_chat_row;
+
+    public static final int YELLOW_CHAT_BACKGROUND_CLICKED=R.drawable.background_left_chat_row_yellow_clicked;
+    public static final int RED_CHAT_BACKGROUND_CLICKED=R.drawable.background_left_chat_row_red_clicked;
+    public static final int GREEN_CHAT_BACKGROUND_CLICKED=R.drawable.background_left_chat_row_green_clicked;
+    public static final int BLUE_CHAT_BACKGROUND_CLICKED=R.drawable.background_left_chat_row_blue_clicked;
+    public static final int DEFAULT_CHAT_BACKGROUND_CLICKED=R.drawable.background_left_chat_row_clicked;
+
+
+
+    public void setColor(int color) {
+
+        mChatColor=color;
+
+    }
+    public void setTextSize(int size){
+
+            mTextSize = size;
+
+    }
 
 
     public ChatListAdapter(Context context,ArrayList<SingleMessage> messageList, String id, String profilePhoto){
@@ -39,29 +76,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         myId=id;
         mMessagesList=messageList;
 
-
-
-
     }
-//    private ChildEventListener mListener= new ChildEventListener() {
-//        @Override
-//        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//            if(!dataSnapshot.getKey().equals("last_message")){
-//                SingleMessage message=dataSnapshot.getValue(SingleMessage.class);
-//                mMessagesList.add(message);
-//                notifyDataSetChanged();}
-//            recyclerView.scrollToPosition(getItemCount()-1);
-//        }
-//        @Override
-//        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-//        @Override
-//        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
-//        @Override
-//        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-//        @Override
-//        public void onCancelled(@NonNull DatabaseError databaseError) { }
-//    };
 
 
     @NonNull
@@ -70,15 +85,24 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         if(viewType==MSG_TYPE_RIGHT){
             View view=LayoutInflater.from(mContext).inflate(R.layout.single_chat_row_right,parent,false);
+
+
             return new ChatListAdapter.ViewHolder(view);
         }else{
             View view=LayoutInflater.from(mContext).inflate(R.layout.single_chat_row_left,parent,false);
             return new ChatListAdapter.ViewHolder(view);
         }
+
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
+        setSizeInView(holder);
+
+        if(holder.getItemViewType()==MSG_TYPE_LEFT){
+           setColorForLeftIfClicked(false,holder);
+        }
 
         SingleMessage singleMessage=mMessagesList.get(position);
 
@@ -99,56 +123,6 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         return mMessagesList.size();
     }
 
-//    @Override
-//    public View getView(int position, View convertView, ViewGroup parent) {
-//
-//        if(convertView==null){
-//            LayoutInflater inflater=(LayoutInflater)mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//            convertView=inflater.inflate(R.layout.chat_msg_row,parent,false);
-//            final ViewHolder holder = new ViewHolder();
-//            holder.authorName= convertView.findViewById(R.id.author);
-//            holder.body= convertView.findViewById(R.id.message);
-//            holder.params=(LinearLayout.LayoutParams)holder.authorName.getLayoutParams();
-//            convertView.setTag(holder);
-//        }
-//
-//        final SingleMessage message= getItem(position);
-//        final ViewHolder holder=(ViewHolder) convertView.getTag();
-//
-//        String msg=message.getMessage();
-//        boolean isMe= message.getuId().equals(myId);
-//
-//        String author;
-//        if(isMe){
-//            author="Me";
-//        }else {
-//            author = musernameOfChatPerson;
-//        }
-//        holder.authorName.setText(author);
-//        holder.body.setText(msg);
-//
-//        setChatRowAppearance(isMe,holder);
-//
-//        return convertView;
-//
-//    }
-
-//    private void setChatRowAppearance(boolean isItMe,ViewHolder holder){
-//
-//        if(isItMe){
-//            holder.params.gravity= Gravity.END;
-//            holder.authorName.setTextColor(Color.GREEN);
-//            holder.body.setBackgroundResource(R.drawable.singlechat2);
-//        }else{
-//            holder.params.gravity=Gravity.START;
-//            holder.authorName.setTextColor(Color.BLUE);
-//            holder.body.setBackgroundResource(R.drawable.singlechat1);
-//        }
-//
-//        holder.authorName.setLayoutParams(holder.params);
-//        holder.body.setLayoutParams(holder.params);
-//
-//    }
 
     @Override
     public int getItemViewType(int position) {
@@ -161,11 +135,6 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     }
 
 
-    //    static class ViewHolder{
-//        TextView authorName;
-//        TextView body;
-//        LinearLayout.LayoutParams params;
-//    }
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView bodyMessageTextView;
         ImageView profilePhotoImageView;
@@ -190,13 +159,14 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
                 //clicked exist
                 clickedView.dateMessageTextView.setVisibility(View.GONE);
                 if(clickedView.getItemViewType()==MSG_TYPE_LEFT)
-                    clickedView.bodyMessageTextView.setBackgroundResource(R.drawable.background_left_chat_row);
+                    setColorForLeftIfClicked(false,clickedView);
+
                 else clickedView.bodyMessageTextView.setBackgroundResource(R.drawable.background_right_chat_row);
 
                 if(!clickedView.equals(this)) {
                     dateMessageTextView.setVisibility(View.VISIBLE);
                     if(getItemViewType()==MSG_TYPE_LEFT)
-                        bodyMessageTextView.setBackgroundResource(R.drawable.background_left_chat_row_clicked);
+                        setColorForLeftIfClicked(true,this);
                     else bodyMessageTextView.setBackgroundResource(R.drawable.background_right_chat_row_clicked);
                     clickedView = this;
                 }else{
@@ -207,7 +177,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
                 //clicked don't exist
                 dateMessageTextView.setVisibility(View.VISIBLE);
                 if(getItemViewType()==MSG_TYPE_LEFT)
-                    bodyMessageTextView.setBackgroundResource(R.drawable.background_left_chat_row_clicked);
+                    setColorForLeftIfClicked(true,this);
+
                 else bodyMessageTextView.setBackgroundResource(R.drawable.background_right_chat_row_clicked);
                 clickedView=this;
             }
@@ -217,6 +188,58 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         }
     }
 
+    private void setColorForLeftIfClicked(boolean clicked,ViewHolder holder) {
+        holder.bodyMessageTextView.setTextColor(ContextCompat.getColor(mContext,R.color.colorChatFontBright));
+        if(clicked){
+
+            switch (mChatColor) {
+                case YELLOW_CHAT_COLOR:
+                    holder.bodyMessageTextView.setBackgroundResource(YELLOW_CHAT_BACKGROUND_CLICKED);
+                    break;
+                case RED_CHAT_COLOR:
+                    holder.bodyMessageTextView.setBackgroundResource(RED_CHAT_BACKGROUND_CLICKED);
+                    break;
+                case GREEN_CHAT_COLOR:
+                    holder.bodyMessageTextView.setBackgroundResource(GREEN_CHAT_BACKGROUND_CLICKED);
+                    break;
+                case BLUE_CHAT_COLOR:
+                    holder.bodyMessageTextView.setBackgroundResource(BLUE_CHAT_BACKGROUND_CLICKED);
+                    break;
+                default:
+                    holder.bodyMessageTextView.setBackgroundResource(DEFAULT_CHAT_BACKGROUND_CLICKED);
+                    //holder.bodyMessageTextView.setTextColor(ContextCompat.getColor(mContext,R.color.colorChatFont));
+
+            }
+        }else {
+            switch (mChatColor) {
+                case YELLOW_CHAT_COLOR:
+                    holder.bodyMessageTextView.setBackgroundResource(YELLOW_CHAT_BACKGROUND);
+                    break;
+                case RED_CHAT_COLOR:
+                    holder.bodyMessageTextView.setBackgroundResource(RED_CHAT_BACKGROUND);
+                    break;
+                case GREEN_CHAT_COLOR:
+                    holder.bodyMessageTextView.setBackgroundResource(GREEN_CHAT_BACKGROUND);
+                    break;
+                case BLUE_CHAT_COLOR:
+                    holder.bodyMessageTextView.setBackgroundResource(BLUE_CHAT_BACKGROUND);
+                    break;
+                default:
+                    holder.bodyMessageTextView.setBackgroundResource(DEFAULT_CHAT_BACKGROUND);
+                    //holder.bodyMessageTextView.setTextColor(ContextCompat.getColor(mContext,R.color.colorChatFont));
+
+            }
+        }
+
+    }
+    private void setSizeInView(ViewHolder holder){
+        if(mTextSize==0){
+            holder.bodyMessageTextView.setTextSize(16);
+        }else {
+            holder.bodyMessageTextView.setTextSize(mTextSize);
+        }
+
+    }
 
     public void updateProfilePhoto(String profilePhotoUri){
         mProfilePhotoUri=profilePhotoUri;

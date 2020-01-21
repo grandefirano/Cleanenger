@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="colorPrimary">#F6FFFE</color>
     <color name="colorPrimaryDark">#222222</color>
     <color name="colorAccent">#7D5AD3</color>
@@ -16,8 +17,17 @@
 
 
     <color name="colorChatFont">#222222</color>
+    <color name="colorChatFontBright">#EEEEEE</color>
 
     <color name="colorChatLeftClicked">#A5B7E0</color>
     <color name="colorChatRightClicked">#AFAFAF</color>
+    <color name="colorChatLeftYellow">#CCBA47</color>
+    <color name="colorChatLeftRed">#B93D3D</color>
+    <color name="colorChatLeftGreen">#359635</color>
+    <color name="colorChatLeftBlue">#3195FF</color>
+    <color name="colorChatLeftBlueClicked">#0051DD</color>
+    <color name="colorChatLeftGreenClicked">#1A7E1A</color>
+    <color name="colorChatLeftRedClicked">#752323</color>
+    <color name="colorChatLeftYellowClicked">#9B9B15</color>
 
 </resources>

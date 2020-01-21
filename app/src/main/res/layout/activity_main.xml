@@ -25,9 +25,9 @@
 
             <ImageView
                 android:id="@+id/cameraImageView"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="8dp"
                 android:onClick="takeAPhoto"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

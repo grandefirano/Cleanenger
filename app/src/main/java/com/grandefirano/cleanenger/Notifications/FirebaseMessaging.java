@@ -36,39 +36,51 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         String sent=remoteMessage.getData().get("sent");
         String user=remoteMessage.getData().get("user");
 
-        if(currentUser!=null && sent.equals(currentUser.getUid())){
-            if(!currentUser.getUid().equals(user)){
 
-                if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
-                    sendOAndAboveNotification(remoteMessage);
-                }else{
-                    sendNormalNotification(remoteMessage);
-                }
-            }
-        }
+        if(currentUser!=null
+                && sent.equals(currentUser.getUid())
+                && !currentUser.getUid().equals(user))
+            sendNotification(remoteMessage);
 
 
 
     }
-
-    private void sendNormalNotification(RemoteMessage remoteMessage) {
+    private void sendNotification(RemoteMessage remoteMessage){
         String user=remoteMessage.getData().get("user");
         String icon=remoteMessage.getData().get("icon");
         String title=remoteMessage.getData().get("title");
         String body=remoteMessage.getData().get("body");
         String chatId=remoteMessage.getData().get("chatId");
 
-        //RemoteMessage.Notification notification=remoteMessage.getNotification();
         int i =Integer.parseInt(user.replaceAll("[\\D]",""));
-        Intent intent=new Intent(this, ChatActivity.class);
-        Bundle bundle= new Bundle();
-        bundle.putString("id",user);
-        bundle.putString("chatId",chatId);
+        Intent intent;
+        Bundle bundle = new Bundle();
+        if(chatId!=null&&!chatId.equals("")) {
+            intent = new Intent(this, ChatActivity.class);
+            bundle.putString("id", user);
+            bundle.putString("chatId", chatId);
+        }else{
+            intent=new Intent(this, ShowStoryActivity.class);
+            bundle.putString("id",user);
+        }
         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent=PendingIntent.getActivity(this,i,intent,PendingIntent.FLAG_ONE_SHOT);
 
+        PendingIntent pendingIntent=PendingIntent.getActivity(this,i,intent,PendingIntent.FLAG_ONE_SHOT);
         Uri defSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
+            sendOAndAboveNotification(icon,body,title,pendingIntent,defSoundUri,i);
+        }else{
+            sendNormalNotification(icon,body,title,pendingIntent,defSoundUri,i);
+        }
+
+
+    }
+
+    private void sendNormalNotification(String icon,String body,String title,PendingIntent pendingIntent,Uri defSoundUri,int i) {
+
         NotificationCompat.Builder builder= new NotificationCompat.Builder(this)
                 .setSmallIcon(Integer.parseInt(icon))
                 .setContentText(body)
@@ -87,36 +99,10 @@ public class FirebaseMessaging extends FirebaseMessagingService {
 
     }
 
-    private void sendOAndAboveNotification(RemoteMessage remoteMessage) {
-        String user=remoteMessage.getData().get("user");
-        String icon=remoteMessage.getData().get("icon");
-        String title=remoteMessage.getData().get("title");
-        String body=remoteMessage.getData().get("body");
-        String chatId=remoteMessage.getData().get("chatId");
-
-
-        RemoteMessage.Notification notification=remoteMessage.getNotification();
-        int i =Integer.parseInt(user.replaceAll("[\\D]",""));
-        Intent intent;
-        Bundle bundle = new Bundle();
-        if(chatId!=null&&!chatId.equals("")) {
-             intent = new Intent(this, ChatActivity.class);
-            bundle.putString("id", user);
-            bundle.putString("chatId", chatId);
-        }else{
-            intent=new Intent(this, ShowStoryActivity.class);
-            bundle.putString("id",user);
-        }
-        intent.putExtras(bundle);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent=PendingIntent.getActivity(this,i,intent,PendingIntent.FLAG_ONE_SHOT);
-
-        Uri defSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+    private void sendOAndAboveNotification(String icon,String body,String title,PendingIntent pendingIntent,Uri defSoundUri,int i) {
 
         OreoAndAboveNotification notification1=new OreoAndAboveNotification(this);
         Notification.Builder builder=notification1.getONotifications(title,body,pendingIntent,defSoundUri,icon);
-
-
 
         int j=0;
         if(i>0){

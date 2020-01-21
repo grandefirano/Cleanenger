@@ -96,6 +96,7 @@ public class ChatActivity extends AppCompatActivity {
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     };
 
+
     private ChildEventListener mListener= new ChildEventListener() {
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -103,11 +104,20 @@ public class ChatActivity extends AppCompatActivity {
             if(dataSnapshot.getKey().equals("last_message")){
                 setLastMessageStatus(dataSnapshot);
 
+            }else if(dataSnapshot.getKey().equals("data")) {
+                    //TODO: CRASHUJE SIE
+                int color = dataSnapshot.child("color").getValue(Integer.class);
+                int size = dataSnapshot.child("textSize").getValue(Integer.class);
+
+                mAdapter.setColor(color);
+                mAdapter.setTextSize(size);
+
             }else{
-                SingleMessage message=dataSnapshot.getValue(SingleMessage.class);
-                mMessagesList.add(message);
-                mAdapter.notifyDataSetChanged();
-            }
+                    SingleMessage message=dataSnapshot.getValue(SingleMessage.class);
+                    mMessagesList.add(message);
+                    mAdapter.notifyDataSetChanged();
+                }
+
 
             mChatRecycleView.scrollToPosition(mAdapter.getItemCount()-1);
         }
@@ -115,6 +125,17 @@ public class ChatActivity extends AppCompatActivity {
         public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
             if(dataSnapshot.getKey().equals("last_message")){
                 setLastMessageStatus(dataSnapshot);
+            }else if(dataSnapshot.getKey().equals("data")) {
+                int color=ChatListAdapter.DEFAULT_CHAT_COLOR;
+                if(dataSnapshot.child("color").exists())
+                    color=dataSnapshot.child("color").getValue(Integer.class);
+
+                int size=16;
+                if(dataSnapshot.child("textSize").exists())
+                    size=dataSnapshot.child("textSize").getValue(Integer.class);
+
+                mAdapter.setColor(color);
+                mAdapter.setTextSize(size);
             }
 
         }
@@ -125,6 +146,8 @@ public class ChatActivity extends AppCompatActivity {
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     };
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -393,6 +416,11 @@ public class ChatActivity extends AppCompatActivity {
             mSeenStatus.setVisibility(View.GONE);
         }
     }
+    public void showOptions(View view){
+        Intent intent=new Intent(this,ChatOptionsActivity.class);
+        intent.putExtra("chatId",mchatId);
+        startActivity(intent);
+    }
 
     @Override
     protected void onDestroy() {
@@ -418,5 +446,11 @@ public class ChatActivity extends AppCompatActivity {
         super.onStart();
         changeReadStatus();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAdapter.notifyDataSetChanged();
     }
 }
