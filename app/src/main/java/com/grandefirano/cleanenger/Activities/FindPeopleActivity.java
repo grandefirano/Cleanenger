@@ -103,6 +103,7 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
 
         //SET SEARCHVIEW
         SearchView mSearchView= (SearchView) searchItem.getActionView();
+
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) { return false; }
@@ -189,14 +190,17 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
                         String profilePhoto=userData.getProfilePhoto();
                         String id=dataSnapshot.getKey();
 
-                        //CHECKING IF PERSON IS FRIEND
-                        boolean isFriend=false;
-                        for(String friendId:mFriendsIdList)
-                            if(friendId.equals(id))isFriend=true;
+                        //CHECK IF IT'S ME
+                        if(!id.equals(myId)) {
+                            //CHECKING IF PERSON IS FRIEND
+                            boolean isFriend = false;
+                            for (String friendId : mFriendsIdList)
+                                if (friendId.equals(id)) isFriend = true;
 
-                        //ADDING PERSON DATA TO LIST
-                        mTemporaryList.add(new SinglePersonSearchItem(id,username,profilePhoto,isFriend));
-                        mAdapter.notifyDataSetChanged();
+                            //ADDING PERSON DATA TO LIST
+                            mTemporaryList.add(new SinglePersonSearchItem(id, username, profilePhoto, isFriend));
+                            mAdapter.notifyDataSetChanged();
+                        }
                     }
                     @Override
                     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }

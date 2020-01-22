@@ -66,8 +66,7 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
                 mList.clear();
                 mList.addAll((ArrayList)results.values);
                 notifyDataSetChanged();
-                Log.d("dddddddMLTIS", String.valueOf(mList.size()));
-                Log.d("dddddddMLTIS", String.valueOf(mList.size()));
+
             }
         };
 

@@ -69,7 +69,8 @@ public class SendPhotoActivity extends AppCompatActivity {
     ImageView mPhotoImageView;
     ImageView mCancelButton;
     ImageView mSendButton;
-    ImageView mRotateButton;
+    ImageView mRotateRightButton;
+    ImageView mRotateLeftButton;
     ConstraintLayout mConstraintLayout;
 
     APIService mAPIService;
@@ -111,10 +112,24 @@ public class SendPhotoActivity extends AppCompatActivity {
         mPhotoImageView=findViewById(R.id.photoToSendImageView);
         mCancelButton=findViewById(R.id.sendPhotoCancelButton);
         mSendButton=findViewById(R.id.sendPhotoSendButton);
-        mRotateButton=findViewById(R.id.sendPhotoRotateButton);
+        mRotateLeftButton=findViewById(R.id.sendPhotoRotateLeftButton);
+        mRotateRightButton=findViewById(R.id.sendPhotoRotateRightButton);
         mConstraintLayout=findViewById(R.id.sendConstraintLayout);
 
         mConstraintLayout.setVisibility(View.INVISIBLE);
+
+        mRotateLeftButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rotatePhoto(270);
+            }
+        });
+        mRotateRightButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rotatePhoto(90);
+            }
+        });
 
 
 
@@ -210,8 +225,9 @@ public class SendPhotoActivity extends AppCompatActivity {
         finish();
     }
 
-    public void rotatePhoto(View view){
-        mSelectedImage=Utilities.rotateBitmap(mSelectedImage,270);
+    public void rotatePhoto(int rotation){
+
+        mSelectedImage=Utilities.rotateBitmap(mSelectedImage,rotation);
         mPhotoImageView.setImageBitmap(mSelectedImage);
     }
 

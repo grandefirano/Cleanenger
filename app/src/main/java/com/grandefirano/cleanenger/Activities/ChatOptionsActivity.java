@@ -5,7 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.RadioButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 
 import com.google.firebase.database.DatabaseReference;
@@ -15,29 +16,46 @@ import com.grandefirano.cleanenger.R;
 
 public class ChatOptionsActivity extends AppCompatActivity {
 
-    RadioGroup mColorRadioGroup;
-    RadioGroup mSizeRadioGroup;
+    private RadioGroup mColorRadioGroup;
+    private RadioGroup mSizeRadioGroup;
 
+    private DatabaseReference mChatDataReference;
 
-    DatabaseReference mChatDataReference;
-    String mChatId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_options);
 
+        ImageView mCloseActivityView=findViewById(R.id.closeActivityImageView);
+        LinearLayout mSaveLinearLayout=findViewById(R.id.saveLinearLayout);
+
         mColorRadioGroup=findViewById(R.id.chatColorRadioGroup);
         mSizeRadioGroup=findViewById(R.id.chatTextSizeRadioGroup);
 
+        mCloseActivityView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        mSaveLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveChatOptions();
+            }
+        });
+
+
+
         Intent intent=getIntent();
-        mChatId=intent.getStringExtra("chatId");
+        String mChatId=intent.getStringExtra("chatId");
 
         mChatDataReference= FirebaseDatabase.getInstance().getReference()
                             .child("chats").child(mChatId).child("data");
 
     }
 
-    public void saveChatOptions(View view){
+    public void saveChatOptions(){
         int radioColorId=mColorRadioGroup.getCheckedRadioButtonId();
         int radioSizeId=mSizeRadioGroup.getCheckedRadioButtonId();
 
@@ -85,5 +103,6 @@ public class ChatOptionsActivity extends AppCompatActivity {
         mChatDataReference.child("color").setValue(colorToSave);
 
         mChatDataReference.child("textSize").setValue(sizeToSave);
+        finish();
     }
 }

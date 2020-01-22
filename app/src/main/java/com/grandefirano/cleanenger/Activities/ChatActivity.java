@@ -40,6 +40,7 @@ import com.grandefirano.cleanenger.Notifications.MyResponse;
 import com.grandefirano.cleanenger.Notifications.Sender;
 import com.grandefirano.cleanenger.Notifications.Token;
 import com.grandefirano.cleanenger.R;
+import com.grandefirano.cleanenger.SingleItems.ChatData;
 import com.grandefirano.cleanenger.SingleItems.UserData;
 import com.grandefirano.cleanenger.Adapter.ChatListAdapter;
 import com.grandefirano.cleanenger.SingleItems.SingleMessage;
@@ -96,47 +97,62 @@ public class ChatActivity extends AppCompatActivity {
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     };
 
-
-    private ChildEventListener mListener= new ChildEventListener() {
+    private ValueEventListener mOnDataChangeListener=new ValueEventListener() {
         @Override
-        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-            if(dataSnapshot.getKey().equals("last_message")){
-                setLastMessageStatus(dataSnapshot);
-
-            }else if(dataSnapshot.getKey().equals("data")) {
-                    //TODO: CRASHUJE SIE
-                int color = dataSnapshot.child("color").getValue(Integer.class);
-                int size = dataSnapshot.child("textSize").getValue(Integer.class);
+            if(dataSnapshot.exists()) {
+                ChatData data = dataSnapshot.getValue(ChatData.class);
+                int color = data.getColor();
+                int size = data.getTextSize();
 
                 mAdapter.setColor(color);
                 mAdapter.setTextSize(size);
+            }
 
-            }else{
-                    SingleMessage message=dataSnapshot.getValue(SingleMessage.class);
-                    mMessagesList.add(message);
-                    mAdapter.notifyDataSetChanged();
-                }
+        }
 
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
+    private ValueEventListener mOnLastMessageListener=new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            if(dataSnapshot.exists())
+            setLastMessageStatus(dataSnapshot);
+
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
+    private ChildEventListener mOnMessageListener= new ChildEventListener() {
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+
+
+            SingleMessage message=dataSnapshot.getValue(SingleMessage.class);
+            mMessagesList.add(message);
+            mAdapter.notifyDataSetChanged();
 
             mChatRecycleView.scrollToPosition(mAdapter.getItemCount()-1);
         }
         @Override
         public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            if(dataSnapshot.getKey().equals("last_message")){
-                setLastMessageStatus(dataSnapshot);
-            }else if(dataSnapshot.getKey().equals("data")) {
-                int color=ChatListAdapter.DEFAULT_CHAT_COLOR;
-                if(dataSnapshot.child("color").exists())
-                    color=dataSnapshot.child("color").getValue(Integer.class);
-
-                int size=16;
-                if(dataSnapshot.child("textSize").exists())
-                    size=dataSnapshot.child("textSize").getValue(Integer.class);
-
-                mAdapter.setColor(color);
-                mAdapter.setTextSize(size);
-            }
+//            if(dataSnapshot.getKey().equals("last_message")){
+//                setLastMessageStatus(dataSnapshot);
+//            }else if(dataSnapshot.getKey().equals("data")) {
+////                int color=ChatListAdapter.DEFAULT_CHAT_COLOR;
+////                if(dataSnapshot.child("color").exists())
+////                    color=dataSnapshot.child("color").getValue(Integer.class);
+////
+////                int size=16;
+////                if(dataSnapshot.child("textSize").exists())
+////                    size=dataSnapshot.child("textSize").getValue(Integer.class);
+////
+////                mAdapter.setColor(color);
+////                mAdapter.setTextSize(size);
+//            }
 
         }
         @Override
@@ -166,7 +182,7 @@ public class ChatActivity extends AppCompatActivity {
         mAuth=FirebaseAuth.getInstance();
         myId=mAuth.getCurrentUser().getUid();
         mDatabase= FirebaseDatabase.getInstance().getReference();
-        mChatRef=mDatabase.child("chats").child(mchatId);
+
 
 
         SharedPreferences sharedPreferences=getSharedPreferences(MainActivity.SHARED_PREFS,Context.MODE_PRIVATE);
@@ -174,7 +190,12 @@ public class ChatActivity extends AppCompatActivity {
         myName=sharedPreferences.getString(MainActivity.MY_NAME,myId);
 
 
-        mChatRef.addChildEventListener(mListener);
+        if(mchatId!=null) {
+            mChatRef=mDatabase.child("chats").child(mchatId);
+            mChatRef.child("messages").addChildEventListener(mOnMessageListener);
+            mChatRef.child("data").addValueEventListener(mOnDataChangeListener);
+            mChatRef.child("last_message").addValueEventListener(mOnLastMessageListener);
+        }
 
 
         //VIEW FINDING
@@ -282,23 +303,24 @@ public class ChatActivity extends AppCompatActivity {
 
 
             //Message
+            sendNotification(mIdOfChatPerson,textOfMessage);
 
             /////
-            mChatRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(notify){
-                        Log.d("sssssss","notifyyyy");
-                        sendNotification(mIdOfChatPerson,textOfMessage);
-
-                    }notify=false;
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
+//            mChatRef.addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                    if(notify){
+//                        Log.d("sssssss","notifyyyy");
+//                        sendNotification(mIdOfChatPerson,textOfMessage);
+//
+//                    }notify=false;
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                }
+//            });
 
 
 
@@ -307,7 +329,7 @@ public class ChatActivity extends AppCompatActivity {
             LastMessage lastMessage = new LastMessage(singleMessage.getuId(), singleMessage.getMessage(), ServerValue.TIMESTAMP, false);
 
 
-            mChatRef.push().setValue(singleMessage.toMap());
+            mChatRef.child("messages").push().setValue(singleMessage.toMap());
             //mChatRef.child(String.valueOf(ServerValue.TIMESTAMP)).setValue(singleMessage);
 
             //mChatRef.child(String.valueOf(System.currentTimeMillis())).setValue(singleMessage);
@@ -323,7 +345,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void sendNotification(final String idOfChatPerson, final String textOfMessage) {
-        DatabaseReference allTokens=FirebaseDatabase.getInstance().getReference("tokens");
+        DatabaseReference allTokens=mDatabase.child("tokens");
 
 
         allTokens.child(idOfChatPerson).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -332,22 +354,23 @@ public class ChatActivity extends AppCompatActivity {
 
                     Token token= dataSnapshot.getValue(Token.class);
 
-                    Data data =new Data(myId,textOfMessage,mchatId,myName,idOfChatPerson,R.drawable.ic_notification);
+                        Data data = new Data(myId, textOfMessage, mchatId, myName, idOfChatPerson, R.drawable.ic_notification);
 
-                    Sender sender= new Sender(data,token.getToken());
+                        Sender sender = new Sender(data, token.getToken());
 
-                    mAPIService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
-                        @Override
-                        public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                            //Toast.makeText(ChatActivity.this,response.message(),Toast.LENGTH_SHORT).show();
+                        mAPIService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
+                            @Override
+                            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                //Toast.makeText(ChatActivity.this,response.message(),Toast.LENGTH_SHORT).show();
 
-                        }
+                            }
 
-                        @Override
-                        public void onFailure(Call<MyResponse> call, Throwable t) {
+                            @Override
+                            public void onFailure(Call<MyResponse> call, Throwable t) {
+                                Log.d("TAG","Failure while sending notification");
+                            }
+                        });
 
-                        }
-                    });
 
                 //}
             }
@@ -396,14 +419,30 @@ public class ChatActivity extends AppCompatActivity {
     private void changeReadStatus(){
         if(mchatId!=null) {
 
-             mDatabase.child("chats").child(mchatId).child("last_message").addValueEventListener(onLastMessageListener);
+             mDatabase.child("chats").child(mchatId).child("last_message").addValueEventListener(mOnLastMessageListener);
                 Log.d("dddd","changReadStat");
         }
     }
     private void setLastMessageStatus(DataSnapshot dataSnapshot){
+
         boolean ifRead = (boolean) dataSnapshot.child("ifRead").getValue();
         String uId = (String) dataSnapshot.child("uId").getValue();
         boolean ifMe = uId.equals(myId);
+
+        //TODO:
+
+
+//            if (dataSnapshot.child("uId").exists()) {
+                if (!ifMe || myId.equals(mIdOfChatPerson)) {
+                    if (isOnTheBottom) {
+                        mDatabase.child("chats").child(mchatId).child("last_message").child("ifRead").setValue(true);
+                    }
+                }
+//            }
+
+
+
+
 
         if (ifMe) {
             if(ifRead){
@@ -430,7 +469,7 @@ public class ChatActivity extends AppCompatActivity {
         isOnTheBottom=false;
         if(mDatabase!=null) {
             mDatabase.child("chats").child(mchatId).child("last_message").removeEventListener(onLastMessageListener);
-            mChatRef.removeEventListener(mListener);
+
         }
         Log.d("ddddd","removing");
     }
@@ -444,7 +483,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        changeReadStatus();
+       // changeReadStatus();
 
     }
 

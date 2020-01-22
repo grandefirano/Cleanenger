@@ -9,34 +9,26 @@
         android:logo="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".Activities.ChatOptionsActivity"></activity>
+        android:screenOrientation="portrait"
+        android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".Activities.ChatOptionsActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".Activities.ChooseSendListActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".Activities.ChooseSendListActivity" />
         <activity
-            android:name=".Activities.ShowStoryActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".Activities.ShowStoryActivity" />
         <activity
-            android:name=".Activities.SendPhotoActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".Activities.SendPhotoActivity" />
         <activity
             android:name=".Activities.FindPeopleActivity"
-            android:screenOrientation="portrait" />
+            android:theme="@style/AppTheme"/>
         <activity
-            android:name=".Activities.AccountActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".Activities.AccountActivity" />
         <activity
             android:name=".Activities.ChatActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".Login.Login"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".Login.Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,12 +36,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Login.Register"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".Login.Register" />
         <activity
             android:name=".Activities.MainActivity"
-            android:screenOrientation="portrait" />
+            android:theme="@style/AppTheme"/>
 
         <meta-data
             android:name="preloaded_fonts"

@@ -6,10 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".Activities.ChatOptionsActivity">
 
+    <include
+        android:id="@+id/include"
+        layout="@layout/toolbar_save_close" />
+
     <RadioGroup
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/chatColorRadioGroup">
+        android:id="@+id/chatColorRadioGroup"
+        android:layout_below="@id/include">
     <RadioButton
         android:id="@+id/defaultColorChatRadioButton"
         android:layout_width="wrap_content"
@@ -43,7 +48,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/chatTextSizeRadioGroup"
         android:layout_toEndOf="@+id/chatColorRadioGroup"
-        android:layout_marginStart="30dp">
+        android:layout_marginStart="30dp"
+        android:layout_below="@id/include">
         <RadioButton
             android:id="@+id/size10ChatRadioButton"
             android:layout_width="wrap_content"
@@ -84,12 +90,5 @@
 
 
     </RadioGroup>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="saveChatOptions"
-        android:layout_alignParentBottom="true"
 
-        android:text="VHANGNE"
-        />
 </RelativeLayout>

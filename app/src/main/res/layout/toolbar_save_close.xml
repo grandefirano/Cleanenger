@@ -12,10 +12,11 @@
         android:gravity="center">
 
             <ImageView
+                android:id="@+id/closeActivityImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_close_black"
-                android:onClick="closeAccountActivity"
+
                 />
 
         <LinearLayout
@@ -24,8 +25,8 @@
             android:layout_alignParentEnd="true"
             android:gravity="center"
             android:layout_marginEnd="20dp"
-            android:onClick="saveData"
-            android:id="@+id/saveAccountLinearLayout">
+
+            android:id="@+id/saveLinearLayout">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

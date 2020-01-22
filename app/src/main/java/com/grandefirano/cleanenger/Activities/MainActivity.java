@@ -115,19 +115,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         }
         else if(item.getItemId()==R.id.logout){
 
-            //DELETE SHARED PREFERENCES WHEN LOG OUT
-            SharedPreferences preferences =getSharedPreferences(SHARED_PREFS,Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.clear();
-            editor.commit();
-
-            //LOGOUT FROM DATABASE
-            mAuth.signOut();
-
-            //OPEN LOGIN ACTIVITY
-            Intent intent= new Intent(this,Login.class);
-            finish();
-            startActivity(intent);
+            logOut();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -142,53 +130,56 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
 
         mAuth = FirebaseAuth.getInstance();
-        myId=mAuth.getUid();
+        myId=mAuth.getCurrentUser().getUid();
 
-        mDatabase=FirebaseDatabase.getInstance().getReference();
-        mainScreenMessagesReference=mDatabase.child("users")
-                .child(mAuth.getCurrentUser().getUid())
-                .child("main_screen_messages");
-
-
-        mMessagesRecyclerView=findViewById(R.id.searchPeopleRecyclerView);
-
-        mStoryRecyclerView=findViewById(R.id.storyRecycleView);
-
-        //TODO:
-        //DOWNLOAD MY DATA
-        downloadMyName(myId);
-
-
-        //DOWNLOAD USERS
-        downloadListFromDatabase();
-        listOfSnapsPerson();
-
-
-        mMessagesRecyclerView.setHasFixedSize(true);
-        mLayoutManager= new LinearLayoutManager(this);
-
-
-        mAdapter= new MainListAdapter(getApplicationContext(),listItems,this,chatIdList,idList);
+        if(myId==null)goToLogin();
 
 
 
+            mDatabase = FirebaseDatabase.getInstance().getReference();
+
+            mainScreenMessagesReference = mDatabase.child("users")
+                    .child(myId)
+                    .child("main_screen_messages");
 
 
-        mMessagesRecyclerView.setLayoutManager(mLayoutManager);
-        mMessagesRecyclerView.setAdapter(mAdapter);
+            mMessagesRecyclerView = findViewById(R.id.searchPeopleRecyclerView);
 
-        mStoryRecyclerView.setHasFixedSize(true);
-        LinearLayoutManager mStoryLinearLayoutManager= new LinearLayoutManager(getApplicationContext(),
-                LinearLayoutManager.HORIZONTAL,false);
-        mStoryRecyclerView.setLayoutManager(mStoryLinearLayoutManager);
+            mStoryRecyclerView = findViewById(R.id.storyRecycleView);
 
-
-        mStoryAdapter=new StoryAdapter(getApplicationContext(),mStoryList,this);
-        mStoryRecyclerView.setAdapter(mStoryAdapter);
+            //TODO:
+            //DOWNLOAD MY DATA
+            downloadMyName(myId);
 
 
-        //UPDATE FIREBASE NOTIFICATIONS TOKEN
-        updateToken(FirebaseInstanceId.getInstance().getToken());
+            //DOWNLOAD USERS
+            downloadListFromDatabase();
+            listOfSnapsPerson();
+
+
+            mMessagesRecyclerView.setHasFixedSize(true);
+            mLayoutManager = new LinearLayoutManager(this);
+
+
+            mAdapter = new MainListAdapter(getApplicationContext(), listItems, this, chatIdList, idList);
+
+
+            mMessagesRecyclerView.setLayoutManager(mLayoutManager);
+            mMessagesRecyclerView.setAdapter(mAdapter);
+
+            mStoryRecyclerView.setHasFixedSize(true);
+            LinearLayoutManager mStoryLinearLayoutManager = new LinearLayoutManager(getApplicationContext(),
+                    LinearLayoutManager.HORIZONTAL, false);
+            mStoryRecyclerView.setLayoutManager(mStoryLinearLayoutManager);
+
+
+            mStoryAdapter = new StoryAdapter(getApplicationContext(), mStoryList, this);
+            mStoryRecyclerView.setAdapter(mStoryAdapter);
+
+
+            //UPDATE FIREBASE NOTIFICATIONS TOKEN
+            updateToken(FirebaseInstanceId.getInstance().getToken());
+
 
     }
 
@@ -198,12 +189,14 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         mDatabase.child("users").child(id).child("data").child("username").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                SharedPreferences sharedPreferences=getSharedPreferences(SHARED_PREFS,Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(MY_NAME,dataSnapshot.getValue().toString());
-                editor.commit();
-                Log.d("ddddddmINAME",dataSnapshot.getValue().toString());
-                Log.d("ddddddmINAME","ddd");
+                if(dataSnapshot.exists()) {
+                    SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(MY_NAME, dataSnapshot.getValue().toString());
+                    editor.commit();
+                    Log.d("ddddddmINAME", dataSnapshot.getValue().toString());
+                    Log.d("ddddddmINAME", "ddd");
+                }else logOut();
             }
 
             @Override
@@ -311,13 +304,22 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     protected void onStart() {
         super.onStart();
 
+        if(mAuth.getCurrentUser()==null) goToLogin();
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+    }
 
-        //TODO: przelozyc do create
-        if(currentUser==null) {
-            goToLogin();
-        }else{ }
+    public void logOut(){
+        //DELETE SHARED PREFERENCES WHEN LOG OUT
+        SharedPreferences preferences =getSharedPreferences(SHARED_PREFS,Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.clear();
+        editor.commit();
+
+        //LOGOUT FROM DATABASE
+        mAuth.signOut();
+
+        //OPEN LOGIN ACTIVITY
+        goToLogin();
     }
 
     private void goToLogin(){

@@ -8,22 +8,25 @@
 
     <include
         android:id="@+id/include"
-        layout="@layout/toolbar_account" />
+        layout="@layout/toolbar_save_close" />
+
 
     <de.hdodenhof.circleimageview.CircleImageView
+
         android:id="@+id/profilePhotoImageView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:src="@drawable/default_profile_photo"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
         android:layout_marginTop="32dp"
         android:layout_marginBottom="16dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:onClick="changePhoto"
         app:layout_constraintBottom_toTopOf="@+id/usernameTitleTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/include"
-        android:src="@drawable/default_profile_photo"
+
         />
 
 

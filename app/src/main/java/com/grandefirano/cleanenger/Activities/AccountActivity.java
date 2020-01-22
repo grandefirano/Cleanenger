@@ -55,11 +55,12 @@ public class AccountActivity extends AppCompatActivity {
     private FirebaseUser user;
 
     //VIEWS
-    private EditText emailEditText;
-    private EditText passwordEditText;
-    private EditText usernameEditText;
-    private LinearLayout saveAccountLinearLayout;
+    private EditText mEmailEditText;
+    private EditText mPasswordEditText;
+    private EditText mUsernameEditText;
+    private LinearLayout mSaveAccountLinearLayout;
     private ImageView mProfilePhotoImageView;
+    private ImageView mCloseActivityButton;
 
     //STRINGS
     private String usernameBefore;
@@ -91,12 +92,25 @@ public class AccountActivity extends AppCompatActivity {
                 .child(mAuth.getCurrentUser().getUid())
                 .child("data");
 
-        emailEditText=findViewById(R.id.emailAccountEditText);
-        passwordEditText=findViewById(R.id.passwordAccountEditText);
-        usernameEditText=findViewById(R.id.usernameAccountEditText);
-        saveAccountLinearLayout=findViewById(R.id.saveAccountLinearLayout);
+        mEmailEditText=findViewById(R.id.emailAccountEditText);
+        mPasswordEditText=findViewById(R.id.passwordAccountEditText);
+        mUsernameEditText=findViewById(R.id.usernameAccountEditText);
+        mSaveAccountLinearLayout=findViewById(R.id.saveLinearLayout);
         mProfilePhotoImageView=findViewById(R.id.profilePhotoImageView);
+        mCloseActivityButton=findViewById(R.id.closeActivityImageView);
 
+        mSaveAccountLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveData();
+            }
+        });
+        mCloseActivityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         updateFields();
 
@@ -131,7 +145,7 @@ public class AccountActivity extends AppCompatActivity {
                         if(passwordWritten!=null && !passwordWritten.equals("")){
 
                         reauthenticate(passwordWritten);
-                        saveData(null);
+                        saveData();
                         }else{
                             showDialog();
                         }
@@ -140,12 +154,12 @@ public class AccountActivity extends AppCompatActivity {
                 .show();
     }
 
-    public void saveData(View view){
+    public void saveData(){
 
         //ASSIGNMENT
-        temporaryEmail=emailEditText.getText().toString();
-        temporaryPassword=passwordEditText.getText().toString();
-        temporaryUsername=usernameEditText.getText().toString();
+        temporaryEmail=mEmailEditText.getText().toString();
+        temporaryPassword=mPasswordEditText.getText().toString();
+        temporaryUsername=mUsernameEditText.getText().toString();
 
         //CHECK IF EDITED
 
@@ -187,9 +201,7 @@ public class AccountActivity extends AppCompatActivity {
 
     }
 
-    public void closeAccountActivity(View view){
-        finish();
-    }
+
 
 
     private AuthCredential getCredentials(String passwordWritten){
@@ -340,10 +352,10 @@ public class AccountActivity extends AppCompatActivity {
 
                     //GET DATA FROM FIREBASE AND UPLOAD FIELDS
                     emailBefore=String.valueOf(dataSnapshot.child("email").getValue());
-                    emailEditText.setText(emailBefore);
+                    mEmailEditText.setText(emailBefore);
 
                     usernameBefore=String.valueOf(dataSnapshot.child("username").getValue());
-                    usernameEditText.setText(usernameBefore);
+                    mUsernameEditText.setText(usernameBefore);
 
                     photoBefore=String.valueOf(dataSnapshot.child("profilePhoto").getValue());
                     Picasso.with(getApplicationContext()).load(photoBefore)

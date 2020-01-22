@@ -52,6 +52,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         String body=remoteMessage.getData().get("body");
         String chatId=remoteMessage.getData().get("chatId");
 
+        RemoteMessage.Notification notification=remoteMessage.getNotification();
         int i =Integer.parseInt(user.replaceAll("[\\D]",""));
         Intent intent;
         Bundle bundle = new Bundle();
@@ -81,6 +82,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
 
     private void sendNormalNotification(String icon,String body,String title,PendingIntent pendingIntent,Uri defSoundUri,int i) {
 
+
         NotificationCompat.Builder builder= new NotificationCompat.Builder(this)
                 .setSmallIcon(Integer.parseInt(icon))
                 .setContentText(body)
@@ -90,12 +92,12 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                 .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager=(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        int j=0;
-        if(i>0){
-            j=i;
-
-        }
-        notificationManager.notify(j,builder.build());
+//        int j=0;
+//        if(i>0){
+//            j=i;
+//
+//        }
+        notificationManager.notify(i,builder.build());
 
     }
 
@@ -104,12 +106,12 @@ public class FirebaseMessaging extends FirebaseMessagingService {
         OreoAndAboveNotification notification1=new OreoAndAboveNotification(this);
         Notification.Builder builder=notification1.getONotifications(title,body,pendingIntent,defSoundUri,icon);
 
-        int j=0;
-        if(i>0){
-            j=i;
-
-        }
-        notification1.getNotificationManager().notify(j,builder.build());
+//        int j=0;
+//        if(i>0){
+//            j=i;
+//
+//        }
+        notification1.getNotificationManager().notify(i,builder.build());
 
     }
 }
