@@ -58,9 +58,8 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
             String mChatId;
-            //TODO:DDSAFKSMGDSMF
 
-            if(!dataSnapshot.exists()){
+            if(dataSnapshot.getValue()==null){
                 //IF NOT EXISTS
                 mChatId= UUID.randomUUID().toString();
             }else{
@@ -245,12 +244,8 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
         mDatabase.child("users").child(myId)
         .child("friends").child(id).setValue(name);
 
-
         }
         downloadListFromDatabase();
-
-
-
 
     }
     //ONITEM FROM LIST

@@ -66,7 +66,7 @@ public class ChooseSendListActivity extends AppCompatActivity implements ChooseS
 
         //SETTING RECYCLERVIEW PROPERTIES
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        mAdapter=new ChooseSendAdapter(this,mListOfFriends,mListOfChecked,this);
+        mAdapter=new ChooseSendAdapter(this,mListOfFriends,this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setHasFixedSize(true);

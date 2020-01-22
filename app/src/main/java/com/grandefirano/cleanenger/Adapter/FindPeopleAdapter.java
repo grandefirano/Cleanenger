@@ -10,8 +10,6 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.SingleItems.SinglePersonSearchItem;
 import com.squareup.picasso.Picasso;
@@ -24,47 +22,47 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.ViewHolder> implements Filterable {
 
-
-
-        private DatabaseReference mDatabaseReference= FirebaseDatabase.getInstance().getReference();
-        private boolean mIfOnlyFriends=false;
+    private boolean mIfOnlyFriends=false;
     private ArrayList<SinglePersonSearchItem> mList=new ArrayList<>();
-        private ArrayList<SinglePersonSearchItem> mFullList;
-        private ArrayList<SinglePersonSearchItem> mActualList= new ArrayList<>();
+    private ArrayList<SinglePersonSearchItem> mFullList;
+    private ArrayList<SinglePersonSearchItem> mActualList= new ArrayList<>();
 
-        OnItemListener mOnItemListener;
-        OnRightButtonListener mOnRightButtonListener;
-        private Context mContext;
-        private Filter mFilter=new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                List<SinglePersonSearchItem> filteredList= new ArrayList<>();
+    private OnItemListener mOnItemListener;
+    private OnRightButtonListener mOnRightButtonListener;
+    private Context mContext;
+    private Filter mFilter=new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<SinglePersonSearchItem> filteredList= new ArrayList<>();
 
+            if(constraint==null || constraint.length()==0){
+                filteredList.addAll(mActualList);
+            }else{
+                String filterPattern=constraint.toString().toLowerCase().trim();
 
-                if(constraint==null || constraint.length()==0){
-                    filteredList.addAll(mActualList);
-                }else{
-                    String filterPattern=constraint.toString().toLowerCase().trim();
-
-
-                    for(SinglePersonSearchItem item: mActualList){
-
-                        if(item.getPersonText().toLowerCase().contains(filterPattern)){
-                            filteredList.add(item);
-
-                        }
+                for(SinglePersonSearchItem item: mActualList){
+                    if(item.getPersonText().toLowerCase().contains(filterPattern)){
+                        filteredList.add(item);
                     }
                 }
-                FilterResults results= new FilterResults();
+            }
+            FilterResults results= new FilterResults();
 
-                results.values=filteredList;
-                return results;
+            results.values=filteredList;
+            return results;
             }
 
-            @Override
+        @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 mList.clear();
-                mList.addAll((ArrayList)results.values);
+
+                //because returned value is always ArrayList
+                @SuppressWarnings("unchecked")
+                ArrayList<SinglePersonSearchItem> resultList=
+                        (ArrayList<SinglePersonSearchItem>) results.values;
+
+                mList.addAll(resultList);
+
                 notifyDataSetChanged();
 
             }
@@ -86,7 +84,7 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
 
         }
 
-    public boolean isIfOnlyFriends() {
+    private boolean isIfOnlyFriends() {
         return mIfOnlyFriends;
     }
 
@@ -127,8 +125,8 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v= LayoutInflater.from(parent.getContext()).inflate(R.layout.single_person_search_item,parent,false);
-            ViewHolder viewHolder=new ViewHolder(v,mOnItemListener,mOnRightButtonListener);
-            return viewHolder;
+            return new ViewHolder(v,mOnItemListener,mOnRightButtonListener);
+
         }
 
         @Override
@@ -181,16 +179,16 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-            public ImageView mImageView;
-            public TextView mPersonTextView;
-            public ImageView mRightButtonImageView;
+            private ImageView mImageView;
+            private TextView mPersonTextView;
+            private ImageView mRightButtonImageView;
 
 
             OnItemListener mOnItemListener;
             OnRightButtonListener mOnRightButtonListener;
 
 
-            public ViewHolder(@NonNull View itemView, OnItemListener onItemListener,OnRightButtonListener onRightButtonListener) {
+            private ViewHolder(@NonNull View itemView, OnItemListener onItemListener,OnRightButtonListener onRightButtonListener) {
                 super(itemView);
                 mImageView=itemView.findViewById(R.id.personImageView);
                 mPersonTextView=itemView.findViewById(R.id.nameOfPersonTextView);

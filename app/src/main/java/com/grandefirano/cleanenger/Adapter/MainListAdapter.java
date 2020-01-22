@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,7 +18,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.SingleItems.UserData;
 import com.grandefirano.cleanenger.Utilities;
-import com.grandefirano.cleanenger.SingleItems.SingleMessageFeedItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -31,25 +30,24 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
 
     private ArrayList<String> mChatIdList;
     private ArrayList<String> mUserIdList;
-    OnItemListener mOnItemListener;
+    private OnItemListener mOnItemListener;
     private Context mContext;
-    FirebaseAuth mAuth=FirebaseAuth.getInstance();
-    final String myId=mAuth.getCurrentUser().getUid();
+    private String myId;
 
-    public MainListAdapter(Context context, ArrayList<SingleMessageFeedItem> listOfMessages, OnItemListener onItemListener,ArrayList<String> chatIdList,ArrayList<String> userIdList){
+
+    public MainListAdapter(Context context,String myId,OnItemListener onItemListener,ArrayList<String> chatIdList,ArrayList<String> userIdList){
         mOnItemListener=onItemListener;
-
         mUserIdList=userIdList;
         mChatIdList=chatIdList;
         mContext=context;
+        this.myId=myId;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v= LayoutInflater.from(parent.getContext()).inflate(R.layout.single_message_feed_item,parent,false);
-        ViewHolder viewHolder=new ViewHolder(v,mOnItemListener);
-        return viewHolder;
+        return new ViewHolder(v,mOnItemListener);
     }
 
     @Override
@@ -74,15 +72,15 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public ImageView mImageView;
-        public TextView mPersonTextView;
-        public TextView mMessageTextView;
-        public TextView mDateTextView;
+        private ImageView mImageView;
+        private TextView mPersonTextView;
+        private TextView mMessageTextView;
+        private TextView mDateTextView;
 
         OnItemListener mOnItemListener;
 
 
-        public ViewHolder(@NonNull View itemView,OnItemListener onItemListener) {
+        private ViewHolder(@NonNull View itemView,OnItemListener onItemListener) {
             super(itemView);
             mImageView=itemView.findViewById(R.id.personImageView);
             mPersonTextView=itemView.findViewById(R.id.nameOfPersonTextView);
@@ -123,6 +121,7 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
 
 
                 String dateString = Utilities.getProperDateFormat(date,false);
+
 
                 boolean ifRead=(boolean)dataSnapshot.child("ifRead").getValue();
                 boolean ifMe=messagePersonId.equals(myId);
@@ -172,15 +171,16 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserData userData=dataSnapshot.getValue(UserData.class);
 
-                String username=userData.getUsername();
-                String profilePhoto=userData.getProfilePhoto();
+                if(userData!=null) {
+                    String username = userData.getUsername();
+                    String profilePhoto = userData.getProfilePhoto();
 
-                holder.mPersonTextView.setText(username);
-                Picasso.with(mContext).load(profilePhoto)
-                        .fit()
-                        .centerCrop()
-                        .into(holder.mImageView);
-
+                    holder.mPersonTextView.setText(username);
+                    Picasso.with(mContext).load(profilePhoto)
+                            .fit()
+                            .centerCrop()
+                            .into(holder.mImageView);
+                }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) { }

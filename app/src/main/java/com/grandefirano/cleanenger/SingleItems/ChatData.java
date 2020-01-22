@@ -1,7 +1,5 @@
 package com.grandefirano.cleanenger.SingleItems;
 
-import com.grandefirano.cleanenger.Adapter.ChatListAdapter;
-
 public class ChatData {
     private int color;
     private int textSize;
@@ -10,10 +8,8 @@ public class ChatData {
         this.color = color;
         this.textSize = textSize;
     }
-
+    @SuppressWarnings("unused")
     public ChatData() {
-        color= ChatListAdapter.DEFAULT_CHAT_COLOR;
-        textSize=16;
     }
 
     public int getColor() {

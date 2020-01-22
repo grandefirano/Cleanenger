@@ -16,7 +16,9 @@ import java.util.Map;
             return result;
         }
 
+        @SuppressWarnings("unused")
         public LastMessage() { }
+
         public boolean isifRead() {
             return isifRead;
         }

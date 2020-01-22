@@ -26,30 +26,19 @@ public class ChooseSendAdapter extends RecyclerView.Adapter<ChooseSendAdapter.Vi
 
 
     private final OnItemListener mOnItemListener;
-    private DatabaseReference mDatabaseReference= FirebaseDatabase.getInstance().getReference();
 
     private ArrayList<String> mList;
-    private boolean[] mListOfChecked;
 
-
-
-        private Context mContext;
-//
-//        public static final int SELECTION_ALL=0;
-//        public static final int SELECTION_NOTHING=1;
-//        public static final int SELECTION_CUSTOM=2;
+    private Context mContext;
 
     private boolean isSelectedAll=false;
 
 
-
-
-
-        public ChooseSendAdapter(Context context, ArrayList<String> listOfFriends,boolean[] listOfChecked, OnItemListener onItemListener){
+        public ChooseSendAdapter(Context context, ArrayList<String> listOfFriends, OnItemListener onItemListener){
             mOnItemListener=onItemListener;
            mList=listOfFriends;
             mContext=context;
-            mListOfChecked=listOfChecked;
+
         }
 
 
@@ -59,8 +48,8 @@ public class ChooseSendAdapter extends RecyclerView.Adapter<ChooseSendAdapter.Vi
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v= LayoutInflater.from(parent.getContext()).inflate(R.layout.single_person_send_item,parent,false);
-            ViewHolder viewHolder=new ViewHolder(v,mOnItemListener);
-            return viewHolder;
+            return new ViewHolder(v,mOnItemListener);
+
         }
 
         @Override
@@ -89,15 +78,15 @@ public class ChooseSendAdapter extends RecyclerView.Adapter<ChooseSendAdapter.Vi
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-            public ImageView mImageView;
-            public TextView mPersonTextView;
-            public ImageView mCheck;
+            private ImageView mImageView;
+            private TextView mPersonTextView;
+            private ImageView mCheck;
 
 
             OnItemListener mOnItemListener;
 
 
-            public ViewHolder(@NonNull View itemView, OnItemListener onItemListener) {
+            private ViewHolder(@NonNull View itemView, OnItemListener onItemListener) {
                 super(itemView);
                 mImageView=itemView.findViewById(R.id.personImageView);
                 mPersonTextView=itemView.findViewById(R.id.nameOfPersonTextView);
@@ -135,17 +124,16 @@ public class ChooseSendAdapter extends RecyclerView.Adapter<ChooseSendAdapter.Vi
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserData userData=dataSnapshot.getValue(UserData.class);
 
-                String username=userData.getUsername();
-                String profilePhoto=userData.getProfilePhoto();
+                if(userData!=null) {
+                    String username = userData.getUsername();
+                    String profilePhoto = userData.getProfilePhoto();
 
-                holder.mPersonTextView.setText(username);
-                Picasso.with(mContext).load(profilePhoto)
-                        .fit()
-                        .centerCrop()
-                        .into(holder.mImageView);
-
-
-
+                    holder.mPersonTextView.setText(username);
+                    Picasso.with(mContext).load(profilePhoto)
+                            .fit()
+                            .centerCrop()
+                            .into(holder.mImageView);
+                }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) { }

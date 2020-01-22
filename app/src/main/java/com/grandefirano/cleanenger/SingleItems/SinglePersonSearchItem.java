@@ -32,8 +32,4 @@ public class SinglePersonSearchItem {
     public boolean isFriend() {
         return mIsFriend;
     }
-
-    public void setFriend(boolean friend) {
-        mIsFriend = friend;
-    }
 }

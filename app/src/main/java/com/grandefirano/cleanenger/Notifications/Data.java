@@ -18,55 +18,34 @@ public class Data {
         this.sent = sent;
     }
 
-    public Data() {
-    }
-
+    @SuppressWarnings("unused")
     public String getChatId() {
         return chatId;
     }
 
-    public void setChatId(String chatId) {
-        this.chatId = chatId;
-    }
-
+    @SuppressWarnings("unused")
     public String getUser() {
         return user;
     }
 
-    public void setUser(String user) {
-        this.user = user;
-    }
-
+    @SuppressWarnings("unused")
     public String getBody() {
         return body;
     }
 
-    public void setBody(String body) {
-        this.body = body;
-    }
-
+    @SuppressWarnings("unused")
     public int getIcon() {
         return icon;
     }
 
-    public void setIcon(int icon) {
-        this.icon = icon;
-    }
-
-
+    @SuppressWarnings("unused")
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
+    @SuppressWarnings("unused")
     public String getSent() {
         return sent;
     }
 
-    public void setSent(String sent) {
-        this.sent = sent;
-    }
 }

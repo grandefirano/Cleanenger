@@ -52,7 +52,7 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder>{
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         String mId=mStoriesList.get(position);
-        getUserInfoAndMakeItem(holder,mId,position);
+        getUserInfoAndMakeItem(holder,mId);
 
         Log.d("dddd","ekiiii");
         //add lsitener
@@ -66,13 +66,13 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder>{
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public ImageView storyImageView;
-        public TextView storyNameTextView;
+        private ImageView storyImageView;
+        private TextView storyNameTextView;
         private OnSnapClickListener mOnClickListener;
 
 
 
-        public ViewHolder(@NonNull View itemView,OnSnapClickListener mListener) {
+        private ViewHolder(@NonNull View itemView,OnSnapClickListener mListener) {
             super(itemView);
 
             storyImageView=itemView.findViewById(R.id.StoryImageView);
@@ -92,21 +92,20 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder>{
         return super.getItemViewType(position);
     }
 
-    private void getUserInfoAndMakeItem(final ViewHolder holder, final String userId, int position){
+    private void getUserInfoAndMakeItem(final ViewHolder holder, final String userId){
         DatabaseReference mGivenUserData= FirebaseDatabase.getInstance().getReference()
                 .child("users").child(userId).child("data");
         mGivenUserData.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserData userData=dataSnapshot.getValue(UserData.class);
-                Log.d("ssssss",userId);
-                Log.d("ssssss",userData.getProfilePhoto());
-                Log.d("ssssss",userData.getUsername());
-                Picasso.with(mContext).load(userData.getProfilePhoto())
-                        .fit()
-                        .centerCrop()
-                        .into(holder.storyImageView);
-                holder.storyNameTextView.setText(userData.getUsername());
+                if(userData!=null) {
+                    Picasso.with(mContext).load(userData.getProfilePhoto())
+                            .fit()
+                            .centerCrop()
+                            .into(holder.storyImageView);
+                    holder.storyNameTextView.setText(userData.getUsername());
+                }
 
             }
             @Override

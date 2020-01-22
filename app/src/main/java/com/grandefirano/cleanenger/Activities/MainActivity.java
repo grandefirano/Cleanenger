@@ -17,6 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -26,6 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.grandefirano.cleanenger.Notifications.Token;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.Adapter.StoryAdapter;
@@ -41,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
     public static final String SHARED_PREFS ="user_prefs" ;
     public static final String MY_NAME ="my_name" ;
+
     FirebaseAuth mAuth;
     String myId;
     DatabaseReference mDatabase;
@@ -121,8 +125,8 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         setContentView(R.layout.activity_main);
 
 
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        mAuth=FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
         if (user == null) {
             goToLogin();
         }else {
@@ -140,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
         RecyclerView storyRecyclerView = findViewById(R.id.storyRecycleView);
 
-            //TODO:
+
             //DOWNLOAD MY DATA
             downloadMyName(myId);
 
@@ -154,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
 
 
-            mAdapter = new MainListAdapter(getApplicationContext(), listItems, this, chatIdList, idList);
+            mAdapter = new MainListAdapter(getApplicationContext(),myId, this, chatIdList, idList);
 
 
             messagesRecyclerView.setLayoutManager(layoutManager);
@@ -171,10 +175,19 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
 
             //UPDATE FIREBASE NOTIFICATIONS TOKEN
-            updateToken(FirebaseInstanceId.getInstance().getToken());
+            //updateToken(FirebaseInstanceId.getInstance().getToken());
 
-
-
+            FirebaseInstanceId.getInstance().getInstanceId()
+                    .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                            if(task.isSuccessful()){
+                                if(task.getResult()!=null)
+                                updateToken(task.getResult().getToken());
+                               
+                            }
+                        }
+                    });
 
     }
 
@@ -184,13 +197,12 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         mDatabase.child("users").child(id).child("data").child("username").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()) {
+                String username=dataSnapshot.getValue(String.class);
+                if(username!=null) {
                     SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(MY_NAME, dataSnapshot.getValue().toString());
-                    editor.commit();
-                    Log.d("ddddddmINAME", dataSnapshot.getValue().toString());
-                    Log.d("ddddddmINAME", "ddd");
+                    editor.putString(MY_NAME, username);
+                    editor.apply();
                 }else logOut();
             }
 
@@ -296,8 +308,9 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
+
 
         if(mAuth.getCurrentUser()==null) goToLogin();
 
@@ -308,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         SharedPreferences preferences =getSharedPreferences(SHARED_PREFS,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
-        editor.commit();
+        editor.apply();
 
         //LOGOUT FROM DATABASE
         mAuth.signOut();

@@ -204,10 +204,8 @@ public class ChatOptionsActivity extends AppCompatActivity {
                 sizeToSave=16;
         }
 
-
-        mChatDataReference.child("color").setValue(colorToSave);
-
-        mChatDataReference.child("textSize").setValue(sizeToSave);
+        ChatData chatData=new ChatData(colorToSave,sizeToSave);
+        mChatDataReference.setValue(chatData);
         finish();
     }
 }

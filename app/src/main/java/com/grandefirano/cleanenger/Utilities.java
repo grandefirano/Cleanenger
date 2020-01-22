@@ -5,16 +5,18 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
-import android.net.Uri;
-import android.util.Log;
 
-import java.io.FileNotFoundException;
+import androidx.exifinterface.media.ExifInterface;
+import android.net.Uri;
+import android.webkit.MimeTypeMap;
+
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class Utilities {
 
@@ -33,19 +35,19 @@ public class Utilities {
                 calendarMessageDay.get(Calendar.DAY_OF_YEAR);
         boolean sameYear=calendarToday.get(Calendar.YEAR) == calendarMessageDay.get(Calendar.YEAR);
         if(sameDayofYear&&sameYear) {
-            formatter= new SimpleDateFormat("HH:mm");
+            formatter= new SimpleDateFormat("HH:mm", Locale.getDefault());
         }else if(sameYear){
             if(insideChat){
-                formatter=new SimpleDateFormat("dd MMM 'AT' HH:mm");
+                formatter=new SimpleDateFormat("dd MMM 'AT' HH:mm",Locale.getDefault());
             }else {
-                formatter = new SimpleDateFormat("dd MMM");
+                formatter = new SimpleDateFormat("dd MMM",Locale.getDefault());
             }
         }
         else{
             if (insideChat) {
-                formatter = new SimpleDateFormat("dd MMM yyyy 'AT' HH:mm");
+                formatter = new SimpleDateFormat("dd MMM yyyy 'AT' HH:mm",Locale.getDefault());
             }else {
-                formatter = new SimpleDateFormat("dd MMM yyyy");
+                formatter = new SimpleDateFormat("dd MMM yyyy",Locale.getDefault());
             }
         }
 
@@ -54,6 +56,11 @@ public class Utilities {
 
 
     //PHOTO
+
+    public static String getFileExtension(Uri uri,ContentResolver cR){
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
+    }
 
     public static Bitmap convertToBitmapFromUri(Context context,Uri imageUri,int type) throws IOException {
         InputStream imageStream = context.getContentResolver().openInputStream(imageUri);
@@ -69,7 +76,7 @@ public class Utilities {
         return bitmap;
     }
 
-    public static Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+    private static Bitmap getResizedBitmap(Bitmap image, int maxSize) {
         int width = image.getWidth();
         int height = image.getHeight();
 
@@ -83,7 +90,7 @@ public class Utilities {
         }
         return Bitmap.createScaledBitmap(image, width, height, true);
     }
-    public static Bitmap cropToSquare(Bitmap bitmap){
+    private static Bitmap cropToSquare(Bitmap bitmap){
         int width  = bitmap.getWidth();
         int height = bitmap.getHeight();
         int newWidth = (height > width) ? width : height;
@@ -92,9 +99,9 @@ public class Utilities {
         cropW = (cropW < 0)? 0: cropW;
         int cropH = (height - width) / 2;
         cropH = (cropH < 0)? 0: cropH;
-        Bitmap cropImg = Bitmap.createBitmap(bitmap, cropW, cropH, newWidth, newHeight);
 
-        return cropImg;
+        return Bitmap.createBitmap(bitmap, cropW, cropH, newWidth, newHeight);
+
     }
     public static Bitmap rotateImageBasedOnExif(Bitmap bitmap,String imageFileLocation) throws IOException {
 
@@ -128,9 +135,9 @@ public class Utilities {
     public static Bitmap rotateBitmap(Bitmap bitmap, int rotation){
         Matrix matrix= new Matrix();
         matrix.setRotate(rotation);
-        Bitmap rotatedBitmap= Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+        return Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),
+                bitmap.getHeight(),matrix,true);
 
-        return rotatedBitmap;
     }
 
 

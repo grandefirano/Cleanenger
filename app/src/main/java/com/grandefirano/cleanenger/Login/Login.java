@@ -20,7 +20,6 @@ import com.grandefirano.cleanenger.R;
 public class Login extends AppCompatActivity {
 
     FirebaseAuth mAuth;
-    String TAG="CHECK_LOG_LOGIN";
 
     TextView loginTextView;
     TextView passwordTextView;
@@ -42,7 +41,7 @@ public class Login extends AppCompatActivity {
 
         String email=loginTextView.getText().toString();
         String password = passwordTextView.getText().toString();
-        if(email.length()>0 && email!=null && password.length()>0 && password!=null) {
+        if(email.length()>0 && password.length()>0) {
 
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -52,8 +51,6 @@ public class Login extends AppCompatActivity {
                                 gotoMain();
 
                             } else {
-
-                                //TODO: EXCEPTIONS
                                 Toast.makeText(Login.this, "Authentication failed",
                                         Toast.LENGTH_SHORT).show();
 
@@ -83,14 +80,7 @@ public class Login extends AppCompatActivity {
         super.onStart();
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser!=null) {
-            gotoMain();
-        }else{
-            //TODO: IF USER IS NULL
-
-
-        }
-
+        if(currentUser!=null) gotoMain();
 
     }
 }

@@ -17,10 +17,11 @@ public class Sender {
         this.data = data;
     }
 
+    @SuppressWarnings("unused")
     public String getTo() {
         return to;
     }
-
+    @SuppressWarnings("unused")
     public void setTo(String to) {
         this.to = to;
     }

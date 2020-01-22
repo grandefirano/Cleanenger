@@ -1,7 +1,6 @@
 package com.grandefirano.cleanenger.Adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +27,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     private ViewHolder clickedView;
     //private ViewHolder lastView;
 
-    public static final int MSG_TYPE_LEFT = 0;
-    public static final int MSG_TYPE_RIGHT = 1;
+    private static final int MSG_TYPE_LEFT = 0;
+    private static final int MSG_TYPE_RIGHT = 1;
 
     private ArrayList<SingleMessage> mMessagesList;
 
@@ -39,21 +38,21 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     public static final int GREEN_CHAT_COLOR=103;
     public static final int YELLOW_CHAT_COLOR=104;
 
-    public int mChatColor;
-    public int mTextSize;
+    private int mChatColor;
+    private int mTextSize;
 
 
-    public static final int YELLOW_CHAT_BACKGROUND=R.drawable.background_left_chat_row_yellow;
-    public static final int RED_CHAT_BACKGROUND=R.drawable.background_left_chat_row_red;
-    public static final int GREEN_CHAT_BACKGROUND=R.drawable.background_left_chat_row_green;
-    public static final int BLUE_CHAT_BACKGROUND=R.drawable.background_left_chat_row_blue;
-    public static final int DEFAULT_CHAT_BACKGROUND=R.drawable.background_left_chat_row;
+    private static final int YELLOW_CHAT_BACKGROUND=R.drawable.background_left_chat_row_yellow;
+    private static final int RED_CHAT_BACKGROUND=R.drawable.background_left_chat_row_red;
+    private static final int GREEN_CHAT_BACKGROUND=R.drawable.background_left_chat_row_green;
+    private static final int BLUE_CHAT_BACKGROUND=R.drawable.background_left_chat_row_blue;
+    private static final int DEFAULT_CHAT_BACKGROUND=R.drawable.background_left_chat_row;
 
-    public static final int YELLOW_CHAT_BACKGROUND_CLICKED=R.drawable.background_left_chat_row_yellow_clicked;
-    public static final int RED_CHAT_BACKGROUND_CLICKED=R.drawable.background_left_chat_row_red_clicked;
-    public static final int GREEN_CHAT_BACKGROUND_CLICKED=R.drawable.background_left_chat_row_green_clicked;
-    public static final int BLUE_CHAT_BACKGROUND_CLICKED=R.drawable.background_left_chat_row_blue_clicked;
-    public static final int DEFAULT_CHAT_BACKGROUND_CLICKED=R.drawable.background_left_chat_row_clicked;
+    private static final int YELLOW_CHAT_BACKGROUND_CLICKED=R.drawable.background_left_chat_row_yellow_clicked;
+    private static final int RED_CHAT_BACKGROUND_CLICKED=R.drawable.background_left_chat_row_red_clicked;
+    private static final int GREEN_CHAT_BACKGROUND_CLICKED=R.drawable.background_left_chat_row_green_clicked;
+    private static final int BLUE_CHAT_BACKGROUND_CLICKED=R.drawable.background_left_chat_row_blue_clicked;
+    private static final int DEFAULT_CHAT_BACKGROUND_CLICKED=R.drawable.background_left_chat_row_clicked;
 
 
 
@@ -141,7 +140,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         TextView dateMessageTextView;
 
 
-        public ViewHolder(@NonNull View itemView)  {
+        private ViewHolder(@NonNull View itemView)  {
             super(itemView);
             bodyMessageTextView=itemView.findViewById(R.id.messagePersonTextView);
             profilePhotoImageView=itemView.findViewById(R.id.messagePersonImageView);

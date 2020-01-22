@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,7 +49,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static com.grandefirano.cleanenger.Activities.PhotoHelper.getFileExtension;
+import static com.grandefirano.cleanenger.Utilities.getFileExtension;
+
 
 public class SendPhotoActivity extends AppCompatActivity {
 
@@ -60,7 +62,6 @@ public class SendPhotoActivity extends AppCompatActivity {
     Bitmap mSelectedImage;
 
     DatabaseReference mDatabaseReference;
-    FirebaseAuth mAuth;
     String myId;
 
     String myName;
@@ -75,38 +76,11 @@ public class SendPhotoActivity extends AppCompatActivity {
 
     APIService mAPIService;
 
-    //DatabaseReference mFriendsReference;
-
-
-
-    ArrayList<String> mFriendsIdList= new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_photo);
-
-        mAuth=FirebaseAuth.getInstance();
-        mDatabaseReference=FirebaseDatabase.getInstance().getReference();
-
-        myId=mAuth.getCurrentUser().getUid();
-
-        mAPIService= Client.getRetrofit("https://fcm.googleapis.com/").create(APIService.class);
-
-
-        SharedPreferences sharedPreferences=getSharedPreferences(MainActivity.SHARED_PREFS,MODE_PRIVATE);
-
-        myName=sharedPreferences.getString(MainActivity.MY_NAME,myId);
-
-
-      //  mDatabaseReference=FirebaseDatabase.getInstance().getReference();
-
-//        mFriendsReference=mDatabaseReference.child("users")
-//                .child(mAuth.getCurrentUser().getUid())
-//                .child("friends");
-
-
-        //FriendsController.downloadFriends(mFriendsReference,mFriendsIdList);
 
 
         mPhotoImageView=findViewById(R.id.photoToSendImageView);
@@ -131,23 +105,34 @@ public class SendPhotoActivity extends AppCompatActivity {
             }
         });
 
+        FirebaseUser firebaseUser=FirebaseAuth.getInstance().getCurrentUser();
+        mDatabaseReference=FirebaseDatabase.getInstance().getReference();
+
+        if(firebaseUser==null){
+            finish();
+        }else {
+            myId = firebaseUser.getUid();
+
+            mAPIService = Client.getRetrofit("https://fcm.googleapis.com/").create(APIService.class);
+
+            SharedPreferences sharedPreferences = getSharedPreferences(MainActivity.SHARED_PREFS, MODE_PRIVATE);
+            myName = sharedPreferences.getString(MainActivity.MY_NAME, myId);
+        }
 
 
 
         if(Build.VERSION.SDK_INT>=23){
             if(checkSelfPermission(Manifest.permission.CAMERA)== PackageManager.PERMISSION_DENIED
                     || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_DENIED){
-                //pwemission not enabled,request it
+                //PERMISSION NOT ENABLED
 
                 String[] permission={Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE};
-                //show popup request permission
+                //SHOW REQUEST
                 requestPermissions(permission,PERMISSION_CODE);
             }else{
-                //permission already granted
+                //PERMISSION ALREADY GRANTED
                 openCamera();
             }
-        } else{
-            //system os<marshmallow
         }
     }
     private void openCamera() {
@@ -168,56 +153,10 @@ public class SendPhotoActivity extends AppCompatActivity {
 
         if(mSelectedImage!=null){
 
-
-                Intent intent=new Intent(this,ChooseSendListActivity.class);
-                startActivityForResult(intent,LIST_TO_SEND_CODE);
-
-
-//            final String random=String.valueOf(UUID.randomUUID());
-//
-//            final StorageReference profilePhotoReference= FirebaseStorage.getInstance()
-//                    .getReference().child("snaps")
-//                    .child(mAuth.getCurrentUser().getUid()).child(random +"."+getFileExtension(mImageUri,getContentResolver()));
-//
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//            mSelectedImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-//            byte[] data = baos.toByteArray();
-//
-//            profilePhotoReference.putBytes(data)
-//                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                        @Override
-//                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//
-//
-//                            profilePhotoReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                                @Override
-//                                public void onSuccess(Uri uri) {
-//                                    for(String friendId:mFriendsIdList) {
-//                                        Log.d("ddddddID",friendId);
-//                                        mUsersDatabase.child(friendId).child("snaps").child(mCurrentUserId).child(random).setValue(uri.toString());
-//
-//                                        Toast.makeText(getApplicationContext(), "Upload successful", Toast.LENGTH_SHORT).show();
-//
-//                                        mDatabaseReference.child("snaps").child(random).child(friendId).setValue(false);
-//                                    }
-//
-//                                    finish();
-//                                }
-//                            });
-//
-//
-//
-//                        }
-//                    })
-//                    .addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//                            Toast.makeText(getApplicationContext(),e.getMessage(), Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
+            Intent intent=new Intent(this,ChooseSendListActivity.class);
+            startActivityForResult(intent,LIST_TO_SEND_CODE);
         }else{
-            Toast.makeText(this,"No file was selected",Toast.LENGTH_SHORT).show();
-
+            finish();
         }
 
     }
@@ -231,19 +170,17 @@ public class SendPhotoActivity extends AppCompatActivity {
         mPhotoImageView.setImageBitmap(mSelectedImage);
     }
 
-    //handling permission result
+    //HANDLING PERMISSIONS RESULT
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
-            case PERMISSION_CODE:{
-                if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                    //permission from popup was granted
-                    openCamera();
-                }else{
-                    //permission from popup was denied
-                    Toast.makeText(this,"Permission denied",Toast.LENGTH_SHORT).show();
-                }
-            }
+         if(requestCode==PERMISSION_CODE){
+             if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                 //PERMISSION GRANTED
+                 openCamera();
+             }else{
+                 //PERMISSION DENIED
+                 Toast.makeText(this,"Permission denied",Toast.LENGTH_SHORT).show();
+             }
         }
     }
 
@@ -251,13 +188,13 @@ public class SendPhotoActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==LIST_TO_SEND_CODE){
-            if(resultCode==RESULT_OK){
+            if(resultCode==RESULT_OK && data!=null){
 
                 final ArrayList<String> listToSend=data.getStringArrayListExtra("listToSend");
 
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                mSelectedImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                byte[] bytesData = baos.toByteArray();
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                mSelectedImage.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                byte[] bytesData = byteArrayOutputStream.toByteArray();
 
                 final String random = String.valueOf(UUID.randomUUID());
 
@@ -332,29 +269,29 @@ public class SendPhotoActivity extends AppCompatActivity {
         DatabaseReference allTokens=FirebaseDatabase.getInstance().getReference("tokens");
 
         for(final String idOfSendPerson:idsOfSendPerson) {
-            allTokens.child(idOfSendPerson).addListenerForSingleValueEvent(new ValueEventListener() {
+            allTokens.child(idOfSendPerson).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                     Token token = dataSnapshot.getValue(Token.class);
 
                     Data data = new Data(myId, "[New snap]", null, myName, idOfSendPerson, R.drawable.ic_notification);
+                    if(token!=null) {
 
-                    Sender sender = new Sender(data, token.getToken());
+                        Sender sender = new Sender(data, token.getToken());
 
-                    mAPIService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
-                        @Override
-                        public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                            Log.d("Response",response.toString()); }
-                        @Override
-                        public void onFailure(Call<MyResponse> call, Throwable t) { }
-                    });
+                        mAPIService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
+                            @Override
+                            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                Log.d("Response", response.toString());
+                            }
+                            @Override
+                            public void onFailure(Call<MyResponse> call, Throwable t) { }
+                        });
+                    }
                 }
-
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
             });
         }
     }

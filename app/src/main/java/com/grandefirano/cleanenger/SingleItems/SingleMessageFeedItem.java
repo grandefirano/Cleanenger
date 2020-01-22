@@ -2,9 +2,6 @@ package com.grandefirano.cleanenger.SingleItems;
 
 public class SingleMessageFeedItem {
 
-
-    //TODO:Message Block zmienic na to
-    //private String muId;
     private String mImageResource;
     private String mPersonText;
     private String mMessageText;

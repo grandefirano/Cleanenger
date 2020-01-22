@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -80,7 +79,7 @@ public class AccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
-        FirebaseAuth mAuth=FirebaseAuth.getInstance();
+
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         mUserDataDatabase=FirebaseDatabase.getInstance().getReference()
                 .child("users")
@@ -117,9 +116,9 @@ public class AccountActivity extends AppCompatActivity {
 
     }
 
+
     public void showDialog(){
-        LayoutInflater inflater = this.getLayoutInflater();
-        alertView=inflater.inflate(R.layout.dialog_reauth,null);
+        alertView=View.inflate(getApplicationContext(),R.layout.dialog_reauth,null);
         AlertDialog.Builder builder=new AlertDialog.Builder(this);
         builder.setTitle("Reauthentication")
                 .setMessage("Write previous password to continue")

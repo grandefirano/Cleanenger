@@ -81,12 +81,10 @@ public class ChatActivity extends AppCompatActivity {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             if(isOnTheBottom) {
+                    String uId=(String)dataSnapshot.child("uId").getValue();
+                if (uId!=null && !uId.equals(myId)) {
 
-                if (dataSnapshot.child("uId").exists()) {
-                    if (!dataSnapshot.child("uId").getValue().toString().equals(myId)) {
-
-                        mDatabase.child("chats").child(mchatId).child("last_message").child("ifRead").setValue(true);
-                    }
+                    mDatabase.child("chats").child(mchatId).child("last_message").child("ifRead").setValue(true);
                 }
             }
         }
@@ -343,7 +341,6 @@ public class ChatActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
                         }
-
                         @Override
                         public void onFailure(Call<MyResponse> call, Throwable t) {
                             Log.d("TAG", "Failure while sending notification");

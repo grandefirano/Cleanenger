@@ -25,7 +25,6 @@ public class Register extends AppCompatActivity {
 
     FirebaseAuth mAuth;
     DatabaseReference myRef;
-    String TAG="CHECK_LOG_REGISTER";
 
     TextView loginTextView;
     TextView passwordTextView;
@@ -53,13 +52,11 @@ public class Register extends AppCompatActivity {
         String password=passwordTextView.getText().toString();
         final String email=emailTextView.getText().toString();
 
-        if(username.length()>0 && username!=null &&
-                password.length()>0 && password!=null &&
-                email.length()>0 && email!=null) {
+        if(username.length()>0 && password.length()>0
+                && email.length()>0) {
             if (checkPassword(password)) {
 
-                //TODO: UTWORZ KONTO
-
+                //CREATE ACCOUNT
                 mAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                             @Override
@@ -67,33 +64,32 @@ public class Register extends AppCompatActivity {
                                 if (task.isSuccessful()) {
 
                                     FirebaseUser user = mAuth.getCurrentUser();
-                                    String uId = user.getUid();
+                                    if(user!=null) {
+                                        String uId = user.getUid();
 
-                                    myRef = FirebaseDatabase.getInstance()
-                                            .getReference().child("users").child(uId);
+                                        myRef = FirebaseDatabase.getInstance()
+                                                .getReference().child("users").child(uId);
 
-                                    String linktoPhoto = "https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/profile_photos%2Fdefault_profile_photo.jpg?alt=media&token=5f8f3295-d9d1-4a70-bc41-b344cf07fd5d";
+                                        String linktoPhoto = "https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/profile_photos%2Fdefault_profile_photo.jpg?alt=media&token=5f8f3295-d9d1-4a70-bc41-b344cf07fd5d";
 
-                                    UserData newUserData = new UserData(email, username, linktoPhoto);
-                                    myRef.child("data").setValue(newUserData);
+                                        UserData newUserData = new UserData(email, username, linktoPhoto);
+                                        myRef.child("data").setValue(newUserData);
 
-                                    goToMain();
-
-                                } else {
-
-                                    try {
-                                        throw task.getException();
-                                    } catch (FirebaseAuthUserCollisionException existEmail) {
-                                        Toast.makeText(Register.this, "This email already exists",
-                                                Toast.LENGTH_SHORT).show();
-                                    } catch (Exception e) {
-                                        Toast.makeText(Register.this, "There is some problem with signing up",
-                                                Toast.LENGTH_SHORT).show();
+                                        goToMain();
                                     }
 
-                                }
+                                } else if(task.getException()!=null) {
+                                        try {
+                                            throw task.getException();
 
-                                // ...
+                                        } catch (FirebaseAuthUserCollisionException existEmail) {
+                                            Toast.makeText(Register.this, "This email already exists",
+                                                    Toast.LENGTH_SHORT).show();
+                                        } catch (Exception e) {
+                                            Toast.makeText(Register.this, "There is some problem with signing up",
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                }
                             }
                         });
 
