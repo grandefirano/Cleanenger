@@ -10,59 +10,41 @@
         android:id="@+id/include"
         layout="@layout/toolbar_save_close" />
 
-    <RadioGroup
+    <androidx.core.widget.NestedScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/chatColorRadioGroup"
         android:layout_below="@id/include">
-    <RadioButton
-        android:id="@+id/defaultColorChatRadioButton"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/textSizeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Default"
-        android:checked="true" />
-        <RadioButton
-            android:id="@+id/yellowColorChatRadioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Yellow"/>
-        <RadioButton
-            android:id="@+id/redColorChatRadioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Red"/>
-        <RadioButton
-            android:id="@+id/greenColorChatRadioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Green"/>
-        <RadioButton
-            android:id="@+id/blueColorChatRadioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Blue"/>
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:textSize="18sp"
 
-    </RadioGroup>
+        android:text="text size" />
+
     <RadioGroup
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/chatTextSizeRadioGroup"
-        android:layout_toEndOf="@+id/chatColorRadioGroup"
-        android:layout_marginStart="30dp"
-        android:layout_below="@id/include">
+         android:layout_below="@id/textSizeTextView"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true">
         <RadioButton
             android:id="@+id/size10ChatRadioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="10"
-            android:textSize="10sp"
-            android:checked="true" />
+            android:textSize="10sp"/>
         <RadioButton
             android:id="@+id/size12ChatRadioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="12"
-            android:checked="true"
             android:textSize="12sp"/>
         <RadioButton
             android:id="@+id/defaultSizeChatRadioButton"
@@ -76,19 +58,97 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="20"
-            android:checked="true"
             android:textSize="20sp"/>
         <RadioButton
             android:id="@+id/size24ChatRadioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="24"
-            android:checked="true"
             android:textSize="24sp"/>
 
 
 
 
     </RadioGroup>
+
+    <TextView
+        android:id="@+id/chatColorTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textSize="18sp"
+        android:layout_marginTop="40dp"
+        android:layout_below="@id/chatTextSizeRadioGroup"
+        android:text="chat color" />
+
+
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/colorPicker"
+        android:layout_width="match_parent"
+        android:layout_marginStart="80dp"
+        android:layout_marginEnd="80dp"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@id/chatColorTextView"
+
+        app:flexWrap="wrap"
+        app:alignItems="flex_start"
+        app:alignContent="center"
+        app:justifyContent="center"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="20dp"
+        >
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/colorPickDefault"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_margin="7dp"
+            android:src="@color/colorChatLeft"
+            app:civ_border_color="@color/colorStory"
+            />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/colorPickYellow"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_margin="7dp"
+             android:src="@color/colorChatLeftYellow"
+            app:civ_border_color="@color/colorStory"
+            />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/colorPickGreen"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_margin="7dp"
+            android:src="@color/colorChatLeftGreen"
+            app:civ_border_color="@color/colorStory"
+            />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/colorPickRed"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_margin="7dp"
+            android:src="@color/colorChatLeftRed"
+            app:civ_border_color="@color/colorStory"
+            />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/colorPickBlue"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_margin="7dp"
+            android:src="@color/colorChatLeftBlue"
+            app:civ_border_color="@color/colorStory"
+            />
+    </com.google.android.flexbox.FlexboxLayout>
+
+    </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
 
 </RelativeLayout>

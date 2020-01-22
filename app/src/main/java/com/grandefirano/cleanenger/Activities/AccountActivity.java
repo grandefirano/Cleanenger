@@ -10,10 +10,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,7 +27,7 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,24 +42,22 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+
 
 public class AccountActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST=1;
 
     //FIREBASE
-    private FirebaseAuth mAuth;
+
     private DatabaseReference mUserDataDatabase;
-    private FirebaseUser user;
+    private FirebaseUser mUser;
 
     //VIEWS
     private EditText mEmailEditText;
     private EditText mPasswordEditText;
     private EditText mUsernameEditText;
-    private LinearLayout mSaveAccountLinearLayout;
     private ImageView mProfilePhotoImageView;
-    private ImageView mCloseActivityButton;
 
     //STRINGS
     private String usernameBefore;
@@ -69,10 +66,8 @@ public class AccountActivity extends AppCompatActivity {
     private Bitmap newPhotoBitmap;
 
     private String temporaryPassword;
-    private String temporaryEmail;
-    private String temporaryUsername;
 
-    //ALERT SHOW WHEN REAUTHORIZATION IS NECESSARY
+    //ALERT SHOW WHEN RE-AUTHORIZATION IS NECESSARY
     private View alertView;
 
     //CHECKS IF ACTIVITY CAN BE CLOSE AND TO UPDATE DATA IN ORDER
@@ -85,27 +80,27 @@ public class AccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
-        mAuth=FirebaseAuth.getInstance();
-        user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseAuth mAuth=FirebaseAuth.getInstance();
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
         mUserDataDatabase=FirebaseDatabase.getInstance().getReference()
                 .child("users")
-                .child(mAuth.getCurrentUser().getUid())
+                .child(mUser.getUid())
                 .child("data");
 
         mEmailEditText=findViewById(R.id.emailAccountEditText);
         mPasswordEditText=findViewById(R.id.passwordAccountEditText);
         mUsernameEditText=findViewById(R.id.usernameAccountEditText);
-        mSaveAccountLinearLayout=findViewById(R.id.saveLinearLayout);
         mProfilePhotoImageView=findViewById(R.id.profilePhotoImageView);
-        mCloseActivityButton=findViewById(R.id.closeActivityImageView);
+        ImageView closeActivityButton = findViewById(R.id.closeActivityImageView);
+        LinearLayout saveAccountLinearLayout = findViewById(R.id.saveLinearLayout);
 
-        mSaveAccountLinearLayout.setOnClickListener(new View.OnClickListener() {
+        saveAccountLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveData();
             }
         });
-        mCloseActivityButton.setOnClickListener(new View.OnClickListener() {
+        closeActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
@@ -142,7 +137,7 @@ public class AccountActivity extends AppCompatActivity {
                         EditText passEditText=alertView.findViewById(R.id.passwordWhenChangeProfile);
                         String passwordWritten=passEditText.getText().toString();
 
-                        if(passwordWritten!=null && !passwordWritten.equals("")){
+                        if(!passwordWritten.equals("")){
 
                         reauthenticate(passwordWritten);
                         saveData();
@@ -157,9 +152,9 @@ public class AccountActivity extends AppCompatActivity {
     public void saveData(){
 
         //ASSIGNMENT
-        temporaryEmail=mEmailEditText.getText().toString();
+        String temporaryEmail = mEmailEditText.getText().toString();
         temporaryPassword=mPasswordEditText.getText().toString();
-        temporaryUsername=mUsernameEditText.getText().toString();
+        String temporaryUsername = mUsernameEditText.getText().toString();
 
         //CHECK IF EDITED
 
@@ -188,7 +183,7 @@ public class AccountActivity extends AppCompatActivity {
     private void updatePassword(String temporaryPassword){
 
         //CHECKING PASSWORD
-        if(!temporaryPassword.equals("") && !(temporaryPassword==null)) {
+        if(!temporaryPassword.equals("")) {
 
             if (temporaryPassword.length() >= 6) {
                 isPasswordEdited=true;
@@ -206,13 +201,13 @@ public class AccountActivity extends AppCompatActivity {
 
     private AuthCredential getCredentials(String passwordWritten){
 
-       AuthCredential credential = EmailAuthProvider
+
+        return EmailAuthProvider
                 .getCredential(emailBefore, passwordWritten);
-        return credential;
     }
 
     private void reauthenticate(String passwordWritten){
-        user.reauthenticate(getCredentials(passwordWritten))
+        mUser.reauthenticate(getCredentials(passwordWritten))
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -224,7 +219,7 @@ public class AccountActivity extends AppCompatActivity {
     }
     private void changeEmailInAuth(final String newEmail){
 
-            user.updateEmail(newEmail)
+            mUser.updateEmail(newEmail)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -250,7 +245,7 @@ public class AccountActivity extends AppCompatActivity {
     }
     private void changePasswordInAuth(final String newPassword){
 
-        user.updatePassword(newPassword)
+        mUser.updatePassword(newPassword)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -285,7 +280,7 @@ public class AccountActivity extends AppCompatActivity {
 
             final StorageReference profilePhotoReference= FirebaseStorage.getInstance()
                     .getReference().child("profile_photos")
-                    .child(mAuth.getCurrentUser().getUid()+".jpg");
+                    .child(mUser.getUid()+".jpg");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         newPhotoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);

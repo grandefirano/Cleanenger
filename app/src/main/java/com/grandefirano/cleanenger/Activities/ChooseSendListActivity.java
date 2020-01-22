@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,18 +29,15 @@ public class ChooseSendListActivity extends AppCompatActivity implements ChooseS
 
     //FIREBASE
     private DatabaseReference mDatabaseReference;
-    private FirebaseAuth mAuth;
 
     //ID OF CURRENT USER
     private String myId;
 
     //VIEW
     private CheckBox mSelectedAllCheckBox;
-    private RecyclerView mRecyclerView;
 
     //RECYCLERVIEW IMPLEMENTS
     private ChooseSendAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
 
     //ARRAYS
     private ArrayList<String> mListOfFriends=new ArrayList<>();
@@ -54,20 +52,24 @@ public class ChooseSendListActivity extends AppCompatActivity implements ChooseS
         setContentView(R.layout.activity_choose_send_list);
 
         //VIEWS
-        mRecyclerView=findViewById(R.id.selectToSendRecyclerView);
+        RecyclerView recyclerView = findViewById(R.id.selectToSendRecyclerView);
         mSelectedAllCheckBox=findViewById(R.id.selectAllCheckbox);
 
         //FIREBASE AND ID
         mDatabaseReference= FirebaseDatabase.getInstance().getReference();
-        mAuth=FirebaseAuth.getInstance();
-        myId=mAuth.getCurrentUser().getUid();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user==null){
+            finish();
+        }else {
+            myId = user.getUid();
+        }
 
         //SETTING RECYCLERVIEW PROPERTIES
-        mLayoutManager= new LinearLayoutManager(this);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mAdapter=new ChooseSendAdapter(this,mListOfFriends,mListOfChecked,this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(mAdapter);
+        recyclerView.setHasFixedSize(true);
 
         //DOWNLOAD LIST OF FRIENDS FROM DATABASE
         downloadFriends();
@@ -121,13 +123,13 @@ public class ChooseSendListActivity extends AppCompatActivity implements ChooseS
     @Override
     public void onItemClick(int position, ImageView imageView) {
 
-        if(mListOfChecked[position]==false) {
-            //IF HADN'T BEEN CHECCKED
+        if(!mListOfChecked[position]) {
+            //IF WASN'T CHECKED BEFORE
             imageView.setImageResource(R.drawable.ic_check_box_purple);
             mListOfChecked[position] = true;
         }
         else {
-            //IF HAD BEEN CHECKED BEFORE
+            //IF WAS CHECKED BEFORE
             mListOfChecked[position] = false;
             imageView.setImageResource(R.drawable.ic_check_box_outline_blank_grey);
         }
@@ -141,11 +143,11 @@ public class ChooseSendListActivity extends AppCompatActivity implements ChooseS
 
     public void checkAll(View view){
 
-        //WHEN CHECK ALL BUTTON PRESSED
+        //CHECK IF ALL WERE SELECTED BEFORE
+        //if yes set all to false
+        //if no set all to true
         boolean b;
-        if(mAdapter.getSelectedAll())
-            b=false;
-        else b=true;
+        b= !mAdapter.getSelectedAll();
 
         //SET ALL CHECKBOX
         for (int i = 0; i < mListOfChecked.length; i++) mListOfChecked[i] = b;

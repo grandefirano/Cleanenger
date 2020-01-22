@@ -21,16 +21,16 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.grandefirano.cleanenger.Notifications.APIService;
@@ -41,14 +41,14 @@ import com.grandefirano.cleanenger.Notifications.Sender;
 import com.grandefirano.cleanenger.Notifications.Token;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.SingleItems.ChatData;
+import com.grandefirano.cleanenger.SingleItems.LastMessage;
 import com.grandefirano.cleanenger.SingleItems.UserData;
 import com.grandefirano.cleanenger.Adapter.ChatListAdapter;
 import com.grandefirano.cleanenger.SingleItems.SingleMessage;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.prefs.Preferences;
+
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -59,13 +59,11 @@ public class ChatActivity extends AppCompatActivity {
     EditText mMessageInput;
     String mchatId;
     String myId;
-    String mNameOfPerson;
     boolean isOnTheBottom=false;
 
     String myName;
 
     private ChatListAdapter mAdapter;
-    private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private DatabaseReference mChatRef;
     private RecyclerView mChatRecycleView;
@@ -85,8 +83,7 @@ public class ChatActivity extends AppCompatActivity {
             if(isOnTheBottom) {
 
                 if (dataSnapshot.child("uId").exists()) {
-                    if (!dataSnapshot.child("uId").getValue().toString().equals(mAuth.getCurrentUser().getUid())
-                            || mAuth.getCurrentUser().getUid().equals(mIdOfChatPerson)) {
+                    if (!dataSnapshot.child("uId").getValue().toString().equals(myId)) {
 
                         mDatabase.child("chats").child(mchatId).child("last_message").child("ifRead").setValue(true);
                     }
@@ -103,11 +100,13 @@ public class ChatActivity extends AppCompatActivity {
 
             if(dataSnapshot.exists()) {
                 ChatData data = dataSnapshot.getValue(ChatData.class);
-                int color = data.getColor();
-                int size = data.getTextSize();
+                if(data!=null) {
+                    int color = data.getColor();
+                    int size = data.getTextSize();
 
-                mAdapter.setColor(color);
-                mAdapter.setTextSize(size);
+                    mAdapter.setColor(color);
+                    mAdapter.setTextSize(size);
+                }
             }
 
         }
@@ -179,8 +178,13 @@ public class ChatActivity extends AppCompatActivity {
 
 
         //FIREBASE
-        mAuth=FirebaseAuth.getInstance();
-        myId=mAuth.getCurrentUser().getUid();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user=auth.getCurrentUser();
+        if(user==null){
+            finish();
+        }else {
+            myId = user.getUid();
+        }
         mDatabase= FirebaseDatabase.getInstance().getReference();
 
 
@@ -223,15 +227,17 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserData userData=dataSnapshot.getValue(UserData.class);
-                mNameOfPerson=userData.getUsername();
-                mPersonNameTextView.setText(mNameOfPerson);
+                if(userData!=null) {
+                    String nameOfPerson = userData.getUsername();
+                    mPersonNameTextView.setText(nameOfPerson);
 
-                profilePhoto=userData.getProfilePhoto();
-                Picasso.with(getApplicationContext()).load(userData.getProfilePhoto())
-                        .fit()
-                        .centerCrop()
-                        .into(mPersonImageView);
-                mAdapter.updateProfilePhoto(profilePhoto);
+                    profilePhoto = userData.getProfilePhoto();
+                    Picasso.with(getApplicationContext()).load(userData.getProfilePhoto())
+                            .fit()
+                            .centerCrop()
+                            .into(mPersonImageView);
+                    mAdapter.updateProfilePhoto(profilePhoto);
+                }
             }
 
             @Override
@@ -255,16 +261,12 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if(!recyclerView.canScrollVertically(1)){
-                    isOnTheBottom=true;
 
-                }else{
-                    isOnTheBottom=false;
-
-                }
+                //IF CANNOT SCROLL THEN IS ON THE BOTTOM
+                isOnTheBottom= !recyclerView.canScrollVertically(1);
             }
         });
-        //adjust recyclerview to keyboard
+        //ADJUST RECYCLER VIEW TO THE KEYBOARD
         mChatRecycleView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
 
@@ -291,7 +293,7 @@ public class ChatActivity extends AppCompatActivity {
         notify=true;
 
         final String textOfMessage=mMessageInput.getText().toString();
-        if(textOfMessage!=null && !textOfMessage.equals("")) {
+        if(!textOfMessage.equals("")) {
 
             //SENDING USER
             mDatabase.child("users").child(myId).child("main_screen_messages")
@@ -305,34 +307,12 @@ public class ChatActivity extends AppCompatActivity {
             //Message
             sendNotification(mIdOfChatPerson,textOfMessage);
 
-            /////
-//            mChatRef.addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                    if(notify){
-//                        Log.d("sssssss","notifyyyy");
-//                        sendNotification(mIdOfChatPerson,textOfMessage);
-//
-//                    }notify=false;
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                }
-//            });
 
-
-
-                //////
             SingleMessage singleMessage = new SingleMessage(myId, textOfMessage, ServerValue.TIMESTAMP);
             LastMessage lastMessage = new LastMessage(singleMessage.getuId(), singleMessage.getMessage(), ServerValue.TIMESTAMP, false);
 
 
             mChatRef.child("messages").push().setValue(singleMessage.toMap());
-            //mChatRef.child(String.valueOf(ServerValue.TIMESTAMP)).setValue(singleMessage);
-
-            //mChatRef.child(String.valueOf(System.currentTimeMillis())).setValue(singleMessage);
 
 
             mChatRef.child("last_message").setValue(lastMessage.toMap());
@@ -354,25 +334,23 @@ public class ChatActivity extends AppCompatActivity {
 
                     Token token= dataSnapshot.getValue(Token.class);
 
-                        Data data = new Data(myId, textOfMessage, mchatId, myName, idOfChatPerson, R.drawable.ic_notification);
+                if (token != null) {
 
-                        Sender sender = new Sender(data, token.getToken());
+                    Data data = new Data(myId, textOfMessage, mchatId, myName, idOfChatPerson, R.drawable.ic_notification);
+                    Sender sender = new Sender(data, token.getToken());
 
-                        mAPIService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
-                            @Override
-                            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                                //Toast.makeText(ChatActivity.this,response.message(),Toast.LENGTH_SHORT).show();
+                    mAPIService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
+                        @Override
+                        public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                        }
 
-                            }
+                        @Override
+                        public void onFailure(Call<MyResponse> call, Throwable t) {
+                            Log.d("TAG", "Failure while sending notification");
+                        }
+                    });
+                }
 
-                            @Override
-                            public void onFailure(Call<MyResponse> call, Throwable t) {
-                                Log.d("TAG","Failure while sending notification");
-                            }
-                        });
-
-
-                //}
             }
 
             @Override
@@ -395,25 +373,7 @@ public class ChatActivity extends AppCompatActivity {
 
 
 
-    public class LastMessage extends SingleMessage{
-        private boolean isifRead;
 
-        public LastMessage(String uId,String message,Map<String,String> dateCreated, boolean isRead) {
-            super(uId, message,dateCreated);
-            this.isifRead = isRead;
-        }
-        public Map<String, Object> toMap() {
-           Map<String,Object> result=super.toMap();
-           result.put("ifRead",isifRead);
-
-            return result;
-        }
-
-        public LastMessage() { }
-        public boolean isifRead() {
-            return isifRead;
-        }
-    }
 
 
     private void changeReadStatus(){
@@ -425,34 +385,33 @@ public class ChatActivity extends AppCompatActivity {
     }
     private void setLastMessageStatus(DataSnapshot dataSnapshot){
 
-        boolean ifRead = (boolean) dataSnapshot.child("ifRead").getValue();
-        String uId = (String) dataSnapshot.child("uId").getValue();
-        boolean ifMe = uId.equals(myId);
+        LastMessage lastMessage=dataSnapshot.getValue(LastMessage.class);
+        if(lastMessage!=null) {
 
-        //TODO:
+            boolean ifRead = lastMessage.isifRead();
+            String uId = lastMessage.getuId();
+            boolean ifMe = uId.equals(myId);
+
+            //TODO:
 
 
-//            if (dataSnapshot.child("uId").exists()) {
-                if (!ifMe || myId.equals(mIdOfChatPerson)) {
-                    if (isOnTheBottom) {
-                        mDatabase.child("chats").child(mchatId).child("last_message").child("ifRead").setValue(true);
-                    }
+
+
+
+            if (ifMe) {
+                if (ifRead) {
+                    mSeenStatus.setText(R.string.chatStatusSeenText);
+                } else {
+                    mSeenStatus.setText(R.string.chatStatusSendText);
                 }
-//            }
+                mSeenStatus.setVisibility(View.VISIBLE);
 
-
-
-
-
-        if (ifMe) {
-            if(ifRead){
-                mSeenStatus.setText("Seen");
-            }else {
-                mSeenStatus.setText("Send");
+            } else {
+                if (isOnTheBottom) {
+                    mDatabase.child("chats").child(mchatId).child("last_message").child("ifRead").setValue(true);
+                }
+                mSeenStatus.setVisibility(View.GONE);
             }
-            mSeenStatus.setVisibility(View.VISIBLE);
-        }else{
-            mSeenStatus.setVisibility(View.GONE);
         }
     }
     public void showOptions(View view){

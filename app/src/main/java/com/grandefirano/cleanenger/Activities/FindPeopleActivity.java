@@ -17,6 +17,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,9 +36,7 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
 
 
     //FIREBASE
-    private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
-    private DatabaseReference mChatClickedDatabaseReference;
 
     //CURRENT USER ID
     private String myId;
@@ -46,17 +45,11 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
     private ArrayList<String> mFriendsIdList= new ArrayList<>();
     private ArrayList<SinglePersonSearchItem> mTemporaryList=new ArrayList<>();
 
-    //VIEWS
-    private RecyclerView mRecyclerView;
-    private Switch mSwitch;
-
     //RECYCLERVIEW IMPLEMENTS
     private FindPeopleAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
 
     //INTENT AND CONTEXT
     private Intent newIntent;
-    private Context mContext;
 
 
     //WHEN CLICKED CHAT TO GET CHAT ID IF EXISTS
@@ -65,6 +58,8 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
             String mChatId;
+            //TODO:DDSAFKSMGDSMF
+
             if(!dataSnapshot.exists()){
                 //IF NOT EXISTS
                 mChatId= UUID.randomUUID().toString();
@@ -124,25 +119,29 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
         setContentView(R.layout.activity_find_people);
 
         //FIREBASE AND ID
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         mDatabase= FirebaseDatabase.getInstance().getReference();
-        myId=mAuth.getCurrentUser().getUid();
-
+        if(currentUser==null){
+            finish();
+        }else {
+            myId = currentUser.getUid();
+        }
         //CONTEXT
-        mContext=getApplicationContext();
+        Context context = getApplicationContext();
 
         //VIEWS
-        mRecyclerView=findViewById(R.id.searchPeopleRecyclerView);
-        mSwitch=findViewById(R.id.switchIfFriends);
+        //VIEWS
+        RecyclerView recyclerView = findViewById(R.id.searchPeopleRecyclerView);
+        Switch aSwitch = findViewById(R.id.switchIfFriends);
 
-        mSwitch.setOnCheckedChangeListener(mOnCheckedChangeListener);
+        aSwitch.setOnCheckedChangeListener(mOnCheckedChangeListener);
 
         //IMPLEMENTATIONS FOR RECYCLERVIEW
-        mLayoutManager= new LinearLayoutManager(this);
-        mAdapter= new FindPeopleAdapter(mContext,mTemporaryList,FindPeopleActivity.this,FindPeopleActivity.this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        mAdapter= new FindPeopleAdapter(context,mTemporaryList,FindPeopleActivity.this,FindPeopleActivity.this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(mAdapter);
+        recyclerView.setHasFixedSize(true);
 
         //DOWNLOAD FRIENDS AND ALL USERS LISTS
         downloadListFromDatabase();
@@ -186,20 +185,23 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         UserData userData=dataSnapshot.child("data").getValue(UserData.class);
-                        String username= userData.getUsername();
-                        String profilePhoto=userData.getProfilePhoto();
-                        String id=dataSnapshot.getKey();
+                        String id = dataSnapshot.getKey();
+                        if(userData!=null && id!=null) {
+                            String username = userData.getUsername();
+                            String profilePhoto = userData.getProfilePhoto();
 
-                        //CHECK IF IT'S ME
-                        if(!id.equals(myId)) {
-                            //CHECKING IF PERSON IS FRIEND
-                            boolean isFriend = false;
-                            for (String friendId : mFriendsIdList)
-                                if (friendId.equals(id)) isFriend = true;
 
-                            //ADDING PERSON DATA TO LIST
-                            mTemporaryList.add(new SinglePersonSearchItem(id, username, profilePhoto, isFriend));
-                            mAdapter.notifyDataSetChanged();
+                            //CHECK IF IT'S ME
+                            if (!id.equals(myId)) {
+                                //CHECKING IF PERSON IS FRIEND
+                                boolean isFriend = false;
+                                for (String friendId : mFriendsIdList)
+                                    if (friendId.equals(id)) isFriend = true;
+
+                                //ADDING PERSON DATA TO LIST
+                                mTemporaryList.add(new SinglePersonSearchItem(id, username, profilePhoto, isFriend));
+                                mAdapter.notifyDataSetChanged();
+                            }
                         }
                     }
                     @Override
@@ -260,10 +262,9 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
         newIntent.putExtra("id", mAdapter.getmList().get(position).getPersonId());
 
 
-
-        mChatClickedDatabaseReference= mDatabase.child("users").child(mAuth.getCurrentUser().getUid())
+        DatabaseReference chatClickedDatabaseReference = mDatabase.child("users").child(myId)
                 .child("main_screen_messages").child(mAdapter.getmList().get(position).getPersonId());
-        mChatClickedDatabaseReference
+        chatClickedDatabaseReference
                 .addListenerForSingleValueEvent(mOnChatIdValueListener);
 
     }

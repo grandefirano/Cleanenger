@@ -6,20 +6,21 @@
     <color name="colorAccent">#7D5AD3</color>
     <color name="colorStory">#AD65FF</color>
     <color name="colorAccentSecondary">#1BA2D8</color>
-    <color name="colorAccentRed">#5638A3</color>
+    <color name="colorAccentPurple">#5638A3</color>
     <color name="colorTitleText">#222</color>
     <color name="colorTextSecondary">#555</color>
 
     #CHAT
 
-    <color name="colorChatLeft">#BFD6FF</color>
-    <color name="colorChatRight">#C9C9C9</color>
+
 
 
     <color name="colorChatFont">#222222</color>
     <color name="colorChatFontBright">#EEEEEE</color>
 
-    <color name="colorChatLeftClicked">#A5B7E0</color>
+    <color name="colorChatLeft">#8559E9</color>
+    <color name="colorChatRight">#C9C9C9</color>
+    <color name="colorChatLeftClicked">#6D53C0</color>
     <color name="colorChatRightClicked">#AFAFAF</color>
     <color name="colorChatLeftYellow">#CCBA47</color>
     <color name="colorChatLeftRed">#B93D3D</color>
