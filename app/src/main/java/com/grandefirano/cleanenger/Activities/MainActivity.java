@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -49,14 +50,10 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     private long backPressedTime;
 
 
-
-    private RecyclerView mStoryRecyclerView;
     private StoryAdapter mStoryAdapter;
     private List<String> mStoryList=new ArrayList<>();
 
-    private RecyclerView mMessagesRecyclerView;
     private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
     ArrayList<String> idList=new ArrayList<>();
     ArrayList<SingleMessageFeedItem> listItems= new ArrayList<>();
     ArrayList<String> chatIdList= new ArrayList<>();
@@ -68,10 +65,10 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            DatabaseReference lastMessage=mDatabase.child("chats").child(dataSnapshot.getValue().toString()).child("last_message");
+            String chatId=String.valueOf(dataSnapshot.getValue());
 
             idList.add(String.valueOf(dataSnapshot.getKey()));
-            chatIdList.add(String.valueOf(dataSnapshot.getValue()));
+            chatIdList.add(chatId);
             mAdapter.notifyDataSetChanged();
 
         }
@@ -85,9 +82,6 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     };
 
-
-
-    String TAG="CHECK_LOG_MAIN";
 
     //MENU
     @Override
@@ -128,12 +122,12 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
 
 
-        mAuth = FirebaseAuth.getInstance();
-        myId=mAuth.getCurrentUser().getUid();
-
-        if(myId==null)goToLogin();
-
-
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            goToLogin();
+        }else {
+            myId = user.getUid();
+        }
 
             mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -142,9 +136,9 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
                     .child("main_screen_messages");
 
 
-            mMessagesRecyclerView = findViewById(R.id.searchPeopleRecyclerView);
+        RecyclerView messagesRecyclerView = findViewById(R.id.searchPeopleRecyclerView);
 
-            mStoryRecyclerView = findViewById(R.id.storyRecycleView);
+        RecyclerView storyRecyclerView = findViewById(R.id.storyRecycleView);
 
             //TODO:
             //DOWNLOAD MY DATA
@@ -156,28 +150,30 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
             listOfSnapsPerson();
 
 
-            mMessagesRecyclerView.setHasFixedSize(true);
-            mLayoutManager = new LinearLayoutManager(this);
+            messagesRecyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
 
 
             mAdapter = new MainListAdapter(getApplicationContext(), listItems, this, chatIdList, idList);
 
 
-            mMessagesRecyclerView.setLayoutManager(mLayoutManager);
-            mMessagesRecyclerView.setAdapter(mAdapter);
+            messagesRecyclerView.setLayoutManager(layoutManager);
+            messagesRecyclerView.setAdapter(mAdapter);
 
-            mStoryRecyclerView.setHasFixedSize(true);
+            storyRecyclerView.setHasFixedSize(true);
             LinearLayoutManager mStoryLinearLayoutManager = new LinearLayoutManager(getApplicationContext(),
                     LinearLayoutManager.HORIZONTAL, false);
-            mStoryRecyclerView.setLayoutManager(mStoryLinearLayoutManager);
+            storyRecyclerView.setLayoutManager(mStoryLinearLayoutManager);
 
 
             mStoryAdapter = new StoryAdapter(getApplicationContext(), mStoryList, this);
-            mStoryRecyclerView.setAdapter(mStoryAdapter);
+            storyRecyclerView.setAdapter(mStoryAdapter);
 
 
             //UPDATE FIREBASE NOTIFICATIONS TOKEN
             updateToken(FirebaseInstanceId.getInstance().getToken());
+
+
 
 
     }
