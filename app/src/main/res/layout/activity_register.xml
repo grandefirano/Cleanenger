@@ -77,7 +77,7 @@
             android:id="@+id/registerButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="2dp"
             android:onClick="register"
             android:text="@string/register_button" />
 
@@ -86,6 +86,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="goToLogin"
+            android:padding="3dp"
             android:text="@string/have_account_text_register" />
 
 

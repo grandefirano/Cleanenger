@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,7 +36,7 @@ import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.adapters.StoryAdapter;
 import com.grandefirano.cleanenger.login_register.Login;
 import com.grandefirano.cleanenger.adapters.MainListAdapter;
-import com.grandefirano.cleanenger.single_items.SingleMessageFeedItem;
+import com.grandefirano.cleanenger.single_items.SingleMainScreenMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
     private RecyclerView.Adapter mAdapter;
     ArrayList<String> idList=new ArrayList<>();
-    ArrayList<SingleMessageFeedItem> listItems= new ArrayList<>();
+    ArrayList<SingleMainScreenMessage> listItems= new ArrayList<>();
     ArrayList<String> chatIdList= new ArrayList<>();
     ArrayList<String> usernameList=new ArrayList<>();
 
@@ -71,19 +72,47 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            String chatId=String.valueOf(dataSnapshot.getValue());
+            SingleMainScreenMessage singleMainScreenMessage=
+                    dataSnapshot.getValue(SingleMainScreenMessage.class);
+            if(singleMainScreenMessage!=null) {
+                String chatId = singleMainScreenMessage.getChatId();
 
-            idList.add(String.valueOf(dataSnapshot.getKey()));
-            chatIdList.add(chatId);
-            mAdapter.notifyDataSetChanged();
+                idList.add(String.valueOf(dataSnapshot.getKey()));
+                chatIdList.add(chatId);
 
+                Log.d("CHANGE",idList.get(idList.size()-1));
+                Log.d("CHANGE",chatIdList.get(chatIdList.size()-1));
+
+
+                mAdapter.notifyDataSetChanged();
+            }
         }
         @Override
         public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
         @Override
         public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
         @Override
-        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            SingleMainScreenMessage singleMainScreenMessage=
+                    dataSnapshot.getValue(SingleMainScreenMessage.class);
+            if(singleMainScreenMessage!=null) {
+                String chatId = singleMainScreenMessage.getChatId();
+                String uId=String.valueOf(dataSnapshot.getKey());
+                idList.remove(uId);
+                chatIdList.remove(chatId);
+                idList.add(uId);
+                chatIdList.add(chatId);
+
+
+                Log.d("CHANGE",idList.get(idList.size()-1));
+                Log.d("CHANGE",chatIdList.get(chatIdList.size()-1));
+
+
+                mAdapter.notifyDataSetChanged();
+            }
+
+        }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     };
@@ -159,7 +188,8 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
             messagesRecyclerView.setHasFixedSize(true);
             LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-
+            layoutManager.setReverseLayout(true);
+            layoutManager.setStackFromEnd(true);
             mAdapter = new MainListAdapter(getApplicationContext(),myId, this, chatIdList, idList);
 
             messagesRecyclerView.setLayoutManager(layoutManager);
@@ -246,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         chatIdList.clear();
         usernameList.clear();
 
-        mainScreenMessagesReference.addChildEventListener(mOnMainScreenMessageListener);
+        mainScreenMessagesReference.orderByChild("date").addChildEventListener(mOnMainScreenMessageListener);
 
     }
 

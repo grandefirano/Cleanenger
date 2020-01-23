@@ -42,6 +42,7 @@ import com.grandefirano.cleanenger.notifications.Token;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.single_items.ChatData;
 import com.grandefirano.cleanenger.single_items.LastMessage;
+import com.grandefirano.cleanenger.single_items.SingleMainScreenMessage;
 import com.grandefirano.cleanenger.single_items.UserData;
 import com.grandefirano.cleanenger.adapters.ChatListAdapter;
 import com.grandefirano.cleanenger.single_items.SingleMessage;
@@ -258,13 +259,17 @@ public class ChatActivity extends AppCompatActivity {
         final String textOfMessage=mMessageInput.getText().toString();
         if(!textOfMessage.equals("")) {
 
-            //SENDING USER
-            mDatabase.child("users").child(myId).child("main_screen_messages")
-                    .child(mIdOfChatPerson).setValue(mchatId);
-            //RECEIVING USER
 
+
+            //SENDING USER
+            SingleMainScreenMessage singleMainMessage=
+                    new SingleMainScreenMessage(mchatId,ServerValue.TIMESTAMP);
+
+            mDatabase.child("users").child(myId).child("main_screen_messages")
+                    .child(mIdOfChatPerson).setValue(singleMainMessage.toMap());
+            //RECEIVING USER
             mDatabase.child("users").child(mIdOfChatPerson).child("main_screen_messages")
-                    .child(myId).setValue(mchatId);
+                    .child(myId).setValue(singleMainMessage.toMap());
 
             //NOTIFICATION
             sendNotification(mIdOfChatPerson,textOfMessage);
@@ -360,9 +365,9 @@ public class ChatActivity extends AppCompatActivity {
 
         super.onDestroy();
         isOnTheBottom=false;
-        if(mDatabase!=null) {
-
-            }
+//        if(mDatabase!=null) {
+//
+//            }
     }
     @Override
     public void onBackPressed() {

@@ -26,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.adapters.FindPeopleAdapter;
+import com.grandefirano.cleanenger.single_items.SingleMainScreenMessage;
 import com.grandefirano.cleanenger.single_items.SinglePersonSearchItem;
 import com.grandefirano.cleanenger.single_items.UserData;
 
@@ -57,14 +58,17 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+            SingleMainScreenMessage singleMainScreenMessage=
+                    dataSnapshot.getValue(SingleMainScreenMessage.class);
+
             String mChatId;
 
-            if(dataSnapshot.getValue()==null){
+            if(singleMainScreenMessage==null){
                 //IF NOT EXISTS
                 mChatId= UUID.randomUUID().toString();
             }else{
                 //IF EXISTS
-                mChatId=dataSnapshot.getValue().toString();
+                mChatId=singleMainScreenMessage.getChatId();
             }
             newIntent.putExtra("chatId",mChatId);
             startActivity(newIntent);
