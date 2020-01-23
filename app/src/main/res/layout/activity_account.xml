@@ -36,11 +36,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:text="username"
+        android:text="@string/username_account_title"
         app:layout_constraintBottom_toTopOf="@+id/usernameAccountEditText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:labelFor="@id/usernameAccountEditText"/>
 
     <EditText
         android:id="@+id/usernameAccountEditText"
@@ -54,16 +55,18 @@
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/emailTitleTextView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:importantForAutofill="no" />
 
     <TextView
         android:id="@+id/emailTitleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="email"
+        android:text="@string/email_account_title"
         app:layout_constraintBottom_toTopOf="@+id/emailAccountEditText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:labelFor="@id/emailAccountEditText"/>
 
 
     <EditText
@@ -78,18 +81,20 @@
         android:backgroundTint="@color/colorAccent"
         app:layout_constraintBottom_toTopOf="@+id/passwordTitleTextView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:importantForAutofill="no" />
 
 
     <TextView
         android:id="@+id/passwordTitleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="password"
+        android:text="@string/password_account_title"
         app:layout_constraintBottom_toTopOf="@+id/passwordAccountEditText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:labelFor="@id/passwordAccountEditText"/>
 
 
     <EditText
@@ -105,6 +110,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:importantForAutofill="no" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -25,7 +25,7 @@
         android:layout_centerHorizontal="true"
         android:textSize="18sp"
 
-        android:text="text size" />
+        android:text="@string/text_size_title_chat_option" />
 
     <RadioGroup
         android:layout_width="wrap_content"
@@ -38,32 +38,33 @@
             android:id="@+id/size10ChatRadioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="10"
-            android:textSize="10sp"/>
+            android:text="@string/size_10_radio_chat_option"
+            android:textSize="10sp"
+            tools:ignore="SmallSp" />
         <RadioButton
             android:id="@+id/size12ChatRadioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="12"
+            android:text="@string/size_12_radio_chat_option"
             android:textSize="12sp"/>
         <RadioButton
             android:id="@+id/defaultSizeChatRadioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="16 (default)"
+            android:text="@string/size_16_radio_chat_option"
             android:checked="true"
             android:textSize="16sp"/>
         <RadioButton
             android:id="@+id/size20ChatRadioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="20"
+            android:text="@string/size_20_radio_chat_option"
             android:textSize="20sp"/>
         <RadioButton
             android:id="@+id/size24ChatRadioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="24"
+            android:text="@string/size_24_radio_chat_option"
             android:textSize="24sp"/>
 
 
@@ -79,7 +80,7 @@
         android:textSize="18sp"
         android:layout_marginTop="40dp"
         android:layout_below="@id/chatTextSizeRadioGroup"
-        android:text="chat color" />
+        android:text="@string/chat_color_title_chat_options" />
 
 
 

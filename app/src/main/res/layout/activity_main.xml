@@ -31,7 +31,8 @@
                 android:onClick="takeAPhoto"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_add_a_photo_black" />
+                app:srcCompat="@drawable/ic_add_a_photo_black"
+                android:contentDescription="@string/add_photo_main_screen" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/storyRecycleView"

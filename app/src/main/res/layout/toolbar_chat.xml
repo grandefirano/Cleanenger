@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.appbar.AppBarLayout android:layout_width="match_parent"
+<com.google.android.material.appbar.AppBarLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -27,10 +28,11 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="15dp"
             android:layout_toEndOf="@id/chatPersonImageView"
-            android:text="Line 1"
+            android:text="@string/username_chat_title"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/colorPrimaryDark"/>
+            android:textColor="@color/colorPrimaryDark"
+            tools:ignore="RelativeOverlap" />
 
         <ImageView
             android:id="@+id/chatMoreImageView"
@@ -41,7 +43,7 @@
             android:layout_marginEnd="10dp"
             android:src="@drawable/ic_more_vert_black"
             android:onClick="showOptions"
-            />
+            android:contentDescription="@string/options_chat_activity" />
         </RelativeLayout>
 
 

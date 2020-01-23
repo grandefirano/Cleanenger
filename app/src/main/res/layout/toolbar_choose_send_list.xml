@@ -15,7 +15,7 @@
                 android:id="@+id/selectAllCheckbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Select All"
+                android:text="@string/select_all_send_acitivity"
                 android:onClick="checkAll"/>
 
 

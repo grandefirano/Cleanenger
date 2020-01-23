@@ -14,7 +14,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException;
 import com.google.firebase.auth.FirebaseUser;
 
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -91,9 +92,21 @@ public class AccountActivity extends AppCompatActivity {
         mUsernameEditText=findViewById(R.id.usernameAccountEditText);
         mProfilePhotoImageView=findViewById(R.id.profilePhotoImageView);
         ImageView closeActivityButton = findViewById(R.id.closeActivityImageView);
-        LinearLayout saveAccountLinearLayout = findViewById(R.id.saveLinearLayout);
+        TextView saveAccountTextView= findViewById(R.id.saveTextView);
 
-        saveAccountLinearLayout.setOnClickListener(new View.OnClickListener() {
+        if (mUser != null) {
+            for (UserInfo userInfo : mUser.getProviderData()) {
+                if (userInfo.getProviderId().equals("facebook.com")) {
+                    mEmailEditText.setEnabled(false);
+                    mPasswordEditText.setEnabled(false);
+                    mUsernameEditText.setEnabled(false);
+                    mProfilePhotoImageView.setEnabled(false);
+                    saveAccountTextView.setVisibility(View.INVISIBLE);
+                }
+            }
+        }
+
+        saveAccountTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveData();

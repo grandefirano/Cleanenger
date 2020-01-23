@@ -2,16 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item  android:title=" Account"
+    <item  android:title="@string/account_icon_title"
         android:id="@+id/account"
         android:icon="@drawable/ic_account_circle_black"
         app:showAsAction="ifRoom"/>
 
-    <item android:title="Find People"
+    <item android:title="@string/find_people_icon_title"
         android:icon="@drawable/ic_add_people_black"
         app:showAsAction="ifRoom"
         android:id="@+id/find_people"/>
-    <item android:title="Logout"
+    <item android:title="@string/logout_icon_title"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_exit_to_app_black"
         android:id="@+id/logout"/>

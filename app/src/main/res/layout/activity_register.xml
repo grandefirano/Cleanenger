@@ -19,7 +19,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/cleanenger_register" />
+        app:srcCompat="@drawable/cleanenger_register"
+        android:contentDescription="@string/logo_cleanenger_register" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -38,8 +39,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="25dp"
             android:ems="10"
-            android:hint="Username"
-            android:inputType="textPersonName" />
+            android:hint="@string/username_hint_register"
+            android:inputType="textPersonName"
+            android:importantForAutofill="no" />
 
         <EditText
             android:id="@+id/emailTextView"
@@ -47,8 +49,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="25dp"
             android:ems="10"
-            android:hint="Email"
-            android:inputType="textEmailAddress" />
+            android:hint="@string/email_hint_login"
+            android:inputType="textEmailAddress"
+            android:importantForAutofill="no" />
 
         <EditText
             android:id="@+id/passwordTextView"
@@ -56,8 +59,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="25dp"
             android:ems="10"
-            android:hint="Password"
-            android:inputType="textPassword" />
+            android:hint="@string/password_hint_login"
+            android:inputType="textPassword"
+            android:importantForAutofill="no" />
 
         <EditText
             android:id="@+id/confirmPasswordTextView"
@@ -65,12 +69,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="30dp"
             android:ems="10"
-            android:hint="Confirm Password"
+            android:hint="@string/confirm_password_hint_register"
             android:inputType="textPassword"
-             />
-
-
-
+            android:importantForAutofill="no" />
 
         <Button
             android:id="@+id/registerButton"
@@ -78,21 +79,17 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:onClick="register"
-            android:text="Register"
-            />
+            android:text="@string/register_button" />
 
         <TextView
             android:id="@+id/goToLoginButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="goToLogin"
-            android:text="I have an account" />
+            android:text="@string/have_account_text_register" />
 
 
     </LinearLayout>
-
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

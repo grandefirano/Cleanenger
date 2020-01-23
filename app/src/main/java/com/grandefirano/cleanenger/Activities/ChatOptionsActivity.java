@@ -8,8 +8,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.google.android.flexbox.FlexboxLayout;
 import com.google.firebase.database.DataSnapshot;
@@ -39,7 +39,7 @@ public class ChatOptionsActivity extends AppCompatActivity {
         mClickedColorView=findViewById(R.id.colorPickDefault);
         mSizeRadioGroup=findViewById(R.id.chatTextSizeRadioGroup);
         ImageView mCloseActivityView=findViewById(R.id.closeActivityImageView);
-        LinearLayout mSaveLinearLayout=findViewById(R.id.saveLinearLayout);
+        TextView mSaveTextView=findViewById(R.id.saveTextView);
         FlexboxLayout mColorPicker=findViewById(R.id.colorPicker);
 
         //SET LISTENERS FOR EVERY COLOR
@@ -58,7 +58,7 @@ public class ChatOptionsActivity extends AppCompatActivity {
                 finish();
             }
         });
-        mSaveLinearLayout.setOnClickListener(new View.OnClickListener() {
+        mSaveTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveChatOptions();

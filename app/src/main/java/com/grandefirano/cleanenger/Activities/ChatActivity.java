@@ -397,9 +397,9 @@ public class ChatActivity extends AppCompatActivity {
 
             if (ifMe) {
                 if (ifRead) {
-                    mSeenStatus.setText(R.string.chatStatusSeenText);
+                    mSeenStatus.setText(R.string.chat_status_seen_text);
                 } else {
-                    mSeenStatus.setText(R.string.chatStatusSendText);
+                    mSeenStatus.setText(R.string.chat_status_send_text);
                 }
                 mSeenStatus.setVisibility(View.VISIBLE);
 

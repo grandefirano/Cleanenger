@@ -16,6 +16,7 @@
         android:layout_marginRight="4dp"
         android:layout_marginBottom="16dp"
         android:fontFamily="sans-serif"
-        android:hint="Previous Password"/>
+        android:hint="@string/previous_password_reauthentication"
+        android:importantForAutofill="no" />
 
 </LinearLayout>

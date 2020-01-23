@@ -10,17 +10,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -45,10 +46,11 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     public static final String SHARED_PREFS ="user_prefs" ;
     public static final String MY_NAME ="my_name" ;
 
-    FirebaseAuth mAuth;
-    String myId;
-    DatabaseReference mDatabase;
-    DatabaseReference mainScreenMessagesReference;
+    private FirebaseAuth mAuth;
+    private FirebaseUser mFirebaseUser;
+    private String myId;
+    private DatabaseReference mDatabase;
+    private DatabaseReference mainScreenMessagesReference;
 
 
     private long backPressedTime;
@@ -85,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     };
+
 
 
     //MENU
@@ -126,11 +129,11 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
 
         mAuth=FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user == null) {
+        mFirebaseUser = mAuth.getCurrentUser();
+        if (mFirebaseUser == null) {
             goToLogin();
         }else {
-            myId = user.getUid();
+            myId = mFirebaseUser.getUid();
         }
 
             mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -312,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         super.onResume();
 
 
-        if(mAuth.getCurrentUser()==null) goToLogin();
+        if(mFirebaseUser==null) goToLogin();
 
     }
 
@@ -323,8 +326,17 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         editor.clear();
         editor.apply();
 
+
         //LOGOUT FROM DATABASE
+
+        for (UserInfo userInfo : mFirebaseUser.getProviderData()) {
+            if (userInfo.getProviderId().equals("facebook.com")) {
+                LoginManager.getInstance().logOut();
+            }
+        }
         mAuth.signOut();
+
+
 
         //OPEN LOGIN ACTIVITY
         goToLogin();
