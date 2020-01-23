@@ -2,6 +2,10 @@
   <dictionary name="User">
     <words>
       <w>cleanenger</w>
+      <w>firebase</w>
+      <w>getm</w>
+      <w>reauthenticate</w>
+      <w>reauthentication</w>
     </words>
   </dictionary>
 </component>

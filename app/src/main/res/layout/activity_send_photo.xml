@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/sendConstraintLayout"
-    tools:context=".Activities.SendPhotoActivity"
+    tools:context=".activities.SendPhotoActivity"
     android:background="@color/colorTextSecondary">
 
 

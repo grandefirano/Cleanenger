@@ -12,24 +12,24 @@
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme.NoActionBar">
         <activity
-            android:name=".Activities.ChatOptionsActivity"
+            android:name=".activities.ChatOptionsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Activities.ChooseSendListActivity" />
+            android:name=".activities.ChooseSendListActivity" />
         <activity
-            android:name=".Activities.ShowStoryActivity" />
+            android:name=".activities.ShowStoryActivity" />
         <activity
-            android:name=".Activities.SendPhotoActivity" />
+            android:name=".activities.SendPhotoActivity" />
         <activity
-            android:name=".Activities.FindPeopleActivity"
+            android:name=".activities.FindPeopleActivity"
             android:theme="@style/AppTheme"/>
         <activity
-            android:name=".Activities.AccountActivity" />
+            android:name=".activities.AccountActivity" />
         <activity
-            android:name=".Activities.ChatActivity"
+            android:name=".activities.ChatActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".Login.Login">
+            android:name=".login_register.Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,9 +37,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Login.Register" />
+            android:name=".login_register.Register" />
         <activity
-            android:name=".Activities.MainActivity"
+            android:name=".activities.MainActivity"
             android:theme="@style/AppTheme"/>
 
         <meta-data
@@ -66,7 +66,7 @@
 
 
         <service
-            android:name=".Notifications.FirebaseService"
+            android:name=".notifications.FirebaseService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -74,7 +74,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".Notifications.FirebaseMessaging"
+            android:name=".notifications.FirebaseMessaging"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
