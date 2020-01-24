@@ -125,24 +125,26 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
 
                     if (ifMe) {
                         holder.mMessageTextView.setTextColor(Color.GRAY);
-                        holder.mMessageTextView.setTypeface(holder.mMessageTextView.getTypeface(),
+                        holder.mMessageTextView.setTypeface(null,
                                 Typeface.NORMAL);
                         message = "Me: " + message;
                         if (ifRead) {
                             holder.mMessageTextView.setCompoundDrawablesWithIntrinsicBounds(
                                     R.drawable.ic_check_circle_black, 0, 0, 0);
+                        }else{
+                            holder.mMessageTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                         }
                     } else {
+                        holder.mMessageTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                         if (ifRead) {
                             holder.mMessageTextView.setTextColor(Color.GRAY);
 
-                            holder.mMessageTextView.setTypeface(holder.mMessageTextView.getTypeface(),
+                            holder.mMessageTextView.setTypeface(null,
                                     Typeface.NORMAL);
 
                         } else {
 
                             holder.mMessageTextView.setTextColor(Color.BLACK);
-                            holder.mMessageTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                             holder.mMessageTextView.setTypeface(holder.mMessageTextView.getTypeface(),
                                     Typeface.BOLD);
                         }

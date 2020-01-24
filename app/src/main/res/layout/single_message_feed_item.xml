@@ -37,8 +37,9 @@
             android:layout_toStartOf="@+id/messageDateTextView"
             android:layout_toEndOf="@+id/personImageView"
             android:text=""
+            android:typeface="normal"
             android:textSize="14sp"
-
+            android:maxLines="2"
             android:textStyle="normal" />
 
         <TextView
