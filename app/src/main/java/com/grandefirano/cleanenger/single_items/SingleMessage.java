@@ -16,12 +16,13 @@ public class SingleMessage{
         this.message = message;
         this.dateCreated = dateCreated;
     }
-    public SingleMessage(String uId, String message, long date) {
+
+    SingleMessage(String uId, String message, long date) {
         this.uId = uId;
         this.message = message;
         this.date=date;
     }
-        public SingleMessage() { }
+        SingleMessage() { }
 
 
 
