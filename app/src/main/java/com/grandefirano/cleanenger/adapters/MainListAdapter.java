@@ -3,7 +3,6 @@ package com.grandefirano.cleanenger.adapters;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -112,7 +111,7 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
 
                 if(lastMessage!=null) {
                     String message = lastMessage.getMessage();
-                    String messagePersonId = lastMessage.getuId();
+                    String messagePersonId = lastMessage.getUId();
                     boolean ifRead = lastMessage.isIfRead();
 
                     long date = lastMessage.getDate();
@@ -121,7 +120,6 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
                     boolean ifMe = messagePersonId.equals(myId);
 
                     if (ifMe) {
-
                         holder.mMessageTextView.setTextColor(Color.GRAY);
                         holder.mMessageTextView.setTypeface(holder.mMessageTextView.getTypeface(),
                                 Typeface.NORMAL);

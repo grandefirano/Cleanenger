@@ -9,8 +9,8 @@ public class SingleMainScreenMessage {
     private long date;
     private Map<String, String> dateLastMessage;
 
+    @SuppressWarnings("unused")
     public SingleMainScreenMessage(String chatId, long date) {
-
         this.chatId = chatId;
         this.date = date;
     }
@@ -20,23 +20,24 @@ public class SingleMainScreenMessage {
         this.dateLastMessage=dateLastMessage;
     }
 
+    @SuppressWarnings("unused")
     public SingleMainScreenMessage() {
-
     }
 
     public Map<String, Object> toMap() {
+
         HashMap<String, Object> result = new HashMap<>();
         result.put("chatId", chatId);
         result.put("date", dateLastMessage);
 
-
         return result;
     }
-
+    @SuppressWarnings("unused")
     public long getDate() {
         return date;
     }
 
+    @SuppressWarnings("unused")
     public void setDate(long date) {
         this.date = date;
     }
@@ -45,6 +46,7 @@ public class SingleMainScreenMessage {
         return chatId;
     }
 
+    @SuppressWarnings("unused")
     public void setChatId(String chatId) {
         this.chatId = chatId;
     }

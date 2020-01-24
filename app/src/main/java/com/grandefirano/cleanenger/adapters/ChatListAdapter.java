@@ -123,7 +123,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
     @Override
     public int getItemViewType(int position) {
-        if(myId.equals(mMessagesList.get(position).getuId())){
+        if(myId.equals(mMessagesList.get(position).getUId())){
             return MSG_TYPE_RIGHT;
         }else{
             return MSG_TYPE_LEFT;

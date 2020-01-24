@@ -26,7 +26,7 @@ public class SingleMessage{
 
 
 
-    public String getuId() { return uId; }
+    public String getUId() { return uId; }
         public String getMessage() { return message; }
 
     public long getDate() {

@@ -99,6 +99,27 @@ public class ChatActivity extends AppCompatActivity {
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     };
 
+    private ValueEventListener mOnChatPersonDataListener=(new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            UserData userData=dataSnapshot.getValue(UserData.class);
+            if(userData!=null) {
+                String nameOfPerson = userData.getUsername();
+                mPersonNameTextView.setText(nameOfPerson);
+
+                profilePhoto = userData.getProfilePhoto();
+                Picasso.with(getApplicationContext()).load(userData.getProfilePhoto())
+                        .fit()
+                        .centerCrop()
+                        .into(mPersonImageView);
+                mAdapter.updateProfilePhoto(profilePhoto);
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    });
+
     private ValueEventListener mOnLastMessageListener=new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -160,13 +181,16 @@ public class ChatActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences=getSharedPreferences(MainActivity.SHARED_PREFS,Context.MODE_PRIVATE);
         myName=sharedPreferences.getString(MainActivity.MY_NAME,myId);
 
-        if(mchatId!=null) {
-            mChatRef=mDatabase.child("chats").child(mchatId);
-            mChatRef.child("data").addValueEventListener(mOnDataChangeListener);
-            mChatRef.child("last_message").addValueEventListener(mOnLastMessageListener);
-            mChatRef.child("messages").addChildEventListener(mOnMessageListener);
+        if(mDatabase!=null) {
+            mDatabase.child("users").child(mIdOfChatPerson).child("data")
+                    .addValueEventListener(mOnChatPersonDataListener);
+            if (mchatId != null) {
+                mChatRef = mDatabase.child("chats").child(mchatId);
+                mChatRef.child("data").addValueEventListener(mOnDataChangeListener);
+                mChatRef.child("last_message").addValueEventListener(mOnLastMessageListener);
+                mChatRef.child("messages").addChildEventListener(mOnMessageListener);
+            }
         }
-
         //VIEW FINDING
 
         mSeenStatus=findViewById(R.id.seenStatus);
@@ -183,30 +207,6 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View v) {
                 finish();
             }
-        });
-
-
-
-
-        mDatabase.child("users").child(mIdOfChatPerson).child("data").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                UserData userData=dataSnapshot.getValue(UserData.class);
-                if(userData!=null) {
-                    String nameOfPerson = userData.getUsername();
-                    mPersonNameTextView.setText(nameOfPerson);
-
-                    profilePhoto = userData.getProfilePhoto();
-                    Picasso.with(getApplicationContext()).load(userData.getProfilePhoto())
-                            .fit()
-                            .centerCrop()
-                            .into(mPersonImageView);
-                    mAdapter.updateProfilePhoto(profilePhoto);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
 
 
@@ -259,8 +259,6 @@ public class ChatActivity extends AppCompatActivity {
         final String textOfMessage=mMessageInput.getText().toString();
         if(!textOfMessage.equals("")) {
 
-
-
             //SENDING USER
             SingleMainScreenMessage singleMainMessage=
                     new SingleMainScreenMessage(mchatId,ServerValue.TIMESTAMP);
@@ -276,7 +274,7 @@ public class ChatActivity extends AppCompatActivity {
 
             //MESSAGES
             SingleMessage singleMessage = new SingleMessage(myId, textOfMessage, ServerValue.TIMESTAMP);
-            LastMessage lastMessage = new LastMessage(singleMessage.getuId(), singleMessage.getMessage(), ServerValue.TIMESTAMP, false);
+            LastMessage lastMessage = new LastMessage(singleMessage.getUId(), singleMessage.getMessage(), ServerValue.TIMESTAMP, false);
 
             mChatRef.child("messages").push().setValue(singleMessage.toMap());
             mChatRef.child("last_message").setValue(lastMessage.toMap());
@@ -335,7 +333,7 @@ public class ChatActivity extends AppCompatActivity {
     private void setLastMessageStatus(LastMessage lastMessage){
 
             boolean ifRead = lastMessage.isIfRead();
-            String uId = lastMessage.getuId();
+            String uId = lastMessage.getUId();
             ifMe = uId.equals(myId);
 
             //TODO"
@@ -365,9 +363,14 @@ public class ChatActivity extends AppCompatActivity {
 
         super.onDestroy();
         isOnTheBottom=false;
-//        if(mDatabase!=null) {
-//
-//            }
+        if(mDatabase!=null){
+            mDatabase.child("users").child(mIdOfChatPerson).child("data").removeEventListener(mOnChatPersonDataListener);
+        }
+        if(mChatRef!=null) {
+            mChatRef.child("data").removeEventListener(mOnDataChangeListener);
+            mChatRef.child("last_message").removeEventListener(mOnLastMessageListener);
+            mChatRef.child("messages").removeEventListener(mOnMessageListener);
+            }
     }
     @Override
     public void onBackPressed() {

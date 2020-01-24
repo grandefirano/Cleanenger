@@ -66,7 +66,22 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
     ArrayList<String> chatIdList= new ArrayList<>();
     ArrayList<String> usernameList=new ArrayList<>();
 
+    ChildEventListener mOnReceivedSnapsListener=new ChildEventListener() {
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
+            mStoryList.add(dataSnapshot.getKey());
+            mStoryAdapter.notifyDataSetChanged();
+        }
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
 
     ChildEventListener mOnMainScreenMessageListener=new ChildEventListener() {
         @Override
@@ -104,14 +119,8 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
                 idList.add(uId);
                 chatIdList.add(chatId);
 
-
-                Log.d("CHANGE",idList.get(idList.size()-1));
-                Log.d("CHANGE",chatIdList.get(chatIdList.size()-1));
-
-
                 mAdapter.notifyDataSetChanged();
             }
-
         }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
@@ -251,22 +260,7 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
         mStoryList.clear();
 
-        mDatabase.child("users").child(myId).child("snaps").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                mStoryList.add(dataSnapshot.getKey());
-                mStoryAdapter.notifyDataSetChanged();
-            }
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
-        });
+        mDatabase.child("users").child(myId).child("snaps").addChildEventListener(mOnReceivedSnapsListener);
 
     }
 
@@ -373,4 +367,13 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         reference.child(myId).setValue(mToken);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mainScreenMessagesReference!=null)
+            mainScreenMessagesReference.orderByChild("date").removeEventListener(mOnMainScreenMessageListener);
+
+        if(mDatabase!=null)
+            mDatabase.child("users").child(myId).child("snaps").addChildEventListener(mOnReceivedSnapsListener);
+    }
 }
