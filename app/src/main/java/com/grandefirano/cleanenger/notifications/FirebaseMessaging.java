@@ -87,11 +87,7 @@ public class FirebaseMessaging extends FirebaseMessagingService {
                 .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager=(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//        int j=0;
-//        if(i>0){
-//            j=i;
-//
-//        }
+
         notificationManager.notify(i,builder.build());
 
     }
@@ -99,13 +95,9 @@ public class FirebaseMessaging extends FirebaseMessagingService {
     private void sendOAndAboveNotification(String icon,String body,String title,PendingIntent pendingIntent,Uri defSoundUri,int i) {
 
         OreoAndAboveNotification notification1=new OreoAndAboveNotification(this);
-        Notification.Builder builder=notification1.getONotifications(title,body,pendingIntent,defSoundUri,icon);
+        Notification.Builder builder=notification1
+                .getONotifications(title,body,pendingIntent,defSoundUri,icon);
 
-//        int j=0;
-//        if(i>0){
-//            j=i;
-//
-//        }
         notification1.getNotificationManager().notify(i,builder.build());
 
     }
