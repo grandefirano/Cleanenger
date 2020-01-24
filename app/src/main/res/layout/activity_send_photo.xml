@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/sendConstraintLayout"
+    tools:context=".activities.SendPhotoActivity"
+    android:background="@color/colorTextSecondary">
+
+
+    <ImageView
+        android:id="@+id/photoToSendImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="visible"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/colorPrimaryDark"
+        android:contentDescription="@string/photo_send_activity" />
+
+
+    <ImageView
+        android:id="@+id/sendPhotoSendButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/circle_purple"
+        android:onClick="openList"
+        android:padding="13dp"
+        android:src="@drawable/ic_send_black_lightgrey"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@string/send_photo_description" />
+
+    <ImageView
+        android:id="@+id/sendPhotoCancelButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:onClick="cancelAction"
+        android:padding="2dp"
+        android:src="@drawable/ic_close_medium"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:contentDescription="@string/close_icon_description" />
+
+    <ImageView
+        android:id="@+id/sendPhotoRotateRightButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        android:padding="2dp"
+        android:src="@drawable/ic_rotate_right_grey"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@string/rotate_right" />
+
+    <ImageView
+        android:id="@+id/sendPhotoRotateLeftButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        android:padding="2dp"
+        android:src="@drawable/ic_rotate_left_grey"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/sendPhotoRotateRightButton"
+        android:contentDescription="@string/rotate_left" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

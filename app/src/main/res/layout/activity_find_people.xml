@@ -4,38 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FindPeopleActivity">
-
-    <EditText
-        android:id="@+id/searchPeopleEditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="16dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageButton
-        android:id="@+id/searchPeopleImageButton"
-        android:layout_width="54dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="57dp"
-        android:layout_marginTop="16dp"
-        android:onClick="searchPeople"
-        app:layout_constraintStart_toEndOf="@+id/searchPeopleEditText"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_search_category_default" />
+    tools:context=".activities.FindPeopleActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchPeopleRecyclerView"
-        android:layout_width="416dp"
-        android:layout_height="573dp"
-        android:layout_marginTop="26dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchPeopleEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/switchIfFriends" />
+
+    <Switch
+        android:id="@+id/switchIfFriends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/only_friends_switch_find_people"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="3dp">
+<RelativeLayout
+    android:layout_width="270dp"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/chatMessageDateTextView">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/messagePersonImageView"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="2dp"
+        android:src="@drawable/default_profile_photo"
+        />
+
+
+    <TextView
+        android:id="@+id/messagePersonTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_left_chat_row"
+        android:layout_toEndOf="@+id/messagePersonImageView"
+        android:text="@string/example_message_chat"
+        android:textSize="16sp"
+        android:textColor="@color/colorChatFontBright"
+        android:padding="8dp"
+        android:layout_marginStart="5dp"
+
+        />
+
+
+
+
+</RelativeLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/chatMessageDateTextView"
+        android:text="@string/date_chat"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="2dp"
+        android:visibility="gone"
+        />
+</RelativeLayout>
+

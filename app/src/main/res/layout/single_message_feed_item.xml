@@ -10,11 +10,11 @@
         android:layout_height="wrap_content"
         android:layout_margin="4dp">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/personImageView"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:padding="2dp" />
+            android:padding="2dp"/>
 
         <TextView
             android:id="@+id/nameOfPersonTextView"
@@ -22,8 +22,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/personImageView"
-            android:text="Line 1"
-            android:textSize="20sp"
+            android:fontFamily="@font/roboto"
+            android:text=""
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <TextView
@@ -31,8 +33,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/nameOfPersonTextView"
+            android:layout_marginEnd="20dp"
+            android:layout_toStartOf="@+id/messageDateTextView"
             android:layout_toEndOf="@+id/personImageView"
-            android:text="Line2" />
+            android:text=""
+            android:typeface="normal"
+            android:textSize="14sp"
+            android:maxLines="2"
+            android:textStyle="normal" />
+
+        <TextView
+            android:id="@+id/messageDateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="30dp"
+            android:textSize="14sp"
+            android:text="@string/date_chat" />
 
     </RelativeLayout>
 

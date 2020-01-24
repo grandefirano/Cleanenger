@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ChatOptionsActivity">
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/toolbar_save_close" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/include">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/textSizeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:textSize="18sp"
+
+        android:text="@string/text_size_title_chat_option" />
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/chatTextSizeRadioGroup"
+         android:layout_below="@id/textSizeTextView"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true">
+        <RadioButton
+            android:id="@+id/size10ChatRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/size_10_radio_chat_option"
+            android:textSize="10sp"
+            tools:ignore="SmallSp" />
+        <RadioButton
+            android:id="@+id/size12ChatRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/size_12_radio_chat_option"
+            android:textSize="12sp"/>
+        <RadioButton
+            android:id="@+id/defaultSizeChatRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/size_16_radio_chat_option"
+            android:checked="true"
+            android:textSize="16sp"/>
+        <RadioButton
+            android:id="@+id/size20ChatRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/size_20_radio_chat_option"
+            android:textSize="20sp"/>
+        <RadioButton
+            android:id="@+id/size24ChatRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/size_24_radio_chat_option"
+            android:textSize="24sp"/>
+
+
+
+
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/chatColorTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textSize="18sp"
+        android:layout_marginTop="40dp"
+        android:layout_below="@id/chatTextSizeRadioGroup"
+        android:text="@string/chat_color_title_chat_options" />
+
+
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/colorPicker"
+        android:layout_width="match_parent"
+        android:layout_marginStart="80dp"
+        android:layout_marginEnd="80dp"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@id/chatColorTextView"
+
+        app:flexWrap="wrap"
+        app:alignItems="flex_start"
+        app:alignContent="center"
+        app:justifyContent="center"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="20dp"
+        >
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/colorPickDefault"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_margin="7dp"
+            android:src="@color/colorChatLeft"
+            app:civ_border_color="@color/colorStory"
+            />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/colorPickYellow"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_margin="7dp"
+             android:src="@color/colorChatLeftYellow"
+            app:civ_border_color="@color/colorStory"
+            />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/colorPickGreen"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_margin="7dp"
+            android:src="@color/colorChatLeftGreen"
+            app:civ_border_color="@color/colorStory"
+            />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/colorPickRed"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_margin="7dp"
+            android:src="@color/colorChatLeftRed"
+            app:civ_border_color="@color/colorStory"
+            />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/colorPickBlue"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_margin="7dp"
+            android:src="@color/colorChatLeftBlue"
+            app:civ_border_color="@color/colorStory"
+            />
+    </com.google.android.flexbox.FlexboxLayout>
+
+    </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
+
+</RelativeLayout>

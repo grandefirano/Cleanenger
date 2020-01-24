@@ -1,3 +1,73 @@
 <resources>
     <string name="app_name">Cleanenger</string>
+    <string name="title_activity_choose_person_to_send">ChoosePersonToSendActivity</string>
+    <string name="chat_status_seen_text">Seen</string>
+    <string name="chat_status_send_text">Send</string>
+
+<!--    facebook login   -->
+    <string name="facebook_app_id">581958769313204</string>
+    <string name="fb_login_protocol_scheme">fb581958769313204</string>
+
+<!--    menu icons-->
+    <string name="account_icon_title">Account</string>
+    <string name="find_people_icon_title">Find People</string>
+    <string name="logout_icon_title">Logout</string>
+    <string name="search_icon_title">Search</string>
+    <string name="close_icon_description">close</string>
+
+    <string name="save_text_toolbar">Save</string>
+
+<!--    account activity title-->
+    <string name="username_account_title">username</string>
+    <string name="email_account_title">email</string>
+    <string name="password_account_title">password</string>
+
+<!--    chat activity-->
+    <string name="type_a_message_hint_chat">Type a message…</string>
+    <string name="send_message_icon_description">send message</string>
+
+<!--    chat options activity-->
+    <string name="size_10_radio_chat_option">10</string>
+    <string name="size_12_radio_chat_option">12</string>
+    <string name="size_16_radio_chat_option">16 (default)</string>
+    <string name="size_20_radio_chat_option">20</string>
+    <string name="size_24_radio_chat_option">24</string>
+
+    <string name="text_size_title_chat_option">text size</string>
+    <string name="chat_color_title_chat_options">chat color</string>
+
+<!--     send photo-->
+    <string name="send_photo_description">send photo</string>
+
+<!--   find people activity-->
+    <string name="only_friends_switch_find_people">Only Friends</string>
+
+<!--    login activity-->
+    <string name="logo_cleanenger_login_activity">logo cleanenger</string>
+    <string name="email_hint_login">Email</string>
+    <string name="password_hint_login">Password</string>
+    <string name="login_button">login</string>
+    <string name="create_an_account_login_activity">+ Create an account</string>
+    <string name="add_photo_main_screen">add photo</string>
+    <string name="logo_cleanenger_register">logo cleanenger register</string>
+    <string name="username_hint_register">Username</string>
+    <string name="confirm_password_hint_register">Confirm Password</string>
+    <string name="register_button">Register</string>
+    <string name="have_account_text_register">I have an account</string>
+    <string name="photo_send_activity">photo to send</string>
+    <string name="rotate_right">rotate right</string>
+    <string name="rotate_left">rotate left</string>
+    <string name="photo_show_story">photo to show</string>
+    <string name="author_chat_row">author</string>
+    <string name="example_message_chat">example message</string>
+    <string name="previous_password_reauthentication">Previous Password</string>
+    <string name="date_chat">Date</string>
+    <string name="nickname_snap">nickname</string>
+    <string name="right_button_find_people">right button</string>
+    <string name="check_send_activity">check to send</string>
+    <string name="username_chat_title">username</string>
+    <string name="options_chat_activity">options</string>
+    <string name="select_all_send_acitivity">Select All</string>
+
+
 </resources>

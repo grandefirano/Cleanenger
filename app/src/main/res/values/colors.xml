@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+
+    <color name="colorPrimary">#F6FFFE</color>
+    <color name="colorPrimaryDark">#222222</color>
+    <color name="colorAccent">#7D5AD3</color>
+    <color name="colorStory">#AD65FF</color>
+    <color name="colorAccentSecondary">#1BA2D8</color>
+    <color name="colorAccentPurple">#5638A3</color>
+    <color name="colorTitleText">#222</color>
+    <color name="colorTextSecondary">#555</color>
+
+    #CHAT
+
+
+
+
+    <color name="colorChatFont">#222222</color>
+    <color name="colorChatFontBright">#EEEEEE</color>
+
+    <color name="colorChatLeft">#6B6FCC</color>
+    <color name="colorChatRight">#C9C9C9</color>
+    <color name="colorChatLeftClicked">#5D55BD</color>
+    <color name="colorChatRightClicked">#AFAFAF</color>
+    <color name="colorChatLeftYellow">#CCBA47</color>
+    <color name="colorChatLeftRed">#B93D3D</color>
+    <color name="colorChatLeftGreen">#359635</color>
+    <color name="colorChatLeftBlue">#3195FF</color>
+    <color name="colorChatLeftBlueClicked">#0051DD</color>
+    <color name="colorChatLeftGreenClicked">#1A7E1A</color>
+    <color name="colorChatLeftRedClicked">#752323</color>
+    <color name="colorChatLeftYellowClicked">#9B9B15</color>
+
 </resources>
