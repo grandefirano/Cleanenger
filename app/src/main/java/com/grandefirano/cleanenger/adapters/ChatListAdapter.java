@@ -55,40 +55,28 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     private static final int DEFAULT_CHAT_BACKGROUND_CLICKED=R.drawable.background_left_chat_row_clicked;
 
 
-
-    public void setColor(int color) {
-
-        mChatColor=color;
-
-    }
-    public void setTextSize(int size){
-
-            mTextSize = size;
-
-    }
-
-
     public ChatListAdapter(Context context,ArrayList<SingleMessage> messageList, String id, String profilePhoto){
 
         mContext=context;
         mProfilePhotoUri=profilePhoto;
         myId=id;
         mMessagesList=messageList;
-
     }
-
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         if(viewType==MSG_TYPE_RIGHT){
-            View view=LayoutInflater.from(mContext).inflate(R.layout.single_chat_row_right,parent,false);
-
+            View view=LayoutInflater.from(mContext)
+                    .inflate(R.layout.single_chat_row_right,
+                            parent,false);
 
             return new ChatListAdapter.ViewHolder(view);
         }else{
-            View view=LayoutInflater.from(mContext).inflate(R.layout.single_chat_row_left,parent,false);
+            View view=LayoutInflater.from(mContext)
+                    .inflate(R.layout.single_chat_row_left,
+                            parent,false);
             return new ChatListAdapter.ViewHolder(view);
         }
 
@@ -143,7 +131,6 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
             itemView.setOnClickListener(this);
         }
 
-
         @Override
         public void onClick(View v) {
             if(clickedView!=null){
@@ -152,13 +139,17 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
                 if(clickedView.getItemViewType()==MSG_TYPE_LEFT)
                     setColorForLeftIfClicked(false,clickedView);
 
-                else clickedView.bodyMessageTextView.setBackgroundResource(R.drawable.background_right_chat_row);
+                else clickedView.bodyMessageTextView
+                        .setBackgroundResource(R.drawable.background_right_chat_row);
 
                 if(!clickedView.equals(this)) {
                     dateMessageTextView.setVisibility(View.VISIBLE);
-                    if(getItemViewType()==MSG_TYPE_LEFT)
-                        setColorForLeftIfClicked(true,this);
-                    else bodyMessageTextView.setBackgroundResource(R.drawable.background_right_chat_row_clicked);
+                    if(getItemViewType()==MSG_TYPE_LEFT) {
+                        setColorForLeftIfClicked(true, this);
+                    }else {
+                        bodyMessageTextView.setBackgroundResource(
+                                R.drawable.background_right_chat_row_clicked);
+                    }
                     clickedView = this;
                 }else{
                     clickedView=null;
@@ -169,12 +160,23 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
                 if(getItemViewType()==MSG_TYPE_LEFT)
                     setColorForLeftIfClicked(true,this);
                 else
-                    bodyMessageTextView.setBackgroundResource
-                            (R.drawable.background_right_chat_row_clicked);
+                    bodyMessageTextView.setBackgroundResource(
+                            R.drawable.background_right_chat_row_clicked);
 
                 clickedView=this;
             }
         }
+    }
+
+    //SETTERS
+    public void setColor(int color) {
+        mChatColor=color;
+    }
+    public void setTextSize(int size){
+        mTextSize = size;
+    }
+    public void updateProfilePhoto(String profilePhotoUri) {
+        mProfilePhotoUri=profilePhotoUri;
     }
 
     private void setColorForLeftIfClicked(boolean clicked,ViewHolder holder) {
@@ -196,8 +198,6 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
                     break;
                 default:
                     holder.bodyMessageTextView.setBackgroundResource(DEFAULT_CHAT_BACKGROUND_CLICKED);
-                    //holder.bodyMessageTextView.setTextColor(ContextCompat.getColor(mContext,R.color.colorChatFont));
-
             }
         }else {
             switch (mChatColor) {
@@ -226,8 +226,6 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         }
     }
 
-    public void updateProfilePhoto(String profilePhotoUri){
-        mProfilePhotoUri=profilePhotoUri;
-    }
+
 
 }

@@ -165,113 +165,109 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        //FIREBASE
         mAuth=FirebaseAuth.getInstance();
         mFirebaseUser = mAuth.getCurrentUser();
+
         if (mFirebaseUser == null) {
             goToLogin();
         }else {
             myId = mFirebaseUser.getUid();
         }
 
-            mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mainScreenMessagesReference = mDatabase.child("users")
+                .child(myId)
+                .child("main_screen_messages");
 
-            mainScreenMessagesReference = mDatabase.child("users")
-                    .child(myId)
-                    .child("main_screen_messages");
-
-
+        //FIND VIEWS
         RecyclerView messagesRecyclerView = findViewById(R.id.searchPeopleRecyclerView);
-
         RecyclerView storyRecyclerView = findViewById(R.id.storyRecycleView);
 
 
-            //DOWNLOAD MY DATA
-            downloadMyName(myId);
+        //DOWNLOAD DATA
+        downloadMyName(myId);
+        downloadListFromDatabase();
+        listOfSnapsPerson();
+
+        //SET RECYCLER VIEW FOR MESSAGE
+        mAdapter = new MainListAdapter(getApplicationContext(),
+                myId, this, chatIdList, idList);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
+
+        messagesRecyclerView.setHasFixedSize(true);
+        messagesRecyclerView.setLayoutManager(layoutManager);
+        messagesRecyclerView.setAdapter(mAdapter);
+
+        //SET RECYCLER VIEW FOR STORY
+        mStoryAdapter = new StoryAdapter(getApplicationContext(),
+                mStoryList, this);
+        LinearLayoutManager mStoryLinearLayoutManager = new LinearLayoutManager(
+                getApplicationContext(),LinearLayoutManager.HORIZONTAL, false);
+
+        storyRecyclerView.setHasFixedSize(true);
+        storyRecyclerView.setLayoutManager(mStoryLinearLayoutManager);
+        storyRecyclerView.setAdapter(mStoryAdapter);
 
 
-            //DOWNLOAD USERS
-            downloadListFromDatabase();
-            listOfSnapsPerson();
-
-
-            messagesRecyclerView.setHasFixedSize(true);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-            layoutManager.setReverseLayout(true);
-            layoutManager.setStackFromEnd(true);
-            mAdapter = new MainListAdapter(getApplicationContext(),myId, this, chatIdList, idList);
-
-            messagesRecyclerView.setLayoutManager(layoutManager);
-            messagesRecyclerView.setAdapter(mAdapter);
-
-            storyRecyclerView.setHasFixedSize(true);
-            LinearLayoutManager mStoryLinearLayoutManager = new LinearLayoutManager(getApplicationContext(),
-                    LinearLayoutManager.HORIZONTAL, false);
-            storyRecyclerView.setLayoutManager(mStoryLinearLayoutManager);
-
-
-            mStoryAdapter = new StoryAdapter(getApplicationContext(), mStoryList, this);
-            storyRecyclerView.setAdapter(mStoryAdapter);
-
-
-            //UPDATE FIREBASE NOTIFICATIONS TOKEN
-            //updateToken(FirebaseInstanceId.getInstance().getToken());
-
-            FirebaseInstanceId.getInstance().getInstanceId()
-                    .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                            if(task.isSuccessful()){
-                                if(task.getResult()!=null)
+        //UPDATE FIREBASE NOTIFICATIONS TOKEN
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if(task.isSuccessful()){
+                            if(task.getResult()!=null)
                                 updateToken(task.getResult().getToken());
-                               
-                            }
                         }
-                    });
-
+                    }
+                });
     }
 
     private void downloadMyName(String id){
 
-
-        mDatabase.child("users").child(id).child("data").child("username").addListenerForSingleValueEvent(new ValueEventListener() {
+        //DOWNLOAD CURRENT USER NAME
+        mDatabase.child("users").child(id).child("data")
+                .child("username").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String username=dataSnapshot.getValue(String.class);
+
                 if(username!=null) {
-                    SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+
+                    SharedPreferences sharedPreferences =
+                            getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString(MY_NAME, username);
                     editor.apply();
-                }else logOut();
+                }else
+                    logOut();
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
-
-
     }
-
 
     private void listOfSnapsPerson(){
 
         mStoryList.clear();
 
-        mDatabase.child("users").child(myId).child("snaps").addChildEventListener(mOnReceivedSnapsListener);
-
+        //DOWNLOAD RECEIVED SNAPS
+        mDatabase.child("users").child(myId).child("snaps")
+                .addChildEventListener(mOnReceivedSnapsListener);
     }
 
     private void downloadListFromDatabase(){
+
         listItems.clear();
         idList.clear();
         chatIdList.clear();
         usernameList.clear();
 
-        mainScreenMessagesReference.orderByChild("date").addChildEventListener(mOnMainScreenMessageListener);
-
+        //DOWNLOAD USERS ORDERED BY DATE
+        mainScreenMessagesReference.orderByChild("date")
+                .addChildEventListener(mOnMainScreenMessageListener);
     }
 
     public void takeAPhoto(View view){
@@ -279,36 +275,31 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         Intent intent= new Intent(this,SendPhotoActivity.class);
         finish();
         startActivity(intent);
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-
-        if(mFirebaseUser==null) goToLogin();
-
+        if(mFirebaseUser==null)
+            goToLogin();
     }
 
     public void logOut(){
+
         //DELETE SHARED PREFERENCES WHEN LOG OUT
         SharedPreferences preferences =getSharedPreferences(SHARED_PREFS,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
         editor.apply();
 
-
         //LOGOUT FROM DATABASE
-
         for (UserInfo userInfo : mFirebaseUser.getProviderData()) {
             if (userInfo.getProviderId().equals("facebook.com")) {
                 LoginManager.getInstance().logOut();
             }
         }
         mAuth.signOut();
-
-
 
         //OPEN LOGIN ACTIVITY
         goToLogin();
@@ -319,13 +310,11 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         Intent intent= new Intent(this,Login.class);
         finish();
         startActivity(intent);
-
     }
 
-    //ONITEMCLICK
+    //ON CHAT ITEM CLICK
     @Override
     public void onItemClick(int position) {
-
         Intent intent= new Intent(this, ChatActivity.class);
         intent.putExtra("id", idList.get(position));
         intent.putExtra("chatId",chatIdList.get(position));
@@ -333,13 +322,13 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
         startActivity(intent);
     }
 
+    //ON SNAP ITEM CLICK
     @Override
     public void onSnapClick(int position) {
         Intent intent= new Intent(this, ShowStoryActivity.class);
         intent.putExtra("id",mStoryList.get(position));
         finish();
         startActivity(intent);
-
     }
 
     @Override
@@ -349,12 +338,11 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
             Intent a = new Intent(Intent.ACTION_MAIN);
             a.addCategory(Intent.CATEGORY_HOME);
             a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            //???? finish();
             startActivity(a);
-
         }else{
-            Toast.makeText(getApplicationContext(),"Press back again to exit",Toast.LENGTH_SHORT).show();
 
+            Toast.makeText(getApplicationContext(),"Press back again to exit",
+                    Toast.LENGTH_SHORT).show();
         }
         backPressedTime=System.currentTimeMillis();
 
@@ -362,18 +350,24 @@ public class MainActivity extends AppCompatActivity implements MainListAdapter.O
 
 
     public void updateToken(String token){
-        DatabaseReference reference=FirebaseDatabase.getInstance().getReference("tokens");
+
+        //UPDATE CURRENT USER TOKEN IF NECESSARY
+        DatabaseReference reference=FirebaseDatabase.
+                getInstance().getReference("tokens");
         Token mToken= new Token(token);
         reference.child(myId).setValue(mToken);
     }
 
     @Override
     protected void onDestroy() {
+        //REMOVE LISTENERS
         super.onDestroy();
         if(mainScreenMessagesReference!=null)
-            mainScreenMessagesReference.orderByChild("date").removeEventListener(mOnMainScreenMessageListener);
+            mainScreenMessagesReference.orderByChild("date")
+                    .removeEventListener(mOnMainScreenMessageListener);
 
         if(mDatabase!=null)
-            mDatabase.child("users").child(myId).child("snaps").addChildEventListener(mOnReceivedSnapsListener);
+            mDatabase.child("users").child(myId).child("snaps")
+                    .addChildEventListener(mOnReceivedSnapsListener);
     }
 }

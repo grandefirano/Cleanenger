@@ -50,7 +50,6 @@ public class AccountActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST=1;
 
     //FIREBASE
-
     private DatabaseReference mUserDataDatabase;
     private FirebaseUser mUser;
 
@@ -59,19 +58,18 @@ public class AccountActivity extends AppCompatActivity {
     private EditText mPasswordEditText;
     private EditText mUsernameEditText;
     private ImageView mProfilePhotoImageView;
+    //alert show when re-authorization is necessary
+    private View alertView;
 
     //STRINGS
     private String usernameBefore;
     private String emailBefore;
     private String photoBefore;
     private Bitmap newPhotoBitmap;
-
     private String temporaryPassword;
 
-    //ALERT SHOW WHEN RE-AUTHORIZATION IS NECESSARY
-    private View alertView;
-
-    //CHECKS IF ACTIVITY CAN BE CLOSE AND TO UPDATE DATA IN ORDER
+    //CHECKS IF ACTIVITY CAN BE CLOSE
+    //allow to change user data in order
     private boolean isPasswordEdited=false;
     private boolean isEmailEdited=false;
 
@@ -81,20 +79,24 @@ public class AccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
-
+        //FIREBASE
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         mUserDataDatabase=FirebaseDatabase.getInstance().getReference()
                 .child("users")
                 .child(mUser.getUid())
                 .child("data");
 
+        //VIEWS
         mEmailEditText=findViewById(R.id.emailAccountEditText);
         mPasswordEditText=findViewById(R.id.passwordAccountEditText);
         mUsernameEditText=findViewById(R.id.usernameAccountEditText);
         mProfilePhotoImageView=findViewById(R.id.profilePhotoImageView);
+
         ImageView closeActivityButton = findViewById(R.id.closeActivityImageView);
         TextView saveAccountTextView= findViewById(R.id.saveTextView);
 
+        //PREVENT ACCOUNT CHANGES
+        //when user is logged in with facebook account
         if (mUser != null) {
             for (UserInfo userInfo : mUser.getProviderData()) {
                 if (userInfo.getProviderId().equals("facebook.com")) {
@@ -123,7 +125,10 @@ public class AccountActivity extends AppCompatActivity {
     }
 
     public void showDialog(){
-        alertView=View.inflate(getApplicationContext(),R.layout.dialog_reauth,null);
+
+        //When it is necessary to re-authorize
+        alertView=View.inflate(getApplicationContext(),
+                R.layout.dialog_reauth,null);
         AlertDialog.Builder builder=new AlertDialog.Builder(this);
         builder.setTitle("Reauthentication")
                 .setMessage("Write previous password to continue")
@@ -138,7 +143,8 @@ public class AccountActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        EditText passEditText=alertView.findViewById(R.id.passwordWhenChangeProfile);
+                        EditText passEditText=alertView
+                                .findViewById(R.id.passwordWhenChangeProfile);
                         String passwordWritten=passEditText.getText().toString();
 
                         if(!passwordWritten.equals(""))
@@ -217,7 +223,8 @@ public class AccountActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 updatePassword(temporaryPassword);
-                                //HERE BECAUSE OF UPDATING PASSWORD IN ANOTHER THREAD
+                                //finish can be here because password is
+                                //updated in another thread
                                 finish();
                                 Toast.makeText(getApplicationContext(),"Email updated",Toast.LENGTH_SHORT).show();
                             }
@@ -226,7 +233,7 @@ public class AccountActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     if(e.getClass().equals(FirebaseAuthRecentLoginRequiredException.class)){
-
+                        //need to re-authorize
                         showDialog();
                     }
                 }
@@ -249,7 +256,7 @@ public class AccountActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception e) {
                 if(e.getClass().equals(FirebaseAuthRecentLoginRequiredException.class)){
-
+                    //need to re-authorize
                     showDialog();
                 }
             }
@@ -281,7 +288,8 @@ public class AccountActivity extends AppCompatActivity {
                                 public void onSuccess(Uri uri) {
                                     //PUT UPLOADED PHOTO URL TO DATABASE
                                     mUserDataDatabase.child("profilePhoto").setValue(uri.toString());
-                                    Toast.makeText(getApplicationContext(),"Upload successful",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(),"Upload successful",
+                                            Toast.LENGTH_SHORT).show();
 
                                 }
                             });
@@ -314,12 +322,15 @@ public class AccountActivity extends AppCompatActivity {
             Uri imageUri=data.getData();
 
             try {
-                Bitmap selectedImage=Utilities.convertToBitmapFromUri(getApplicationContext(),imageUri,Utilities.TYPE_PROFILE_PHOTO);
+                Bitmap selectedImage=Utilities.convertToBitmapFromUri(getApplicationContext(),
+                        imageUri,Utilities.TYPE_PROFILE_PHOTO);
                 mProfilePhotoImageView.setImageBitmap(selectedImage);
                 newPhotoBitmap=selectedImage;
 
-            } catch (IOException e) { e.printStackTrace(); Toast.makeText(this,"Problem with compression",Toast.LENGTH_SHORT).show(); }
-
+            } catch (IOException e) {
+                e.printStackTrace(); Toast.makeText(this,
+                    "Problem with compression",Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -345,12 +356,7 @@ public class AccountActivity extends AppCompatActivity {
                 }
             }
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
-
     }
-
-
 }

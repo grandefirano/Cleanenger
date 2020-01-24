@@ -54,29 +54,67 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
 
 
     //WHEN CLICKED CHAT TO GET CHAT ID IF EXISTS
-    ValueEventListener mOnChatIdValueListener=new ValueEventListener() {
+
+
+    ChildEventListener onFriendsListener=new ChildEventListener() {
         @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            SingleMainScreenMessage singleMainScreenMessage=
-                    dataSnapshot.getValue(SingleMainScreenMessage.class);
-
-            String mChatId;
-
-            if(singleMainScreenMessage==null){
-                //IF NOT EXISTS
-                mChatId= UUID.randomUUID().toString();
-            }else{
-                //IF EXISTS
-                mChatId=singleMainScreenMessage.getChatId();
-            }
-            newIntent.putExtra("chatId",mChatId);
-            startActivity(newIntent);
-
+            //INIT AND WHEN ADD FRIEND
+            String friendId=dataSnapshot.getKey();
+            mFriendsIdList.add(friendId);
         }
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            //WHEN REMOVE FRIEND
+            final String friendId=dataSnapshot.getKey();
+            mFriendsIdList.remove(friendId);
+        }
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     };
+
+
+    ChildEventListener onAllPeopleListener=new ChildEventListener() {
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            UserData userData=dataSnapshot.child("data").getValue(UserData.class);
+            String id = dataSnapshot.getKey();
+            if(userData!=null && id!=null) {
+
+                String username = userData.getUsername();
+                String profilePhoto = userData.getProfilePhoto();
+
+                //CHECK IF IT'S ME
+                if (!id.equals(myId)) {
+                    //CHECKING IF PERSON IS FRIEND
+                    boolean isFriend = false;
+                    for (String friendId : mFriendsIdList)
+                        if (friendId.equals(id)) isFriend = true;
+
+                    //ADDING PERSON DATA TO LIST
+                    mTemporaryList.add(new SinglePersonSearchItem(id, username, profilePhoto, isFriend));
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        }
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
+
+
+
     //IF FRIENDS CHECKED LISTENER
     CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
@@ -109,7 +147,6 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
             public boolean onQueryTextChange(String newText) {
 
                 mAdapter.getFilter().filter(newText);
-
                 return false;
             }
         });
@@ -139,7 +176,7 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
 
         aSwitch.setOnCheckedChangeListener(mOnCheckedChangeListener);
 
-        //IMPLEMENTATIONS FOR RECYCLERVIEW
+        //IMPLEMENTATIONS FOR RECYCLER VIEW
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mAdapter= new FindPeopleAdapter(context,mTemporaryList,FindPeopleActivity.this,FindPeopleActivity.this);
         recyclerView.setLayoutManager(layoutManager);
@@ -158,64 +195,11 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
         mTemporaryList.clear();
 
         //ADD FRIENDS
-        mDatabase.child("users").child(myId).child("friends").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                //INIT AND WHEN ADD FRIEND
-                String friendId=dataSnapshot.getKey();
-                mFriendsIdList.add(friendId);
-            }
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                //WHEN REMOVE FRIEND
-                final String friendId=dataSnapshot.getKey();
-                mFriendsIdList.remove(friendId);
-
-            }
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
-        });
+        mDatabase.child("users").child(myId).child("friends").addChildEventListener(onFriendsListener);
 
         //ADD ALL
-        mDatabase.child("users")
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        UserData userData=dataSnapshot.child("data").getValue(UserData.class);
-                        String id = dataSnapshot.getKey();
-                        if(userData!=null && id!=null) {
-                            String username = userData.getUsername();
-                            String profilePhoto = userData.getProfilePhoto();
+        mDatabase.child("users").addChildEventListener(onAllPeopleListener);
 
-
-                            //CHECK IF IT'S ME
-                            if (!id.equals(myId)) {
-                                //CHECKING IF PERSON IS FRIEND
-                                boolean isFriend = false;
-                                for (String friendId : mFriendsIdList)
-                                    if (friendId.equals(id)) isFriend = true;
-
-                                //ADDING PERSON DATA TO LIST
-                                mTemporaryList.add(new SinglePersonSearchItem(id, username, profilePhoto, isFriend));
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        }
-                    }
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) { }
-                });
         //UPDATE LIST AFTER ALL USERS ARE ADDED (ValueListener is called after ChildListener)
         mDatabase.child("users")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -238,43 +222,63 @@ public class FindPeopleActivity extends AppCompatActivity implements FindPeopleA
         String name= mAdapter.getmList().get(position).getPersonText();
         boolean isFriend=mAdapter.getmList().get(position).isFriend();
 
-
         if(isFriend){
+
             mDatabase.child("users").child(myId)
                     .child("friends").child(id).removeValue();
-
         }else{
 
         mDatabase.child("users").child(myId)
         .child("friends").child(id).setValue(name);
-
         }
         downloadListFromDatabase();
 
     }
-    //ONITEM FROM LIST
+    //ON ITEM FROM LIST
     @Override
     public void onItemClick(int position) {
 
         newIntent= new Intent(this, ChatActivity.class);
-
         newIntent.putExtra("id", mAdapter.getmList().get(position).getPersonId());
 
+        DatabaseReference chatClickedDatabaseReference = mDatabase
+                .child("users").child(myId)
+                .child("main_screen_messages")
+                .child(mAdapter.getmList().get(position).getPersonId());
 
-        DatabaseReference chatClickedDatabaseReference = mDatabase.child("users").child(myId)
-                .child("main_screen_messages").child(mAdapter.getmList().get(position).getPersonId());
         chatClickedDatabaseReference
-                .addListenerForSingleValueEvent(mOnChatIdValueListener);
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                        SingleMainScreenMessage singleMainScreenMessage= dataSnapshot
+                                .getValue(SingleMainScreenMessage.class);
+                        String mChatId;
+
+                        if(singleMainScreenMessage==null){
+                            //IF NOT EXISTS
+                            mChatId= UUID.randomUUID().toString();
+                        }else{
+                            //IF EXISTS
+                            mChatId=singleMainScreenMessage.getChatId();
+                        }
+                        newIntent.putExtra("chatId",mChatId);
+                        startActivity(newIntent);
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) { }
+                });
     }
 
-    private void cleanUp(){
-
-    }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        cleanUp();
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(mDatabase!=null) {
+            mDatabase.child("users").child(myId).child("friends")
+                    .removeEventListener(onFriendsListener);
+            mDatabase.child("users").removeEventListener(onAllPeopleListener);
+        }
     }
 }

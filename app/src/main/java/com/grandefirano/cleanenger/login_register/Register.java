@@ -23,13 +23,15 @@ import com.grandefirano.cleanenger.single_items.UserData;
 
 public class Register extends AppCompatActivity {
 
-    FirebaseAuth mAuth;
-    DatabaseReference myRef;
+    //FIREBASE
+    private FirebaseAuth mAuth;
+    private DatabaseReference myRef;
 
-    TextView loginTextView;
-    TextView passwordTextView;
-    TextView confirmPasswordTextView;
-    TextView emailTextView;
+    //VIEWS
+    private TextView loginTextView;
+    private TextView passwordTextView;
+    private TextView confirmPasswordTextView;
+    private TextView emailTextView;
 
 
     @Override
@@ -37,13 +39,14 @@ public class Register extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        //FIREBASE
         mAuth=FirebaseAuth.getInstance();
 
+        //VIEWS
         loginTextView=findViewById(R.id.loginTextView);
         passwordTextView=findViewById(R.id.passwordTextView);
         confirmPasswordTextView=findViewById(R.id.confirmPasswordTextView);
         emailTextView=findViewById(R.id.emailTextView);
-
     }
 
     public void register(View view){
@@ -100,7 +103,7 @@ public class Register extends AppCompatActivity {
     }
     private boolean checkPassword(String password){
         String confirmPassword=confirmPasswordTextView.getText().toString();
-        //CHECK password and make toast
+        //CHECK PASSWORD and make toast
         if(password.equals(confirmPassword) && password.length()>=5){
             return true;
         }else if(password.equals(confirmPassword)){
@@ -115,8 +118,8 @@ public class Register extends AppCompatActivity {
     }
 
     public void goToLogin(View view){
-        Intent intent=new Intent(this, Login.class);
 
+        Intent intent=new Intent(this, Login.class);
         startActivity(intent);
     }
     public void goToMain(){

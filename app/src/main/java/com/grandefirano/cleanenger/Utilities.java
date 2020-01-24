@@ -20,8 +20,10 @@ import java.util.Locale;
 
 public class Utilities {
 
+
     public static final int TYPE_SNAP_PHOTO=0;
     public static final int TYPE_PROFILE_PHOTO=1;
+
 
     //DATA
     public static String getProperDateFormat(long date,boolean insideChat){
@@ -54,14 +56,11 @@ public class Utilities {
     return formatter.format(new Date(date));
     }
 
-
     //PHOTO
-
     public static String getFileExtension(Uri uri,ContentResolver cR){
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
-
     public static Bitmap convertToBitmapFromUri(Context context,Uri imageUri,int type) throws IOException {
         InputStream imageStream = context.getContentResolver().openInputStream(imageUri);
         Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
@@ -75,7 +74,6 @@ public class Utilities {
 
         return bitmap;
     }
-
     private static Bitmap getResizedBitmap(Bitmap image, int maxSize) {
         int width = image.getWidth();
         int height = image.getHeight();
@@ -131,18 +129,10 @@ public class Utilities {
 
         return rotatedBitmap;
     }
-
     public static Bitmap rotateBitmap(Bitmap bitmap, int rotation){
         Matrix matrix= new Matrix();
         matrix.setRotate(rotation);
         return Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),
                 bitmap.getHeight(),matrix,true);
-
     }
-
-
-
-
-
-
 }

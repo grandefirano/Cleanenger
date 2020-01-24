@@ -29,7 +29,6 @@ public class ShowStoryActivity extends AppCompatActivity {
 
     ImageView mStoryImageView;
 
-
     ArrayList<String> mStoryPhotos= new ArrayList<>();
     ArrayList<String> mStoryIds= new ArrayList<>();
 
@@ -71,7 +70,6 @@ public class ShowStoryActivity extends AppCompatActivity {
                 .child("snaps");
 
         mStoryImageView= findViewById(R.id.showStoryImageView);
-
 
 
         mStoryUserId=getIntent().getStringExtra("id");
@@ -130,31 +128,29 @@ public class ShowStoryActivity extends AppCompatActivity {
     }
 
     private void deleteSnap(int pos) {
-        final String snapId=mStoryIds.get(pos);
-        Log.d("ddddSnapId",snapId);
 
+        final String snapId=mStoryIds.get(pos);
+
+        //DELETE SNAP FROM DATABASE
         mUserSnapsReference.child(mStoryUserId).child(snapId).removeValue();
         mSnapsReference.child(snapId).child(myId).removeValue();
-
         mSnapsReference.child(snapId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getChildrenCount()==0){
+                    //DELETE SNAP FROM STORAGE
                     StorageReference snapToDeleteRef= FirebaseStorage.getInstance()
                             .getReference().child("snaps").child(mStoryUserId).child(snapId+".jpg");
                     snapToDeleteRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Log.d("dddddd","dalismy rade");
+                            Log.d("LOG","Photo was deleted");
                         }
                     });
                 }
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
 
 

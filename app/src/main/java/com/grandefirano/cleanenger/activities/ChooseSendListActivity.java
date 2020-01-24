@@ -36,14 +36,12 @@ public class ChooseSendListActivity extends AppCompatActivity implements ChooseS
     //VIEW
     private CheckBox mSelectedAllCheckBox;
 
-    //RECYCLERVIEW IMPLEMENTS
+    //RECYCLER VIEW IMPLEMENTS
     private ChooseSendAdapter mAdapter;
 
     //ARRAYS
     private ArrayList<String> mListOfFriends=new ArrayList<>();
     private boolean[] mListOfChecked;
-
-
 
 
     @Override
@@ -58,15 +56,17 @@ public class ChooseSendListActivity extends AppCompatActivity implements ChooseS
         //FIREBASE AND ID
         mDatabaseReference= FirebaseDatabase.getInstance().getReference();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        //check if user exists
         if(user==null){
             finish();
         }else {
             myId = user.getUid();
         }
 
-        //SETTING RECYCLERVIEW PROPERTIES
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        //SETTING RECYCLER VIEW PROPERTIES
         mAdapter=new ChooseSendAdapter(this,mListOfFriends,this);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setHasFixedSize(true);
@@ -82,12 +82,14 @@ public class ChooseSendListActivity extends AppCompatActivity implements ChooseS
 
         //GET CHECKED USERS
         for(int i=0;i<mListOfFriends.size();i++){
+
             if(mListOfChecked[i]){
                 listToSend.add(mListOfFriends.get(i));
             }
         }
         //RETURN LIST OF USERS
         if(listToSend.size()>0){
+
             Intent returnIntent=new Intent();
             returnIntent.putExtra("listToSend",listToSend);
             setResult(Activity.RESULT_OK,returnIntent);
@@ -95,9 +97,7 @@ public class ChooseSendListActivity extends AppCompatActivity implements ChooseS
         }else{
             Toast.makeText(this,"Nobody is selected",Toast.LENGTH_SHORT).show();
         }
-
     }
-
 
     private void downloadFriends(){
         mDatabaseReference.child("users").child(myId)
@@ -106,7 +106,6 @@ public class ChooseSendListActivity extends AppCompatActivity implements ChooseS
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
               //DOWNLOAD AND UPDATE ALL FRIENDS SIMULTANEOUSLY
-
              for(DataSnapshot snap: dataSnapshot.getChildren()){
                  String id=snap.getKey();
                  mListOfFriends.add(id);

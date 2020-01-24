@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -30,9 +31,11 @@ import com.grandefirano.cleanenger.single_items.UserData;
 
 public class Login extends AppCompatActivity {
 
+    //FIREBASE AND FB
     private FirebaseAuth mAuth;
     private CallbackManager mCallbackManager;
 
+    //VIEWS
     private TextView loginTextView;
     private TextView passwordTextView;
 
@@ -41,15 +44,16 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mAuth= FirebaseAuth.getInstance();
-
         loginTextView = findViewById(R.id.loginTextView);
         passwordTextView = findViewById(R.id.passwordTextView);
 
+        //FIREBASE AND FB
+        mAuth= FirebaseAuth.getInstance();
 
         mCallbackManager=CallbackManager.Factory.create();
         LoginButton loginButton=findViewById(R.id.loginWithFacebookButton);
-        loginButton.setReadPermissions("email","public_profile");
+
+        loginButton.setPermissions("email","public_profile");
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -70,11 +74,12 @@ public class Login extends AppCompatActivity {
     }
 
     public void login(View view) {
+
         String email=loginTextView.getText().toString();
         String password = passwordTextView.getText().toString();
 
         if(email.length()>0 && password.length()>0) {
-
+            //SIGN IN NORMALLY
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -119,8 +124,10 @@ public class Login extends AppCompatActivity {
                         if (task.isSuccessful()) {
 
                             FirebaseUser user = mAuth.getCurrentUser();
-                            loadFacebookUserToDatabase(user);
-                            gotoMain();
+                            if(user!=null) {
+                                loadFacebookUserToDatabase(user);
+                                gotoMain();
+                            }
                         } else {
                             Toast.makeText(Login.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
@@ -130,13 +137,24 @@ public class Login extends AppCompatActivity {
     }
 
     private void loadFacebookUserToDatabase(FirebaseUser user) {
+
+        //VARIABLES
+        Uri photoUri=user.getPhotoUrl();
         String uId=user.getUid();
-        String photo=user.getPhotoUrl().toString();
         String email=user.getEmail();
         String username=user.getDisplayName();
+        String photo;
+        if(photoUri!=null) {
+            photo = photoUri.toString();
+        }
+        else{
+            photo = "https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/profile_photos%2Fdefault_profile_photo.jpg?alt=media&token=5f8f3295-d9d1-4a70-bc41-b344cf07fd5d";
+        }
 
+        //OBJECTS
         UserData userData=new UserData(email,username,photo);
 
+        //FIREBASE
         FirebaseDatabase.getInstance().getReference()
                 .child("users").child(uId).child("data").setValue(userData);
     }

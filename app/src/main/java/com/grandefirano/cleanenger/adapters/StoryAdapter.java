@@ -25,8 +25,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder>{
 
-    private Context mContext;
     private List<String> mStoriesList;
+
+    private Context mContext;
     private OnSnapClickListener mOnSnapClickListener;
 
     public StoryAdapter(Context context, List<String> storiesList,OnSnapClickListener onSnapClickListener) {

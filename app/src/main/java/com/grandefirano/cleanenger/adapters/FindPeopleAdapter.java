@@ -21,13 +21,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.ViewHolder> implements Filterable {
 
+    //VARIABLES
     private boolean mIfOnlyFriends=false;
+
+    //ARRAY LISTS
     private ArrayList<SinglePersonSearchItem> mList=new ArrayList<>();
     private ArrayList<SinglePersonSearchItem> mFullList;
     private ArrayList<SinglePersonSearchItem> mActualList= new ArrayList<>();
 
+    //LISTENERS
     private OnItemListener mOnItemListener;
     private OnRightButtonListener mOnRightButtonListener;
+
+
     private Context mContext;
     private Filter mFilter=new Filter() {
         @Override
@@ -61,7 +67,6 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
                         (ArrayList<SinglePersonSearchItem>) results.values;
 
                 mList.addAll(resultList);
-
                 notifyDataSetChanged();
             }
         };
@@ -82,7 +87,6 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
             mIfOnlyFriends=onlyFriends;
 
             if(onlyFriends){
-
                 mList.clear();
                 mActualList.clear();
 
@@ -154,8 +158,8 @@ public class FindPeopleAdapter extends RecyclerView.Adapter<FindPeopleAdapter.Vi
             private TextView mPersonTextView;
             private ImageView mRightButtonImageView;
 
-            OnItemListener mOnItemListener;
-            OnRightButtonListener mOnRightButtonListener;
+            private OnItemListener mOnItemListener;
+            private OnRightButtonListener mOnRightButtonListener;
 
 
             private ViewHolder(@NonNull View itemView, OnItemListener onItemListener,OnRightButtonListener onRightButtonListener) {

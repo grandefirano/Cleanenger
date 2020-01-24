@@ -54,27 +54,32 @@ import static com.grandefirano.cleanenger.Utilities.getFileExtension;
 
 public class SendPhotoActivity extends AppCompatActivity {
 
+    //CONSTANTS
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
-    private static final int LIST_TO_SEND_CODE=1005;
+    private static final int LIST_TO_SEND_CODE= 1005;
 
-    Uri mImageUri;
-    Bitmap mSelectedImage;
+    //PHOTO
+    private Uri mImageUri;
+    private Bitmap mSelectedImage;
 
-    DatabaseReference mDatabaseReference;
-    String myId;
+    //FIREBASE
+    private DatabaseReference mDatabaseReference;
 
-    String myName;
-
-
-    ImageView mPhotoImageView;
-    ImageView mCancelButton;
-    ImageView mSendButton;
-    ImageView mRotateRightButton;
-    ImageView mRotateLeftButton;
-    ConstraintLayout mConstraintLayout;
-
+    //NOTIFICATION SERVICE
     APIService mAPIService;
+
+    //MY DATA
+    private String myId;
+    private String myName;
+
+    //VIEWS
+    private ImageView mPhotoImageView;
+    private ImageView mCancelButton;
+    private ImageView mSendButton;
+    private ImageView mRotateRightButton;
+    private ImageView mRotateLeftButton;
+    private ConstraintLayout mConstraintLayout;
 
 
     @Override
@@ -82,7 +87,7 @@ public class SendPhotoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_photo);
 
-
+        //VIEWS
         mPhotoImageView=findViewById(R.id.photoToSendImageView);
         mCancelButton=findViewById(R.id.sendPhotoCancelButton);
         mSendButton=findViewById(R.id.sendPhotoSendButton);
@@ -105,23 +110,26 @@ public class SendPhotoActivity extends AppCompatActivity {
             }
         });
 
-        FirebaseUser firebaseUser=FirebaseAuth.getInstance().getCurrentUser();
+        //FIREBASE
+        FirebaseUser firebaseUser=FirebaseAuth.
+                getInstance().getCurrentUser();
         mDatabaseReference=FirebaseDatabase.getInstance().getReference();
 
         if(firebaseUser==null){
             finish();
         }else {
+            mAPIService = Client.getRetrofit("https://fcm.googleapis.com/")
+                    .create(APIService.class);
+            SharedPreferences sharedPreferences =
+                    getSharedPreferences(MainActivity.SHARED_PREFS, MODE_PRIVATE);
+
             myId = firebaseUser.getUid();
-
-            mAPIService = Client.getRetrofit("https://fcm.googleapis.com/").create(APIService.class);
-
-            SharedPreferences sharedPreferences = getSharedPreferences(MainActivity.SHARED_PREFS, MODE_PRIVATE);
+            //GET NAME FROM SHARED PREFERENCES
             myName = sharedPreferences.getString(MainActivity.MY_NAME, myId);
         }
 
-
-
         if(Build.VERSION.SDK_INT>=23){
+
             if(checkSelfPermission(Manifest.permission.CAMERA)== PackageManager.PERMISSION_DENIED
                     || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_DENIED){
                 //PERMISSION NOT ENABLED
@@ -137,12 +145,15 @@ public class SendPhotoActivity extends AppCompatActivity {
     }
     private void openCamera() {
 
-
+        //CONTENT VALUES
         ContentValues values= new ContentValues();
         values.put(MediaStore.Images.Media.TITLE,"Picture to send");
         values.put(MediaStore.Images.Media.DESCRIPTION,"From the Camera");
-        mImageUri=getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
-        //Camera intent
+
+        mImageUri=getContentResolver()
+                .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
+
+        //CAMERA INTENT
         Intent cameraIntent= new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,mImageUri);
         startActivityForResult(cameraIntent,IMAGE_CAPTURE_CODE);
@@ -190,24 +201,27 @@ public class SendPhotoActivity extends AppCompatActivity {
         if(requestCode==LIST_TO_SEND_CODE){
             if(resultCode==RESULT_OK && data!=null){
 
-                final ArrayList<String> listToSend=data.getStringArrayListExtra("listToSend");
-
+                //COMPRESS PHOTO
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                mSelectedImage.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                mSelectedImage.compress(Bitmap.CompressFormat.JPEG,
+                        100, byteArrayOutputStream);
                 byte[] bytesData = byteArrayOutputStream.toByteArray();
 
+                //SNAP DATA
+                final ArrayList<String> listToSend=data
+                        .getStringArrayListExtra("listToSend");
                 final String random = String.valueOf(UUID.randomUUID());
 
+                //STORAGE REFERENCE
                 final StorageReference snapPhotoReference = FirebaseStorage.getInstance()
                         .getReference().child("snaps")
                         .child(myId).child(random + "."+getFileExtension(mImageUri,getContentResolver()));
 
-
+                //UPLOAD PHOTO
                 snapPhotoReference.putBytes(bytesData)
                         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
 
                                 snapPhotoReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                     @Override
@@ -217,19 +231,16 @@ public class SendPhotoActivity extends AppCompatActivity {
 
                                         for (int i = 0; i < listToSend.size(); i++) {
 
-                                                mDatabaseReference.child("users").child(listToSend.get(i)).child("snaps").child(myId).child(random).setValue(uri.toString());
-
-                                                Toast.makeText(getApplicationContext(), "Upload successful", Toast.LENGTH_SHORT).show();
-
-                                                mDatabaseReference.child("snaps").child(random).child(listToSend.get(i)).setValue(false);
-
+                                            mDatabaseReference.child("users").child(listToSend.get(i))
+                                                    .child("snaps").child(myId).child(random)
+                                                    .setValue(uri.toString());
+                                            mDatabaseReference.child("snaps").child(random)
+                                                    .child(listToSend.get(i)).setValue(false);
                                         }
-
-
+                                        Toast.makeText(getApplicationContext(),
+                                                "Upload successful", Toast.LENGTH_SHORT).show();
                                     }
                                 });
-
-
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -241,24 +252,24 @@ public class SendPhotoActivity extends AppCompatActivity {
                 finish();
             }
         }
-        if(requestCode==IMAGE_CAPTURE_CODE) {
-            if (resultCode == RESULT_OK) {
 
+        if(requestCode==IMAGE_CAPTURE_CODE) {
+
+            if (resultCode == RESULT_OK) {
                 mConstraintLayout.setVisibility(View.VISIBLE);
 
-
                 try {
-                    mSelectedImage = Utilities.convertToBitmapFromUri(this, mImageUri, Utilities.TYPE_SNAP_PHOTO);
+                    mSelectedImage = Utilities.
+                            convertToBitmapFromUri(this, mImageUri, Utilities.TYPE_SNAP_PHOTO);
 
-                    mSelectedImage = Utilities.rotateImageBasedOnExif(mSelectedImage, String.valueOf(mImageUri));
+                    mSelectedImage = Utilities.
+                            rotateImageBasedOnExif(mSelectedImage, String.valueOf(mImageUri));
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-
                 mPhotoImageView.setImageBitmap(mSelectedImage);
-
 
             } else {
                 finish();
@@ -269,13 +280,15 @@ public class SendPhotoActivity extends AppCompatActivity {
         DatabaseReference allTokens=FirebaseDatabase.getInstance().getReference("tokens");
 
         for(final String idOfSendPerson:idsOfSendPerson) {
-            allTokens.child(idOfSendPerson).addValueEventListener(new ValueEventListener() {
+            allTokens.child(idOfSendPerson).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                     Token token = dataSnapshot.getValue(Token.class);
 
-                    Data data = new Data(myId, "[New snap]", null, myName, idOfSendPerson, R.drawable.ic_notification);
+                    Data data = new Data(myId, "[New snap]",
+                            null, myName, idOfSendPerson,
+                            R.drawable.ic_notification);
                     if(token!=null) {
 
                         Sender sender = new Sender(data, token.getToken());

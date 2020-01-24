@@ -24,13 +24,11 @@ import androidx.recyclerview.widget.RecyclerView;
 public class ChooseSendAdapter extends RecyclerView.Adapter<ChooseSendAdapter.ViewHolder> {
 
 
-    private final OnItemListener mOnItemListener;
-
+    private boolean isSelectedAll=false;
     private ArrayList<String> mList;
 
+    private final OnItemListener mOnItemListener;
     private Context mContext;
-
-    private boolean isSelectedAll=false;
 
 
     public ChooseSendAdapter(Context context, ArrayList<String> listOfFriends, OnItemListener onItemListener){
@@ -67,22 +65,21 @@ public class ChooseSendAdapter extends RecyclerView.Adapter<ChooseSendAdapter.Vi
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-            private ImageView mImageView;
-            private TextView mPersonTextView;
-            private ImageView mCheck;
+        private ImageView mImageView;
+        private TextView mPersonTextView;
+        private ImageView mCheck;
 
-            OnItemListener mOnItemListener;
+        private OnItemListener mOnItemListener;
 
+        private ViewHolder(@NonNull View itemView, OnItemListener onItemListener) {
+            super(itemView);
+            mImageView=itemView.findViewById(R.id.personImageView);
+            mPersonTextView=itemView.findViewById(R.id.nameOfPersonTextView);
+            mCheck=itemView.findViewById(R.id.checkboxOfPerson);
 
-            private ViewHolder(@NonNull View itemView, OnItemListener onItemListener) {
-                super(itemView);
-                mImageView=itemView.findViewById(R.id.personImageView);
-                mPersonTextView=itemView.findViewById(R.id.nameOfPersonTextView);
-                mCheck=itemView.findViewById(R.id.checkboxOfPerson);
+            itemView.setOnClickListener(this);
 
-                this.mOnItemListener=onItemListener;
-
-                itemView.setOnClickListener(this);
+            this.mOnItemListener=onItemListener;
             }
 
             @Override
@@ -100,7 +97,7 @@ public class ChooseSendAdapter extends RecyclerView.Adapter<ChooseSendAdapter.Vi
         DatabaseReference mGivenUserData= FirebaseDatabase.getInstance().getReference()
                 .child("users").child(userId).child("data");
 
-        mGivenUserData.addValueEventListener(new ValueEventListener() {
+        mGivenUserData.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserData userData=dataSnapshot.getValue(UserData.class);

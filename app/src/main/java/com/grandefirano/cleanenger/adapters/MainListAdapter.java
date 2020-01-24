@@ -28,12 +28,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHolder> {
 
+    //VARIABLES
+    private String myId;
 
+    //ARRAY LISTS
     private ArrayList<String> mChatIdList;
     private ArrayList<String> mUserIdList;
+
     private OnItemListener mOnItemListener;
     private Context mContext;
-    private String myId;
+
 
     public MainListAdapter(Context context,String myId,OnItemListener onItemListener,ArrayList<String> chatIdList,ArrayList<String> userIdList){
         mOnItemListener=onItemListener;
@@ -125,7 +129,8 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.ViewHo
                                 Typeface.NORMAL);
                         message = "Me: " + message;
                         if (ifRead) {
-                            holder.mMessageTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_circle_black, 0, 0, 0);
+                            holder.mMessageTextView.setCompoundDrawablesWithIntrinsicBounds(
+                                    R.drawable.ic_check_circle_black, 0, 0, 0);
                         }
                     } else {
                         if (ifRead) {

@@ -24,12 +24,13 @@ import com.grandefirano.cleanenger.single_items.ChatData;
 
 public class ChatOptionsActivity extends AppCompatActivity {
 
+    //FIREBASE
+    private DatabaseReference mChatDataReference;
 
+    //VIEWS
     private RadioGroup mSizeRadioGroup;
-
     private CircleImageView mClickedColorView;
 
-    private DatabaseReference mChatDataReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +66,11 @@ public class ChatOptionsActivity extends AppCompatActivity {
             }
         });
 
-
-
+        //INTENT
         Intent intent=getIntent();
         String mChatId=intent.getStringExtra("chatId");
 
+        //FIREBASE
         mChatDataReference= FirebaseDatabase.getInstance().getReference()
                             .child("chats").child(mChatId).child("data");
 
@@ -79,8 +80,6 @@ public class ChatOptionsActivity extends AppCompatActivity {
 
     private void setDataFromDatabase() {
 
-
-
         mChatDataReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -89,15 +88,14 @@ public class ChatOptionsActivity extends AppCompatActivity {
 
                 //IF DATA WAS SAVED PREVIOUSLY
                 if (chatData != null) {
-
                     int color = chatData.getColor();
                     int textSize = chatData.getTextSize();
 
-                    //CHAT COLOR
                     int colorViewId;
+                    int idRadioButton;
 
+                    //CHAT COLOR
                     switch (color) {
-
                         case ChatListAdapter.BLUE_CHAT_COLOR:
                             colorViewId = R.id.colorPickBlue;
                             break;
@@ -112,13 +110,11 @@ public class ChatOptionsActivity extends AppCompatActivity {
                             break;
                         default:
                             colorViewId = R.id.colorPickDefault;
-
                     }
+
                     mClickedColorView=findViewById(colorViewId);
 
                     //TEXT SIZE
-                    int idRadioButton;
-
                     switch (textSize){
                         case 10:
                             idRadioButton=R.id.size10ChatRadioButton;
@@ -137,7 +133,7 @@ public class ChatOptionsActivity extends AppCompatActivity {
                     }
                     mSizeRadioGroup.check(idRadioButton);
 
-                }//END OF IF SAVED PREVIOUSLY
+                }//end of "if saved before"
                 mClickedColorView.setBorderWidth(10);
 
             }
@@ -148,27 +144,24 @@ public class ChatOptionsActivity extends AppCompatActivity {
 
 
     public void pickColor(View view){
-
+        //REMOVE BORDER of old one
         CircleImageView oldView=mClickedColorView;
         oldView.setBorderWidth(0);
 
+        //SET BORDER of new one
         mClickedColorView=(CircleImageView)view;
         mClickedColorView.setBorderWidth(10);
-
-
     }
-
 
     public void saveChatOptions(){
 
         int radioSizeId=mSizeRadioGroup.getCheckedRadioButtonId();
-       int chatColorId=mClickedColorView.getId();
+        int chatColorId=mClickedColorView.getId();
 
         int colorToSave;
         int sizeToSave;
 
         switch(chatColorId){
-
             case R.id.colorPickBlue:
                 colorToSave=ChatListAdapter.BLUE_CHAT_COLOR;
                 break;
@@ -183,7 +176,6 @@ public class ChatOptionsActivity extends AppCompatActivity {
                 break;
             default:
                 colorToSave=ChatListAdapter.DEFAULT_CHAT_COLOR;
-
         }
 
 
@@ -204,8 +196,10 @@ public class ChatOptionsActivity extends AppCompatActivity {
                 sizeToSave=16;
         }
 
-        ChatData chatData=new ChatData(colorToSave,sizeToSave);
+        ChatData chatData=
+                new ChatData(colorToSave,sizeToSave);
         mChatDataReference.setValue(chatData);
+
         finish();
     }
 }
