@@ -134,7 +134,7 @@ public class Register extends AppCompatActivity {
         SingleMainScreenMessage singleMainMessage=
                 new SingleMainScreenMessage(chatId, ServerValue.TIMESTAMP);
         SingleMessage singleMessage = new SingleMessage(
-                userId, textOfWelcomingMessage, ServerValue.TIMESTAMP);
+                idOfCleanTeam, textOfWelcomingMessage, ServerValue.TIMESTAMP);
         LastMessage lastMessage = new LastMessage(
                 singleMessage.getUId(), singleMessage.getMessage(),
                 ServerValue.TIMESTAMP, false);
