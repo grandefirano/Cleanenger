@@ -132,21 +132,27 @@ public class ShowStoryActivity extends AppCompatActivity {
         final String snapId=mStoryIds.get(pos);
 
         //DELETE SNAP FROM DATABASE
+
         mUserSnapsReference.child(mStoryUserId).child(snapId).removeValue();
-        mSnapsReference.child(snapId).child(myId).removeValue();
+
         mSnapsReference.child(snapId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getChildrenCount()==0){
-                    //DELETE SNAP FROM STORAGE
-                    StorageReference snapToDeleteRef= FirebaseStorage.getInstance()
-                            .getReference().child("snaps").child(mStoryUserId).child(snapId+".jpg");
-                    snapToDeleteRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d("LOG","Photo was deleted");
-                        }
-                    });
+                if(dataSnapshot.exists()) {
+
+                    mSnapsReference.child(snapId).child(myId).removeValue();
+
+                    if (dataSnapshot.getChildrenCount() == 0) {
+                        //DELETE SNAP FROM STORAGE
+                        StorageReference snapToDeleteRef = FirebaseStorage.getInstance()
+                                .getReference().child("snaps").child(mStoryUserId).child(snapId + ".jpg");
+                        snapToDeleteRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d("LOG", "Photo was deleted");
+                            }
+                        });
+                    }
                 }
             }
             @Override
