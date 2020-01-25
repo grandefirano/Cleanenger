@@ -130,7 +130,6 @@ public class Login extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             if(user!=null) {
                                 loadFacebookUserToDatabase(user);
-                                gotoMain();
                             }
                         } else {
                             Toast.makeText(Login.this, "Authentication failed.",
@@ -163,13 +162,15 @@ public class Login extends AppCompatActivity {
                 .child("users").child(uId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.exists()){
+                if(!dataSnapshot.child("data").exists()){
                     //IF LOGGED FIRST TIME SEND WELCOMING MESSAGES
                     Utilities.setWelcomingMessages(getApplicationContext(),uId);
                 }
                 FirebaseDatabase.getInstance().getReference()
                         .child("users").child(uId).child("data").setValue(userData);
 
+                //GO TO MAIN AFTER UPDATING
+                gotoMain();
             }
 
             @Override
