@@ -10,11 +10,11 @@ import android.content.ContextWrapper;
 import android.net.Uri;
 import android.os.Build;
 
-
+@TargetApi(Build.VERSION_CODES.O)
 public class OreoAndAboveNotification extends ContextWrapper {
 
-    private static final String ID="some_id";
-    private static final String NAME="FirebaseApp";
+    private static final String ID="channel_cleanenger";
+    private static final String NAME="Cleanenger";
 
     private NotificationManager mNotificationManager;
 
@@ -27,7 +27,7 @@ public class OreoAndAboveNotification extends ContextWrapper {
     }
     @TargetApi(Build.VERSION_CODES.O)
     private void createChannel() {
-        NotificationChannel notificationChannel = new NotificationChannel(ID,NAME, NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationChannel notificationChannel = new NotificationChannel(ID,NAME, NotificationManager.IMPORTANCE_HIGH);
         notificationChannel.enableLights(true);
         notificationChannel.enableVibration(true);
         notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
