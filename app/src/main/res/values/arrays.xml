@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string-array name="welcoming_snaps">
+        <item tools:ignore="TypographyDashes">https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/snaps%2F7EFVvXXy7uZwsWC036PQftd4OWG3%2Fslide1.jpg?alt=media&amp;token=9df77eb7-e5e9-454a-a1fa-69b3836705f9</item>
+        <item tools:ignore="TypographyDashes">https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/snaps%2F7EFVvXXy7uZwsWC036PQftd4OWG3%2Fslide2.jpg?alt=media&amp;token=8b58222e-4ca0-47e8-8fc5-bcf58c2f3280</item>
+        <item tools:ignore="TypographyDashes">https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/snaps%2F7EFVvXXy7uZwsWC036PQftd4OWG3%2Fslide3.jpg?alt=media&amp;token=58adf16d-38c6-444e-896b-832203b4e89d</item>
+        <item tools:ignore="TypographyDashes">https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/snaps%2F7EFVvXXy7uZwsWC036PQftd4OWG3%2Fslide4.jpg?alt=media&amp;token=c7dd5b19-0f72-4252-a99a-025bcf3f8d6d</item>
+        <item tools:ignore="TypographyDashes">https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/snaps%2F7EFVvXXy7uZwsWC036PQftd4OWG3%2Fslide5.jpg?alt=media&amp;token=1ff9284d-d3ab-4b56-853f-9a5183c71d49</item>
+        <item tools:ignore="TypographyDashes">https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/snaps%2F7EFVvXXy7uZwsWC036PQftd4OWG3%2Fslide5.jpg?alt=media&amp;token=1ff9284d-d3ab-4b56-853f-9a5183c71d49</item>
+        <item>https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/snaps%2F7EFVvXXy7uZwsWC036PQftd4OWG3%2Fslide6.jpg?alt=media&amp;token=b2836d0a-43da-4ddd-8770-ee0d6e515d96</item>
+        <item tools:ignore="TypographyDashes">https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/snaps%2F7EFVvXXy7uZwsWC036PQftd4OWG3%2Fslide7.jpg?alt=media&amp;token=c69ffeb3-b557-40c9-bc1b-37c9b45919ff</item>
+        <item>https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/snaps%2F7EFVvXXy7uZwsWC036PQftd4OWG3%2Fslide8.jpg?alt=media&amp;token=39db613d-0c7f-4a1d-aa0b-9d0cab37662e</item>
+
+
+    </string-array>
+
+
+</resources>

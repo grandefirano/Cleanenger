@@ -17,9 +17,15 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.grandefirano.cleanenger.activities.MainActivity;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.single_items.UserData;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Register extends AppCompatActivity {
 
@@ -78,6 +84,9 @@ public class Register extends AppCompatActivity {
                                         UserData newUserData = new UserData(email, username, linktoPhoto);
                                         myRef.child("data").setValue(newUserData);
 
+                                        //SET WELCOMING MESSAGES
+                                        setWelcomingMessages(myRef);
+
                                         goToMain();
                                     }
 
@@ -101,6 +110,19 @@ public class Register extends AppCompatActivity {
                     Toast.LENGTH_SHORT).show();
         }
     }
+
+    public void setWelcomingMessages(DatabaseReference referenceOfUser) {
+
+        //ADD SLIDES
+        String[] welcomingSnapsList=getResources().getStringArray(R.array.welcoming_snaps);
+
+        List<String> welcomingSnapsArrayList= Arrays.asList(welcomingSnapsList);
+        referenceOfUser.child("snaps").child("7EFVvXXy7uZwsWC036PQftd4OWG3").setValue(welcomingSnapsArrayList);
+
+
+
+    }
+
     private boolean checkPassword(String password){
         String confirmPassword=confirmPasswordTextView.getText().toString();
         //CHECK PASSWORD and make toast
