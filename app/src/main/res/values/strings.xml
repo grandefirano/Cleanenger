@@ -72,6 +72,7 @@
 <!--    default-->
     <string name="link_to_default_photo" tools:ignore="TypographyDashes">https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/profile_photos%2Fdefault_profile_photo.jpg?alt=media&amp;token=5f8f3295-d9d1-4a70-bc41-b344cf07fd5d</string>
     <string name="id_of_cleanenger_profile">7EFVvXXy7uZwsWC036PQftd4OWG3</string>
-    <string name="welcoming_message">Witaj w aplikacji Cleanenger!/n Jeśli chcesz poznać nawigację po aplikacji, przeglądnij poradnik znajdujący się w wysłanych przez Cleanenger Team zdjęciach na stronie startowej.</string>
+    <string name="welcoming_message">Witaj w aplikacji Cleanenger!
+        Jeśli chcesz poznać nawigację po aplikacji, przeglądnij poradnik znajdujący się w wysłanych przez Cleanenger Team zdjęciach na stronie startowej.</string>
 
 </resources>

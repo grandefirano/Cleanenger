@@ -11,12 +11,22 @@ import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
+import com.grandefirano.cleanenger.single_items.LastMessage;
+import com.grandefirano.cleanenger.single_items.SingleMainScreenMessage;
+import com.grandefirano.cleanenger.single_items.SingleMessage;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 public class Utilities {
 
@@ -134,5 +144,40 @@ public class Utilities {
         matrix.setRotate(rotation);
         return Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),
                 bitmap.getHeight(),matrix,true);
+    }
+
+    //WELCOMING MESSAGES AND SNAPS
+    public static void setWelcomingMessages(Context context, String userId) {
+
+        DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference();
+
+        String chatId= UUID.randomUUID().toString();
+        String[] welcomingSnapsList=context.getResources().getStringArray(R.array.welcoming_snaps);
+        String textOfWelcomingMessage=context.getResources().getString(R.string.welcoming_message);
+        String idOfCleanTeam=context.getResources()
+                .getString(R.string.id_of_cleanenger_profile);
+        DatabaseReference userDatabaseReference=
+                databaseReference.child("users").child(userId);
+        DatabaseReference chatDatabaseReference=
+                databaseReference.child("chats").child(chatId);
+
+        //ADD SLIDES
+        List<String> welcomingSnapsArrayList= Arrays.asList(welcomingSnapsList);
+        userDatabaseReference.child("snaps").child(idOfCleanTeam)
+                .setValue(welcomingSnapsArrayList);
+
+        //ADD MESSAGE
+        SingleMainScreenMessage singleMainMessage=
+                new SingleMainScreenMessage(chatId, ServerValue.TIMESTAMP);
+        SingleMessage singleMessage = new SingleMessage(
+                idOfCleanTeam, textOfWelcomingMessage, ServerValue.TIMESTAMP);
+        LastMessage lastMessage = new LastMessage(
+                singleMessage.getUId(), singleMessage.getMessage(),
+                ServerValue.TIMESTAMP, false);
+
+        userDatabaseReference.child("main_screen_messages")
+                .child(idOfCleanTeam).setValue(singleMainMessage.toMap());
+        chatDatabaseReference.child("messages").push().setValue(singleMessage.toMap());
+        chatDatabaseReference.child("last_message").setValue(lastMessage.toMap());
     }
 }

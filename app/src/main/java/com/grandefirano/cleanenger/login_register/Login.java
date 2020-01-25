@@ -24,7 +24,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.grandefirano.cleanenger.Utilities;
 import com.grandefirano.cleanenger.activities.MainActivity;
 import com.grandefirano.cleanenger.R;
 import com.grandefirano.cleanenger.single_items.UserData;
@@ -140,7 +144,7 @@ public class Login extends AppCompatActivity {
 
         //VARIABLES
         Uri photoUri=user.getPhotoUrl();
-        String uId=user.getUid();
+        final String uId=user.getUid();
         String email=user.getEmail();
         String username=user.getDisplayName();
         String photo;
@@ -151,11 +155,29 @@ public class Login extends AppCompatActivity {
             photo = "https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/profile_photos%2Fdefault_profile_photo.jpg?alt=media&token=5f8f3295-d9d1-4a70-bc41-b344cf07fd5d";
         }
 
-        //OBJECTS
-        UserData userData=new UserData(email,username,photo);
+        final UserData userData=new UserData(email,username,photo);
 
         //FIREBASE
+
         FirebaseDatabase.getInstance().getReference()
-                .child("users").child(uId).child("data").setValue(userData);
+                .child("users").child(uId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()){
+                    //IF LOGGED FIRST TIME SEND WELCOMING MESSAGES
+                    Utilities.setWelcomingMessages(getApplicationContext(),uId);
+                }
+                FirebaseDatabase.getInstance().getReference()
+                        .child("users").child(uId).child("data").setValue(userData);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 }
