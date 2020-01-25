@@ -17,21 +17,24 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+
+import com.google.firebase.database.ServerValue;
 import com.grandefirano.cleanenger.activities.MainActivity;
 import com.grandefirano.cleanenger.R;
+import com.grandefirano.cleanenger.single_items.LastMessage;
+import com.grandefirano.cleanenger.single_items.SingleMainScreenMessage;
+import com.grandefirano.cleanenger.single_items.SingleMessage;
 import com.grandefirano.cleanenger.single_items.UserData;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class Register extends AppCompatActivity {
 
     //FIREBASE
     private FirebaseAuth mAuth;
-    private DatabaseReference myRef;
+    private DatabaseReference mDatabaseReference;
 
     //VIEWS
     private TextView loginTextView;
@@ -47,6 +50,7 @@ public class Register extends AppCompatActivity {
 
         //FIREBASE
         mAuth=FirebaseAuth.getInstance();
+        mDatabaseReference=FirebaseDatabase.getInstance().getReference();
 
         //VIEWS
         loginTextView=findViewById(R.id.loginTextView);
@@ -74,18 +78,16 @@ public class Register extends AppCompatActivity {
 
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     if(user!=null) {
+
                                         String uId = user.getUid();
-
-                                        myRef = FirebaseDatabase.getInstance()
-                                                .getReference().child("users").child(uId);
-
-                                        String linktoPhoto = "https://firebasestorage.googleapis.com/v0/b/cleanenger.appspot.com/o/profile_photos%2Fdefault_profile_photo.jpg?alt=media&token=5f8f3295-d9d1-4a70-bc41-b344cf07fd5d";
+                                        String linktoPhoto =getResources().getString(R.string.link_to_default_photo);
 
                                         UserData newUserData = new UserData(email, username, linktoPhoto);
-                                        myRef.child("data").setValue(newUserData);
+                                        mDatabaseReference.child("users").child(uId)
+                                                .child("data").setValue(newUserData);
 
                                         //SET WELCOMING MESSAGES
-                                        setWelcomingMessages(myRef);
+                                        setWelcomingMessages(uId);
 
                                         goToMain();
                                     }
@@ -111,16 +113,36 @@ public class Register extends AppCompatActivity {
         }
     }
 
-    public void setWelcomingMessages(DatabaseReference referenceOfUser) {
+    public void setWelcomingMessages(String userId) {
+
+        String chatId= UUID.randomUUID().toString();
+        String[] welcomingSnapsList=getResources().getStringArray(R.array.welcoming_snaps);
+        String textOfWelcomingMessage=getResources().getString(R.string.welcoming_message);
+        String idOfCleanTeam=getResources()
+                .getString(R.string.id_of_cleanenger_profile);
+        DatabaseReference userDatabaseReference=
+                mDatabaseReference.child("users").child(userId);
+        DatabaseReference chatDatabaseReference=
+                mDatabaseReference.child("chats").child(chatId);
 
         //ADD SLIDES
-        String[] welcomingSnapsList=getResources().getStringArray(R.array.welcoming_snaps);
-
         List<String> welcomingSnapsArrayList= Arrays.asList(welcomingSnapsList);
-        referenceOfUser.child("snaps").child("7EFVvXXy7uZwsWC036PQftd4OWG3").setValue(welcomingSnapsArrayList);
+        userDatabaseReference.child("snaps").child(idOfCleanTeam)
+                .setValue(welcomingSnapsArrayList);
 
+        //ADD MESSAGE
+        SingleMainScreenMessage singleMainMessage=
+                new SingleMainScreenMessage(chatId, ServerValue.TIMESTAMP);
+        SingleMessage singleMessage = new SingleMessage(
+                userId, textOfWelcomingMessage, ServerValue.TIMESTAMP);
+        LastMessage lastMessage = new LastMessage(
+                singleMessage.getUId(), singleMessage.getMessage(),
+                ServerValue.TIMESTAMP, false);
 
-
+        userDatabaseReference.child("main_screen_messages")
+                .child(idOfCleanTeam).setValue(singleMainMessage.toMap());
+        chatDatabaseReference.child("messages").push().setValue(singleMessage.toMap());
+        chatDatabaseReference.child("last_message").setValue(lastMessage.toMap());
     }
 
     private boolean checkPassword(String password){
