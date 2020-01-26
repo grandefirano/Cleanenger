@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.AccountActivity">
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/toolbar_save_close" />
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+
+        android:id="@+id/profilePhotoImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="32dp"
+        android:onClick="changePhoto"
+        android:src="@drawable/default_profile_photo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/accountLinearLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/include"
+
+
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="50dp"
+        android:gravity="center_horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/include"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/accountLinearLayout"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/usernameTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:labelFor="@id/usernameAccountEditText"
+            android:text="@string/username_account_title" />
+
+        <EditText
+            android:id="@+id/usernameAccountEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/colorAccent"
+            android:ems="12"
+            android:gravity="center"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/emailTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:labelFor="@id/emailAccountEditText"
+            android:text="@string/email_account_title" />
+
+        <EditText
+            android:id="@+id/emailAccountEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/colorAccent"
+            android:ems="12"
+            android:gravity="center"
+            android:importantForAutofill="no"
+            android:inputType="textEmailAddress"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/passwordTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:labelFor="@id/passwordAccountEditText"
+            android:text="@string/password_account_title" />
+
+        <EditText
+            android:id="@+id/passwordAccountEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:backgroundTint="@color/colorAccent"
+            android:ems="12"
+            android:gravity="center"
+            android:importantForAutofill="no"
+            android:inputType="textPassword"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
