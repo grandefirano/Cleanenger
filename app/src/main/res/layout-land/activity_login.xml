@@ -66,7 +66,7 @@
             android:id="@+id/loginWithFacebookButton"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="6dp"
             />
 
 
@@ -75,7 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="2dp"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="10dp"
             android:onClick="goToRegister"
             android:text="@string/create_an_account_login_activity"
             />
