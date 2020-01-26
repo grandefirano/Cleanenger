@@ -17,25 +17,30 @@
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
         android:src="@drawable/logo_cleananger"
-        app:layout_constraintEnd_toStartOf="@+id/linearLayout"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/scrollingRegisterLayout"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:contentDescription="@string/logo_cleanenger_register" />
 
-
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:id="@+id/scrollingRegisterLayout"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="70dp"
+        android:paddingEnd="60dp"
+        android:paddingStart="30dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:gravity="center_horizontal">
 
         <EditText
+            android:layout_marginTop="30dp"
             android:id="@+id/loginTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -69,7 +74,7 @@
             android:id="@+id/confirmPasswordTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
+            android:layout_marginBottom="10dp"
             android:ems="10"
             android:hint="@string/confirm_password_hint_register"
             android:inputType="textPassword"
@@ -79,7 +84,7 @@
             android:id="@+id/registerButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="5dp"
             android:onClick="register"
             android:text="@string/register_button" />
 
@@ -88,11 +93,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="goToLogin"
+            android:layout_marginBottom="30dp"
             android:padding="3dp"
             android:text="@string/have_account_text_register" />
 
-
     </LinearLayout>
+    </ScrollView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
