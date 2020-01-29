@@ -43,7 +43,7 @@ It has support for **signing in with Facebook**, as well as the classic email & 
 
 #### Main Screen
 
-![presentation1](https://user-images.githubusercontent.com/41000632/73369445-e746a500-42b2-11ea-8ad9-26c2e4efdee1.jpg =300x) 
+![presentation11](https://user-images.githubusercontent.com/41000632/73372182-152de880-42b7-11ea-9d9d-07c40dedb0a1.jpg)
 
 The main screen contains recycler views of both photos and messages.
 
@@ -60,7 +60,7 @@ If you are logged in with your facebook account all Edit Text fields and a profi
 
 #### Chat Screen
 
-![presentationchat10](https://user-images.githubusercontent.com/41000632/73369860-94b9b880-42b3-11ea-9306-69dc5af5df18.jpg =300x)
+![presentationchat101](https://user-images.githubusercontent.com/41000632/73372048-e748a400-42b6-11ea-9b33-2d5b0c48e2e5.jpg)
 
 The chat screen allows you to send and receive instant messages.
 Tap a message to show the time it was sent.
@@ -69,7 +69,8 @@ Personalization of chat appearance include text size and chat color.
 
 #### Find Friends Screen
 
-![presentationfindfriends](https://user-images.githubusercontent.com/41000632/73370103-f8dc7c80-42b3-11ea-8b08-6e9b8439a5a2.jpg =300x)
+![presentationfindfriends1](https://user-images.githubusercontent.com/41000632/73371836-96d14680-42b6-11ea-8ab2-ab34b3aa1253.jpg)
+
 
 When opened, the Recycler View is filled with all the users of the app.
 Tap **Search Icon** to search for users by their usernames and 
